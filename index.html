@@ -13,7 +13,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Plan d'étude">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180' width='180' height='180'%3E%3Crect width='180' height='180' rx='40' fill='%236d74f0'/%3E%3Crect x='40' y='50' width='100' height='92' rx='16' fill='none' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M40 78h100' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M68 36v24M112 36v24' stroke='%23fff' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M68 111l15 14 30-30' fill='none' stroke='%23fff' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0BAMAAADP4xsBAAAAMFBMVEX////5+v/09P7v8P7m6PzZ2/vKzfrCxfm/wvi8v/iws/egpPWTmPOEivJ1fPBtdPDcGy3dAAADvUlEQVR42u2bPWgUQRTHf3sf+QLJgVqIggdiExCuEkQCERsLDdcJQoxoLaaxDxYxkMJUanlEozaSiIJWcojWCaazSK5QBEFyEaLex+5a3Pft7O2bzZ4YnGku97Lzu//Nvnkz+96c5dKvFsOgDdqgDdqgDdqgDdqgDXpfou3zJ9el1q7mBrQcjEitnS0IXQVYk1m7WtCAlAAWZVbNsbYBCjKrJtoBWJdZzZQx6P8A7R9DPt0+F9z70OXn2uGpel2q7fSaHtrOyr/3wJYWelFnTId10F/07tdVOdqe0EMntsToj7pudkqKdiZ00YltIXpXf3ZMC9E5ffSIDO2kAYgvbLquWwQY7b6kaf3+OlOLF9si9C8ArJVOiBrtuuUUAPdE6NpyOu7K0O4GAAdE+5AcQGxJOsxjaYCyKKiuAhxNi8NyDqAqQTsFgDvt/08rezWsZwDsggBtA8QakS8OkOm+psOaTKs3PF50BSCZqr8bBJjpvqbDamUB8tIFLNnUl4MRr+oOaxag6J396l1e6xOnNt4/8350hzWlRnv9ekfpyb1aAeC4wK/10/A+qs0Wx6ADFky1eccyY23QBv1vzMbRogZjJ2XG2qD/IvrDiUv6mYWiZPdUAlYCeoRUfReY6suAlGapZz8jR883t7RRo0uzffOQeVHXWHjRg31AP6y9PIrer3/XOg650fv1fMu1I1btER2darFobdVe0ZGplovWVa0QHVq1feNw3uvTD4hA9SIMdMZpT6ozpGp7BsrTHXEamCMC1bsAye1eosOqdgAq02FEB6n+0Z7YVIsOqzoOQHUyhOgg1ZV67N3yFx1WdaKWYXLGW858n2hUuz/ruas15UTc02wcrsl2L+pED2EMaaQ03/iJDh/5kqu11wsa0UMa+SrtjyoK0XuI14kXXZu96FS71ZZsZXVnD6tM/F3zzzmiVe3amR4jvbe1MfYYbfeQro31IpBatFy1pUisWsu93KPYTKwGbCdjqpztkSwwNNMDnZaiu3f81hPgqc+YFqRoCxQFi+FXB29mfdB59YB4b2MZ1IUnv+akaH/U63Eb4wDOqtzHykVQVEFUxe40wDG56jxATFSomgD4Kk7jONegrSTSU/U60CyvBTff8poCXVsNYysycr0oeEuEtuu3c2EzGNwoZbIlK8DO6D86DQpru5/10ZPSYndGlxyXFrv7WKLv58GCPh6HcN2XOuSzeqdaluTkMc0DM86ylHxlW/uo4DfZMZ+3vgDL/IDIoA3aoA3aoA3aoA3aoA16P6D/ALR9KBGcdAT3AAAAAElFTkSuQmCC">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
 
 <style>
 /* =====================================================================
@@ -230,6 +231,10 @@ details.passees summary { padding: 12px 4px; color: var(--texte-2); font-weight:
 .interrupteur input:checked + span::after { transform: translateX(22px); }
 .interrupteur input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
 label.ligne-reglage { cursor: pointer; }
+
+.installer ol { margin: 8px 0 0; padding-left: 22px; color: var(--texte-2); }
+.installer li { margin-bottom: 6px; }
+.installer .attention { margin-top: 10px; color: var(--alerte); font-size: 14px; }
 
 /* ---------- Formulaires (dans la feuille qui monte du bas) ---------- */
 .champ { display: block; margin: 0 0 18px; font-weight: 650; font-size: 15px; }
@@ -1364,6 +1369,7 @@ function afficherReglages() {
   const exemple = r.tempsBase.test[2] * (r.coefBase + r.coefChapitre * 4);
 
   let h = `<header class="entete"><h1>Réglages</h1></header>`;
+  h += carteInstaller();
 
   h += `<section class="carte"><h2>⏰ Mon temps disponible</h2>
       ${ligneReglage('dispoSemaine', 'En semaine', 'du lundi au vendredi', 15, 0, 720, 'duree')}
@@ -1458,6 +1464,69 @@ function changerReglage(bouton, sens) {
   ecrireChemin(donnees.reglages, s.dataset.chemin, borner(arrondie, Number(s.dataset.min), Number(s.dataset.max)));
   sauvegarder();
   afficherReglages();
+}
+
+/* ---------- Installer l'appli sur le téléphone ---------- */
+
+let invitationInstall = null;  // fournie par Chrome (Android / ordinateur) quand l'appli est installable
+
+function appliInstallee() {
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+
+function carteInstaller() {
+  if (appliInstallee()) return '';
+  const ua = navigator.userAgent;
+  const iphone = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  let corps;
+  if (location.protocol === 'file:') {
+    corps = `<p class="aide">Tu as ouvert le <strong>fichier</strong> directement : impossible de l'installer comme ça. Ouvre l'<strong>adresse web</strong> de l'appli (qui commence par https://).</p>`;
+  } else if (!window.isSecureContext) {
+    corps = `<p class="aide">L'adresse doit commencer par <strong>https://</strong> pour pouvoir installer l'appli.</p>`;
+  } else if (invitationInstall) {
+    corps = `<div class="pile"><button class="btn btn-principal btn-plein" data-action="installer" type="button">Installer l'application</button></div>`;
+  } else if (iphone) {
+    corps = `<ol><li>Ouvre cette page dans <strong>Safari</strong> (pas dans une autre appli).</li>
+        <li>Touche le bouton <strong>Partager</strong> (le carré avec une flèche vers le haut).</li>
+        <li>Choisis <strong>« Sur l'écran d'accueil »</strong>, puis <strong>Ajouter</strong>.</li></ol>
+        <p class="attention">Sur iPhone, l'appli installée a ses propres données : elles ne reprennent pas celles vues dans Safari.</p>`;
+  } else {
+    corps = `<ol><li>Ouvre cette page dans <strong>Chrome</strong>.</li>
+        <li>Touche le menu <strong>⋮</strong> (en haut à droite).</li>
+        <li>Choisis <strong>« Installer l'application »</strong> (ou « Ajouter à l'écran d'accueil »).</li></ol>
+        <p class="aide">Pas d'option d'installation ? Recharge la page, attends quelques secondes et regarde à nouveau le menu.</p>`;
+  }
+  return `<section class="carte installer"><h2>📲 Installer l'appli</h2>${corps}</section>`;
+}
+
+async function installerAppli() {
+  const invitation = invitationInstall;
+  if (!invitation) return;
+  invitationInstall = null;
+  invitation.prompt();
+  try {
+    const choix = await invitation.userChoice;
+    afficherToast(choix.outcome === 'accepted' ? 'Installation en cours…' : 'Installation annulée');
+  } catch (erreur) { /* pas grave */ }
+  if (vueActive === 'reglages') afficherReglages();
+}
+
+// Chrome prévient l'appli quand elle peut être installée.
+window.addEventListener('beforeinstallprompt', ev => {
+  ev.preventDefault();
+  invitationInstall = ev;
+  if (vueActive === 'reglages') afficherReglages();
+});
+window.addEventListener('appinstalled', () => {
+  invitationInstall = null;
+  afficherToast('Appli installée ✓');
+  if (vueActive === 'reglages') afficherReglages();
+});
+
+// Le service worker (fichier sw.js) garde l'appli en mémoire : installation + mode hors ligne.
+// Il ne fonctionne qu'avec une adresse https:// (pas quand on ouvre le fichier directement).
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 }
 
 /* ---------- Petits messages ---------- */
@@ -2092,6 +2161,7 @@ const ACTIONS = {
   'fermer': () => fermerFeuille(),
   'chapitres-moins': () => changerChapitres(-1),
   'chapitres-plus': () => changerChapitres(1),
+  'installer': () => installerAppli(),
   'tester-alerte': () => { preparerSon(); alerter('travail'); },
   'exemple': () => chargerExemple(),
   'reglages-defaut': () => reglagesParDefaut(),
