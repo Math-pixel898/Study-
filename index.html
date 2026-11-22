@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plan d'étude</title>
+<meta name="description" content="Planifie tes révisions : plan du jour, échéances et chrono Pomodoro.">
+<meta name="theme-color" content="#0d0f13">
+<meta name="color-scheme" content="dark">
+<!-- Pour que l'appli s'ouvre en plein écran quand elle est ajoutée à l'écran d'accueil -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Plan d'étude">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180' width='180' height='180'%3E%3Crect width='180' height='180' rx='40' fill='%236d74f0'/%3E%3Crect x='40' y='50' width='100' height='92' rx='16' fill='none' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M40 78h100' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M68 36v24M112 36v24' stroke='%23fff' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M68 111l15 14 30-30' fill='none' stroke='%23fff' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0BAMAAADP4xsBAAAAMFBMVEX////5+v/09P7v8P7m6PzZ2/vKzfrCxfm/wvi8v/iws/egpPWTmPOEivJ1fPBtdPDcGy3dAAADvUlEQVR42u2bPWgUQRTHf3sf+QLJgVqIggdiExCuEkQCERsLDdcJQoxoLaaxDxYxkMJUanlEozaSiIJWcojWCaazSK5QBEFyEaLex+5a3Pft7O2bzZ4YnGku97Lzu//Nvnkz+96c5dKvFsOgDdqgDdqgDdqgDdqgDXpfou3zJ9el1q7mBrQcjEitnS0IXQVYk1m7WtCAlAAWZVbNsbYBCjKrJtoBWJdZzZQx6P8A7R9DPt0+F9z70OXn2uGpel2q7fSaHtrOyr/3wJYWelFnTId10F/07tdVOdqe0EMntsToj7pudkqKdiZ00YltIXpXf3ZMC9E5ffSIDO2kAYgvbLquWwQY7b6kaf3+OlOLF9si9C8ArJVOiBrtuuUUAPdE6NpyOu7K0O4GAAdE+5AcQGxJOsxjaYCyKKiuAhxNi8NyDqAqQTsFgDvt/08rezWsZwDsggBtA8QakS8OkOm+psOaTKs3PF50BSCZqr8bBJjpvqbDamUB8tIFLNnUl4MRr+oOaxag6J396l1e6xOnNt4/8350hzWlRnv9ekfpyb1aAeC4wK/10/A+qs0Wx6ADFky1eccyY23QBv1vzMbRogZjJ2XG2qD/IvrDiUv6mYWiZPdUAlYCeoRUfReY6suAlGapZz8jR883t7RRo0uzffOQeVHXWHjRg31AP6y9PIrer3/XOg650fv1fMu1I1btER2darFobdVe0ZGplovWVa0QHVq1feNw3uvTD4hA9SIMdMZpT6ozpGp7BsrTHXEamCMC1bsAye1eosOqdgAq02FEB6n+0Z7YVIsOqzoOQHUyhOgg1ZV67N3yFx1WdaKWYXLGW858n2hUuz/ruas15UTc02wcrsl2L+pED2EMaaQ03/iJDh/5kqu11wsa0UMa+SrtjyoK0XuI14kXXZu96FS71ZZsZXVnD6tM/F3zzzmiVe3amR4jvbe1MfYYbfeQro31IpBatFy1pUisWsu93KPYTKwGbCdjqpztkSwwNNMDnZaiu3f81hPgqc+YFqRoCxQFi+FXB29mfdB59YB4b2MZ1IUnv+akaH/U63Eb4wDOqtzHykVQVEFUxe40wDG56jxATFSomgD4Kk7jONegrSTSU/U60CyvBTff8poCXVsNYysycr0oeEuEtuu3c2EzGNwoZbIlK8DO6D86DQpru5/10ZPSYndGlxyXFrv7WKLv58GCPh6HcN2XOuSzeqdaluTkMc0DM86ylHxlW/uo4DfZMZ+3vgDL/IDIoA3aoA3aoA3aoA3aoA16P6D/ALR9KBGcdAT3AAAAAElFTkSuQmCC">
+
+<style>
+/* =====================================================================
+   STYLE (CSS) : les couleurs, les tailles et la mise en page
+   ===================================================================== */
+
+/* Les couleurs de l'appli, rangées dans des "variables" réutilisables */
+:root {
+  --fond: #0d0f13;
+  --carte: #171a21;
+  --carte-2: #222631;
+  --carte-3: #2f3442;
+  --bord: #262b36;
+  --texte: #eef0f5;
+  --texte-2: #a9afbc;
+  --texte-3: #757c8c;
+  --accent: #8b93ff;
+  --sur-accent: #0d0f13;
+  --travail: #ff6b5b;
+  --pause: #34d399;
+  --pause-longue: #60a5fa;
+  --alerte: #fbbf24;
+  --danger: #f87171;
+  --ok: #34d399;
+  --rayon: 18px;
+  --haut: env(safe-area-inset-top, 0px);    /* encoche de l'iPhone */
+  --bas: env(safe-area-inset-bottom, 0px);  /* barre du bas de l'iPhone */
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: dark; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--fond);
+  color: var(--texte);
+  font: 16px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+body.bloque { overflow: hidden; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+[hidden] { display: none !important; }
+:focus { outline: none; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- Mise en page générale ---------- */
+main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: calc(12px + var(--haut)) 16px calc(104px + var(--bas));
+}
+.entete { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 10px 0 18px; }
+.entete h1 { margin: 0; font-size: 30px; line-height: 1.1; letter-spacing: -0.02em; }
+.surtitre { margin: 0 0 4px; color: var(--texte-2); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+h2 { margin: 0; font-size: 18px; letter-spacing: -0.01em; }
+h3 { margin: 18px 0 2px; font-size: 13px; color: var(--texte-2); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.carte { background: var(--carte); border: 1px solid var(--bord); border-radius: var(--rayon); padding: 16px; margin-bottom: 14px; }
+.carte > h2 { margin-bottom: 6px; }
+.carte-titre { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.aide { margin: 8px 0 0; color: var(--texte-2); font-size: 14px; }
+.aide-mini { color: var(--texte-3); font-size: 12px; text-align: right; }
+.centre { text-align: center; }
+.etiquette { flex: none; padding: 5px 10px; border-radius: 999px; background: var(--carte-2); color: var(--texte-2); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.vide { margin: 8px 0 4px; text-align: center; font-size: 17px; color: var(--texte-2); }
+.pile { display: grid; gap: 10px; margin-top: 8px; }
+.rond { display: inline-block; flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--couleur, var(--accent)); }
+.icone { width: 1.15em; height: 1.15em; flex: none; fill: currentColor; }
+.insecable { white-space: nowrap; }
+
+/* ---------- Boutons (grands et faciles à toucher) ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 50px; padding: 12px 18px;
+  border: 0; border-radius: 14px;
+  background: var(--carte-2); color: var(--texte);
+  font-size: 16px; font-weight: 650; text-align: center;
+  transition: transform 0.08s, filter 0.15s;
+}
+.btn:active { transform: scale(0.97); filter: brightness(1.15); }
+.btn-principal { background: var(--accent); color: var(--sur-accent); }
+.btn-danger { background: rgba(248, 113, 113, 0.14); color: var(--danger); }
+.btn-danger-plein { background: var(--danger); color: #1b0a0a; }
+.btn-plein { width: 100%; }
+.btn-geant { width: 100%; min-height: 64px; font-size: 19px; border-radius: 18px; }
+.btn-petit { min-height: 42px; padding: 8px 14px; font-size: 15px; border-radius: 12px; }
+.btn-lancer { flex: none; min-width: 108px; background: var(--couleur, var(--accent)); color: var(--couleur-texte, var(--sur-accent)); }
+
+/* ---------- Barre d'onglets en bas ---------- */
+.onglets {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  padding: 0 max(8px, env(safe-area-inset-left)) var(--bas);
+  background: rgba(13, 15, 19, 0.94);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-top: 1px solid var(--bord);
+}
+.onglet {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  min-height: 64px; padding: 6px 2px;
+  background: none; border: 0; color: var(--texte-3);
+  font-size: 12px; font-weight: 650;
+}
+.onglet svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.onglet[aria-current="page"] { color: var(--accent); }
+.onglet.chrono-actif { color: var(--phase, var(--travail)); }
+.onglet.chrono-actif span { font-variant-numeric: tabular-nums; font-size: 13px; }
+
+/* ---------- Écran "Aujourd'hui" ---------- */
+.liste-plan, .semaine, .liste-matieres, .liste-faits { list-style: none; margin: 0; padding: 0; }
+.ligne-plan { display: flex; align-items: center; gap: 12px; padding: 14px 0 14px 14px; border-top: 1px solid var(--bord); position: relative; }
+.ligne-plan:first-child { border-top: 0; padding-top: 4px; }
+.ligne-plan::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 5px; border-radius: 5px; background: var(--couleur); }
+.ligne-plan:first-child::before { top: 4px; }
+.ligne-texte { flex: 1; min-width: 0; }
+.ligne-titre { font-weight: 700; font-size: 16px; }
+.ligne-sous { color: var(--texte-2); font-size: 14px; margin-top: 4px; }
+.points { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.point { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--couleur); }
+.point.fait { background: var(--couleur); }
+
+.alerte { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.35); color: #fde68a; }
+.alerte .aide { color: #e5d3a1; margin-top: 4px; }
+.alerte-ligne { margin: 0 0 6px; }
+.info-jour { margin-bottom: 12px; padding: 12px 14px; border-radius: 14px; background: var(--couleur-fond); border: 1px solid var(--couleur); }
+.bandeau-chrono {
+  display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px;
+  margin-bottom: 12px; padding: 14px 16px; border-radius: 14px;
+  border: 1px solid var(--phase); background: var(--carte); text-align: left; font-weight: 600;
+}
+.bandeau-chrono strong { color: var(--phase); font-size: 20px; font-variant-numeric: tabular-nums; }
+
+.jour { display: grid; grid-template-columns: 58px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--bord); }
+.jour:first-child { border-top: 0; padding-top: 0; }
+.jour-nom { font-weight: 700; font-size: 15px; text-transform: capitalize; }
+.jour-nom small { display: block; color: var(--texte-3); font-size: 12px; font-weight: 600; text-transform: none; }
+.jour-contenu { min-width: 0; display: grid; gap: 6px; }
+.jour-echeance { font-size: 14px; font-weight: 700; color: var(--couleur); }
+.jour-charge { font-size: 13px; font-weight: 700; color: var(--texte-3); font-variant-numeric: tabular-nums; }
+.jour-charge.plein { color: var(--alerte); }
+.puces { display: flex; flex-wrap: wrap; gap: 6px; }
+.puce { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--couleur-fond); font-size: 14px; font-weight: 600; }
+.puce::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--couleur); }
+.repos { color: var(--texte-3); font-size: 14px; }
+
+.bienvenue ol { margin: 12px 0 16px; padding-left: 22px; color: var(--texte-2); }
+.bienvenue li { margin-bottom: 6px; }
+
+/* ---------- Écran "Échéances" ---------- */
+.echeance { position: relative; overflow: hidden; padding-left: 22px; cursor: pointer; }
+.echeance::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: var(--couleur); }
+.echeance:active { filter: brightness(1.12); }
+.echeance.passee { opacity: 0.6; }
+.ech-haut { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ech-matiere { font-size: 18px; font-weight: 750; }
+.badge { flex: none; padding: 3px 9px; border-radius: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+.badge-test { background: rgba(96, 165, 250, 0.16); color: #93c5fd; }
+.badge-examen { background: rgba(248, 113, 113, 0.16); color: #fca5a5; }
+.ech-date { margin-top: 2px; font-weight: 600; }
+.ech-details, .ech-progres { color: var(--texte-2); font-size: 14px; margin-top: 4px; }
+.ech-note { margin-top: 8px; font-size: 14px; font-style: italic; color: var(--texte-2); overflow-wrap: anywhere; }
+.ech-statut { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bord); font-size: 14px; font-weight: 650; }
+.ech-alerte { color: var(--alerte); }
+.ech-ok { color: var(--ok); }
+.barre { height: 8px; margin-top: 10px; border-radius: 99px; background: var(--carte-2); overflow: hidden; }
+.barre > div { height: 100%; border-radius: inherit; background: var(--couleur); }
+details.passees { margin: 18px 0; }
+details.passees summary { padding: 12px 4px; color: var(--texte-2); font-weight: 650; cursor: pointer; }
+
+.ligne-matiere { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 8px 4px; border: 0; border-top: 1px solid var(--bord); background: none; text-align: left; }
+.liste-matieres li:first-child .ligne-matiere { border-top: 0; }
+.ligne-matiere .nom { flex: 1; font-weight: 650; overflow-wrap: anywhere; }
+.ligne-matiere .rond { width: 16px; height: 16px; }
+.chevron { color: var(--texte-3); font-size: 22px; line-height: 1; }
+
+/* ---------- Écran "Chrono" ---------- */
+.chrono { text-align: center; }
+.chrono-phase { display: inline-block; padding: 7px 16px; border-radius: 999px; background: var(--carte-2); color: var(--phase); font-weight: 800; letter-spacing: 0.02em; }
+.chrono-sujet { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; font-size: 17px; font-weight: 650; }
+.anneau { position: relative; width: min(76vw, 300px); aspect-ratio: 1; margin: 16px auto 10px; }
+.anneau svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.anneau circle { fill: none; stroke-width: 8; }
+.anneau-fond { stroke: var(--carte-2); }
+.anneau-progres { stroke: var(--phase); stroke-linecap: round; stroke-dasharray: 339.292; transition: stroke-dashoffset 0.5s linear; }
+.chrono-temps { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: min(19vw, 78px); font-weight: 750; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.chrono-temps.petit { font-size: min(10vw, 40px); }
+.chrono-info { color: var(--texte-2); font-size: 15px; margin-bottom: 18px; }
+.chrono-boutons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.liste-faits li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--bord); }
+.liste-faits li:first-child { border-top: 0; }
+.liste-faits .texte { flex: 1; min-width: 0; font-weight: 600; font-size: 15px; }
+.liste-faits .texte small { display: block; color: var(--texte-3); font-weight: 500; }
+.supprimer-bloc { flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--carte-2); color: var(--texte-3); font-size: 18px; }
+
+/* ---------- Écran "Réglages" ---------- */
+.ligne-reglage { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--bord); }
+.carte > h2 + .ligne-reglage, h3 + .ligne-reglage { border-top: 0; }
+.libelle { font-weight: 600; }
+.libelle small { display: block; color: var(--texte-3); font-size: 13px; font-weight: 500; }
+.stepper { display: flex; align-items: center; gap: 6px; flex: none; }
+.stepper button { width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--carte-2); font-size: 24px; font-weight: 700; line-height: 1; }
+.stepper button:active { background: var(--carte-3); }
+.stepper output { min-width: 78px; text-align: center; font-weight: 750; font-variant-numeric: tabular-nums; }
+.stepper input { width: 70px; min-height: 48px; border: 1px solid var(--bord); border-radius: 12px; background: var(--carte-2); text-align: center; font-size: 18px; font-weight: 750; -moz-appearance: textfield; appearance: textfield; }
+.stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.formule { margin: 6px 0 4px; padding: 10px 12px; border-radius: 12px; background: var(--carte-2); font-weight: 650; text-align: center; }
+.interrupteur { position: relative; flex: none; width: 54px; height: 32px; }
+.interrupteur input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.interrupteur span { position: absolute; inset: 0; border-radius: 999px; background: var(--carte-3); transition: background 0.2s; pointer-events: none; }
+.interrupteur span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+.interrupteur input:checked + span { background: var(--ok); }
+.interrupteur input:checked + span::after { transform: translateX(22px); }
+.interrupteur input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+label.ligne-reglage { cursor: pointer; }
+
+/* ---------- Formulaires (dans la feuille qui monte du bas) ---------- */
+.champ { display: block; margin: 0 0 18px; font-weight: 650; font-size: 15px; }
+.champ input, .champ select {
+  display: block; width: 100%; margin-top: 8px; min-height: 52px; padding: 12px 14px;
+  border: 1px solid var(--bord); border-radius: 14px; background: var(--carte-2);
+  font-size: 17px; font-weight: 500; -webkit-appearance: none; appearance: none;
+}
+.champ input:focus, .champ select:focus { border-color: var(--accent); }
+.champ select {
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a9afbc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; background-size: 18px;
+}
+input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8); }
+.champ .facultatif { color: var(--texte-3); font-weight: 500; }
+.champ-ligne { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 18px; font-weight: 650; font-size: 15px; }
+fieldset { margin: 0 0 18px; padding: 0; border: 0; min-width: 0; }
+legend { margin-bottom: 8px; padding: 0; font-weight: 650; font-size: 15px; }
+
+.segments { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border-radius: 14px; background: var(--carte-2); }
+.segments label { position: relative; }
+.segments input { position: absolute; opacity: 0; pointer-events: none; }
+.segments span { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px; padding: 6px 2px; border-radius: 11px; color: var(--texte-2); font-weight: 750; text-align: center; cursor: pointer; }
+.segments span small { font-size: 12px; font-weight: 600; }
+.segments input:checked + span { background: var(--accent); color: var(--sur-accent); }
+.segments input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.choix-puces { display: flex; flex-wrap: wrap; gap: 8px; }
+.puce-choix { position: relative; }
+.puce-choix input { position: absolute; opacity: 0; pointer-events: none; }
+.puce-choix span { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 8px 16px; border: 2px solid transparent; border-radius: 999px; background: var(--carte-2); font-weight: 650; cursor: pointer; }
+.puce-choix span::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--couleur); }
+.puce-choix input:checked + span { border-color: var(--couleur); background: var(--couleur-fond); }
+.puce-choix input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.pastille-choix { position: relative; }
+.pastille-choix input { position: absolute; opacity: 0; pointer-events: none; }
+.pastille-choix span { display: block; aspect-ratio: 1; border: 3px solid transparent; border-radius: 50%; background: var(--couleur); box-shadow: inset 0 0 0 3px var(--carte); cursor: pointer; }
+.pastille-choix input:checked + span { border-color: var(--texte); }
+.pastille-choix input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.estimation { margin: 4px 0 16px; padding: 12px 14px; border-radius: 14px; background: var(--carte-2); }
+.erreur { margin: 0 0 12px; color: var(--danger); font-weight: 650; }
+
+.fond-feuille { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgba(0, 0, 0, 0.55); opacity: 0; transition: opacity 0.22s; }
+.fond-feuille.ouvert { opacity: 1; }
+.feuille {
+  width: 100%; max-width: 560px; max-height: 92vh; max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain;
+  padding: 8px 16px calc(20px + var(--bas)); border-radius: 22px 22px 0 0;
+  background: var(--carte); border-top: 1px solid var(--bord);
+  transform: translateY(100%); transition: transform 0.25s ease;
+}
+.fond-feuille.ouvert .feuille { transform: none; }
+.feuille h2 { font-size: 22px; margin: 4px 0 16px; }
+.poignee { width: 42px; height: 5px; margin: 4px auto 12px; border-radius: 3px; background: var(--carte-3); }
+
+.fond-dialogue { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(0, 0, 0, 0.65); }
+.dialogue { width: 100%; max-width: 400px; padding: 20px; border-radius: 20px; background: var(--carte); border: 1px solid var(--bord); }
+.dialogue p { margin: 0 0 14px; font-size: 17px; font-weight: 600; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(84px + var(--bas)); z-index: 80;
+  max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px;
+  background: #2d3240; color: var(--texte); font-weight: 650; text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  opacity: 0; transform: translate(-50%, 16px); transition: opacity 0.25s, transform 0.25s; pointer-events: none;
+}
+.toast.visible { opacity: 1; transform: translate(-50%, 0); }
+.flash { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0; }
+.flash.actif { animation: flash 1.4s ease-out; }
+@keyframes flash { 0%, 25% { opacity: 0.3; } 100% { opacity: 0; } }
+</style>
+</head>
+
+<body>
+<!-- =====================================================================
+     STRUCTURE (HTML) : 4 écrans + la barre d'onglets.
+     Le contenu de chaque écran est fabriqué par le JavaScript plus bas.
+     ===================================================================== -->
+<noscript><p style="padding:20px">Active JavaScript pour utiliser cette appli.</p></noscript>
+
+<main>
+  <section id="vue-aujourdhui" class="vue" aria-label="Aujourd'hui"></section>
+  <section id="vue-echeances" class="vue" aria-label="Échéances" hidden></section>
+  <section id="vue-chrono" class="vue" aria-label="Chrono" hidden></section>
+  <section id="vue-reglages" class="vue" aria-label="Réglages" hidden></section>
+</main>
+
+<nav class="onglets" aria-label="Navigation">
+  <button class="onglet" data-onglet="aujourdhui" type="button">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4M8.5 14.8l2.3 2.2 4.7-4.7"/></svg>
+    <span>Aujourd'hui</span>
+  </button>
+  <button class="onglet" data-onglet="echeances" type="button">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.4" fill="currentColor"/><circle cx="4.5" cy="12" r="1.4" fill="currentColor"/><circle cx="4.5" cy="18" r="1.4" fill="currentColor"/></svg>
+    <span>Échéances</span>
+  </button>
+  <button class="onglet" data-onglet="chrono" id="onglet-chrono" type="button">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="8"/><path d="M12 9.5v4l2.6 2.4M9.5 2.5h5"/></svg>
+    <span id="onglet-chrono-texte">Chrono</span>
+  </button>
+  <button class="onglet" data-onglet="reglages" type="button">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M18 7h2M4 17h3M12 17h8"/><circle cx="15.5" cy="7" r="2.4"/><circle cx="9.5" cy="17" r="2.4"/></svg>
+    <span>Réglages</span>
+  </button>
+</nav>
+
+<!-- La "feuille" qui monte du bas (formulaires) et la boîte de confirmation -->
+<div id="fond-feuille" class="fond-feuille" hidden>
+  <div id="feuille" class="feuille" role="dialog" aria-modal="true" aria-label="Formulaire"></div>
+</div>
+<div id="fond-dialogue" class="fond-dialogue" hidden></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="flash" class="flash"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   COMPORTEMENT (JavaScript)
+
+   Organisation :
+     1. Réglages par défaut et données
+     2. Sauvegarde dans le navigateur (localStorage)
+     3. Petits outils (dates, durées, textes, couleurs)
+     4. Calculs : temps d'étude, temps dispo et LE PLAN
+     5. Affichage des 4 écrans
+     6. Formulaires (matières, échéances) et confirmations
+     7. Chrono Pomodoro
+     8. Clics, événements et démarrage
+   ===================================================================== */
+
+
+/* =====================================================================
+   1. RÉGLAGES PAR DÉFAUT ET DONNÉES
+   ===================================================================== */
+
+// Nom du "tiroir" du localStorage où toutes les données sont rangées.
+const CLE_STOCKAGE = 'plan-etude-v1';
+
+// Couleurs proposées pour les matières.
+const PALETTE = [
+  { nom: 'Rouge', code: '#ff6b6b' },
+  { nom: 'Orange', code: '#ffa94d' },
+  { nom: 'Jaune', code: '#ffd43b' },
+  { nom: 'Vert clair', code: '#a9e34b' },
+  { nom: 'Vert', code: '#51cf66' },
+  { nom: 'Turquoise', code: '#38d9a9' },
+  { nom: 'Bleu', code: '#4dabf7' },
+  { nom: 'Indigo', code: '#748ffc' },
+  { nom: 'Violet', code: '#b197fc' },
+  { nom: 'Rose', code: '#f783ac' },
+];
+
+// Nom des niveaux d'étude (la case 0 n'est pas utilisée).
+const NIVEAUX = ['', 'léger', 'moyen', 'costaud', 'très dur'];
+
+// Les réglages de départ. Toutes les durées sont en minutes.
+const REGLAGES_DEFAUT = {
+  dispoSemaine: 60,          // temps dispo du lundi au vendredi
+  dispoWeekend: 180,         // temps dispo le samedi et le dimanche
+  travail: 25,               // un bloc de travail Pomodoro
+  pauseCourte: 5,            // petite pause après chaque bloc
+  pauseLongue: 15,           // grande pause…
+  blocsAvantPauseLongue: 4,  // … tous les 4 blocs
+  tempsBase: {               // temps de base selon le niveau 1, 2, 3, 4
+    test:   [30, 90, 180, 300],    // 30 min, 1 h 30, 3 h, 5 h
+    examen: [120, 300, 540, 840],  // 2 h, 5 h, 9 h, 14 h
+  },
+  coefBase: 0.5,             // temps = base × (0,5 + 0,25 × chapitres)
+  coefChapitre: 0.25,
+  joursAvant: { test: 7, examen: 21 },  // on commence à réviser au plus tôt N jours avant
+  progression: 3,            // la veille, on étudie 3 fois plus que le premier jour
+  son: true,
+  vibration: true,
+  ecranAllume: true,
+};
+
+// TOUTES les données de l'appli sont dans cet objet.
+let donnees = donneesVides();
+
+function donneesVides() {
+  return {
+    version: 1,
+    matieres: [],   // { id, nom, couleur }
+    echeances: [],  // { id, matiereId, type: 'test' | 'examen', date: 'AAAA-MM-JJ', niveau: 1 à 4, chapitres, note }
+    blocs: [],      // blocs de travail terminés : { id, echeanceId, matiereId, date, debut, minutes }
+    reglages: copie(REGLAGES_DEFAUT),
+    chrono: null,   // le chrono en cours (ou null s'il n'y en a pas)
+  };
+}
+
+function copie(objet) {
+  return JSON.parse(JSON.stringify(objet));
+}
+
+
+/* =====================================================================
+   2. SAUVEGARDE DANS LE NAVIGATEUR (localStorage)
+   Le localStorage garde du texte même quand on ferme l'appli.
+   On y range nos données transformées en texte (format JSON).
+   ===================================================================== */
+
+function sauvegarder() {
+  try {
+    localStorage.setItem(CLE_STOCKAGE, JSON.stringify(donnees));
+  } catch (erreur) {
+    afficherToast('⚠️ Impossible de sauvegarder sur cet appareil');
+  }
+}
+
+function charger() {
+  let lu = null;
+  try {
+    lu = JSON.parse(localStorage.getItem(CLE_STOCKAGE));
+  } catch (erreur) {
+    lu = null;
+  }
+  donnees = donneesVides();
+  if (!lu || typeof lu !== 'object') return;
+
+  // On recopie les données lues en vérifiant qu'elles sont correctes.
+  const idPropre = v => (v ? String(v).replace(/[^a-zA-Z0-9_-]/g, '') : null);
+  if (Array.isArray(lu.matieres)) {
+    donnees.matieres = lu.matieres
+      .filter(m => m && m.id && m.nom)
+      .map(m => ({
+        id: idPropre(m.id),
+        nom: String(m.nom),
+        couleur: /^#[0-9a-f]{6}$/i.test(m.couleur) ? m.couleur : PALETTE[0].code,
+      }));
+  }
+  if (Array.isArray(lu.echeances)) {
+    donnees.echeances = lu.echeances
+      .filter(e => e && e.id && estCleDate(e.date))
+      .map(e => ({
+        id: idPropre(e.id),
+        matiereId: idPropre(e.matiereId),
+        type: e.type === 'examen' ? 'examen' : 'test',
+        date: e.date,
+        niveau: borner(Math.round(Number(e.niveau)) || 1, 1, 4),
+        chapitres: borner(Math.round(Number(e.chapitres)) || 1, 1, 99),
+        note: String(e.note || ''),
+      }));
+  }
+  if (Array.isArray(lu.blocs)) {
+    donnees.blocs = lu.blocs
+      .filter(b => b && estCleDate(b.date) && Number(b.minutes) > 0)
+      .map(b => ({
+        id: idPropre(b.id) || nouvelId(),
+        echeanceId: idPropre(b.echeanceId),
+        matiereId: idPropre(b.matiereId),
+        date: b.date,
+        debut: Number(b.debut) || 0,
+        minutes: Number(b.minutes),
+      }));
+  }
+  donnees.reglages = completerReglages(lu.reglages);
+  const c = lu.chrono;
+  if (c && ['travail', 'pause', 'pauseLongue', 'attente'].includes(c.phase)) {
+    donnees.chrono = { ...c, echeanceId: idPropre(c.echeanceId), matiereId: idPropre(c.matiereId) };
+  }
+}
+
+// Part des réglages par défaut et remplace par ceux enregistrés (s'ils sont valides).
+// Utile pour plus tard : si la V2 ajoute un réglage, il prendra sa valeur par défaut.
+function completerReglages(lus) {
+  const r = copie(REGLAGES_DEFAUT);
+  if (!lus || typeof lus !== 'object') return r;
+  for (const cle of Object.keys(r)) {
+    const valeur = lus[cle];
+    if (cle === 'tempsBase' || cle === 'joursAvant') {
+      for (const type of ['test', 'examen']) {
+        const v = valeur && valeur[type];
+        if (cle === 'tempsBase' && Array.isArray(v) && v.length === 4 && v.every(Number.isFinite)) r.tempsBase[type] = v;
+        if (cle === 'joursAvant' && Number.isFinite(v)) r.joursAvant[type] = v;
+      }
+    } else if (typeof valeur === typeof r[cle] && (typeof valeur !== 'number' || Number.isFinite(valeur))) {
+      r[cle] = valeur;
+    }
+  }
+  return r;
+}
+
+
+/* =====================================================================
+   3. PETITS OUTILS
+   Les dates sont écrites comme du texte "AAAA-MM-JJ" (ex : "2026-11-26").
+   Avantage : on peut les comparer directement ("2026-11-25" < "2026-11-26").
+   ===================================================================== */
+
+const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+const JOURS_COURTS = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
+const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+
+function borner(valeur, min, max) {
+  return Math.min(max, Math.max(min, valeur));
+}
+
+function estCleDate(texte) {
+  return typeof texte === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(texte);
+}
+
+// Transforme une date JavaScript en texte "AAAA-MM-JJ" (heure locale).
+function cleDate(date) {
+  const a = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const j = String(date.getDate()).padStart(2, '0');
+  return `${a}-${m}-${j}`;
+}
+
+function aujourdhui() {
+  return cleDate(new Date());
+}
+
+// L'inverse : texte "AAAA-MM-JJ" → date JavaScript (à midi, pour éviter les soucis d'heure d'été).
+function dateDepuisCle(cle) {
+  const [a, m, j] = cle.split('-').map(Number);
+  return new Date(a, m - 1, j, 12);
+}
+
+function ajouterJours(cle, n) {
+  const d = dateDepuisCle(cle);
+  d.setDate(d.getDate() + n);
+  return cleDate(d);
+}
+
+// Nombre de jours entre deux dates (positif si "fin" est après "debut").
+function ecartJours(debut, fin) {
+  return Math.round((dateDepuisCle(fin) - dateDepuisCle(debut)) / 86400000);
+}
+
+function estWeekend(cle) {
+  const jour = dateDepuisCle(cle).getDay();
+  return jour === 0 || jour === 6;
+}
+
+// "jeudi 26 novembre"
+function dateLongue(cle) {
+  const d = dateDepuisCle(cle);
+  return `${JOURS[d.getDay()]} ${d.getDate() === 1 ? '1er' : d.getDate()} ${MOIS[d.getMonth()]}`;
+}
+
+// "aujourd'hui", "demain", "jeudi" (dans la semaine), sinon "le 3 déc."
+function quandCourt(cle, jour = aujourdhui()) {
+  const n = ecartJours(jour, cle);
+  const d = dateDepuisCle(cle);
+  if (n === 0) return "aujourd'hui";
+  if (n === 1) return 'demain';
+  if (n > 1 && n < 7) return JOURS[d.getDay()];
+  return `le ${d.getDate() === 1 ? '1er' : d.getDate()} ${MOIS_COURTS[d.getMonth()]}`;
+}
+
+// "dans 4 jours", "demain", "aujourd'hui", "hier", "il y a 3 jours"
+function delai(cle, jour = aujourdhui()) {
+  const n = ecartJours(jour, cle);
+  if (n === 0) return "aujourd'hui";
+  if (n === 1) return 'demain';
+  if (n === -1) return 'hier';
+  return n > 1 ? `dans ${n} jours` : `il y a ${-n} jours`;
+}
+
+function capitaliser(texte) {
+  return texte.charAt(0).toUpperCase() + texte.slice(1);
+}
+
+// 45 → "45 min" ; 90 → "1 h 30" ; 120 → "2 h"
+function formaterDuree(minutes) {
+  minutes = Math.round(minutes);
+  if (minutes < 60) return `${minutes} min`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m === 0 ? `${h} h` : `${h} h ${String(m).padStart(2, '0')}`;
+}
+
+// 1499000 millisecondes → "24:59"
+function formaterChrono(ms) {
+  const secondes = Math.max(0, Math.ceil(ms / 1000));
+  const m = Math.floor(secondes / 60);
+  const s = secondes % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+// 0.25 → "0,25"
+function formaterDecimal(x) {
+  return String(Math.round(x * 100) / 100).replace('.', ',');
+}
+
+// pluriel(1, 'bloc') → "1 bloc" ; pluriel(3, 'bloc') → "3 blocs"
+function pluriel(n, mot) {
+  return `${n} ${mot}${n > 1 ? 's' : ''}`;
+}
+
+// Protège un texte tapé par l'utilisateur avant de l'afficher (évite de casser la page).
+function echapper(texte) {
+  return String(texte == null ? '' : texte).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// Fabrique un identifiant unique, ex : "lx3k9a7f2qz".
+function nouvelId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+// "de Maths" mais "d'Anglais"
+function de(nom) {
+  return /^[aeiouhàâäéèêëîïôöùûüœæ]/i.test(nom) ? `d'${nom}` : `de ${nom}`;
+}
+
+// Couleur "#ff6b6b" → version transparente, et couleur de texte lisible dessus.
+function rgba(hex, alpha) {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+}
+function texteSur(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const luminosite = (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+  return luminosite > 0.55 ? '#10131a' : '#ffffff';
+}
+function styleCouleur(hex) {
+  return `--couleur:${hex};--couleur-fond:${rgba(hex, 0.16)};--couleur-texte:${texteSur(hex)}`;
+}
+
+function trouverMatiere(id) {
+  return donnees.matieres.find(m => m.id === id);
+}
+function trouverEcheance(id) {
+  return donnees.echeances.find(e => e.id === id);
+}
+function nomMatiere(id) {
+  const m = trouverMatiere(id);
+  return m ? m.nom : 'Matière supprimée';
+}
+function couleurMatiere(id) {
+  const m = trouverMatiere(id);
+  return m ? m.couleur : '#8b93ff';
+}
+function styleMatiere(id) {
+  return styleCouleur(couleurMatiere(id));
+}
+// "le test de Chimie" / "l'examen d'Anglais"
+function nomEcheanceLong(e) {
+  const nom = nomMatiere(e.matiereId);
+  return e.type === 'examen' ? `l'examen ${de(nom)}` : `le test ${de(nom)}`;
+}
+// "Chimie – test jeudi"
+function nomEcheanceCourt(e, jour = aujourdhui()) {
+  return `${nomMatiere(e.matiereId)} – ${e.type} ${quandCourt(e.date, jour)}`;
+}
+// Total des minutes déjà travaillées pour une échéance.
+function minutesFaites(echeanceId) {
+  return donnees.blocs.filter(b => b.echeanceId === echeanceId).reduce((total, b) => total + b.minutes, 0);
+}
+
+// Lire / écrire un réglage à partir de son "chemin", ex : "tempsBase.test.2".
+function lireChemin(objet, chemin) {
+  return chemin.split('.').reduce((o, cle) => o[cle], objet);
+}
+function ecrireChemin(objet, chemin, valeur) {
+  const cles = chemin.split('.');
+  const derniere = cles.pop();
+  cles.reduce((o, cle) => o[cle], objet)[derniere] = valeur;
+}
+
+
+/* =====================================================================
+   4. CALCULS
+   ===================================================================== */
+
+// Temps d'étude total estimé pour une échéance (en minutes) :
+// temps = temps de base (selon le type et le niveau) × (0,5 + 0,25 × nombre de chapitres)
+function tempsEstime(e, r = donnees.reglages) {
+  const bases = r.tempsBase[e.type] || r.tempsBase.test;
+  const base = bases[(e.niveau || 1) - 1] || 0;
+  const facteur = r.coefBase + r.coefChapitre * (e.chapitres || 0);
+  return Math.max(0, Math.round(base * facteur));
+}
+
+// Durée (en minutes) de "nb" blocs enchaînés, avec les pauses entre les blocs.
+// Ex. avec 25/5/15 : 2 blocs = 25 + 5 + 25 = 55 min.
+function dureeSerie(nb, r) {
+  if (nb <= 0) return 0;
+  const pauses = nb - 1;
+  const longues = Math.floor(pauses / r.blocsAvantPauseLongue);
+  const courtes = pauses - longues;
+  return nb * r.travail + courtes * r.pauseCourte + longues * r.pauseLongue;
+}
+
+// Combien de blocs tiennent dans un temps donné (pauses comprises) ?
+// Ex : 1 h → 2 blocs ; 3 h → 5 blocs.
+function blocsDansDuree(minutes, r) {
+  let nb = 0;
+  while (nb < 60 && dureeSerie(nb + 1, r) <= minutes) nb++;
+  return nb;
+}
+
+// Nombre de blocs possibles un jour donné (semaine ou week-end).
+function capaciteDuJour(cle, r = donnees.reglages) {
+  return blocsDansDuree(estWeekend(cle) ? r.dispoWeekend : r.dispoSemaine, r);
+}
+
+// "Poids" d'un jour pour une échéance : 1 le premier jour possible,
+// puis ça augmente jusqu'à 3 la veille (avec le réglage "progression" = 3).
+function poidsDuJour(cle, e, r) {
+  const L = r.joursAvant[e.type] || 7;     // 7 jours (test) ou 21 jours (examen)
+  const k = ecartJours(cle, e.date);       // 1 = la veille, L = le premier jour possible
+  if (L <= 1) return 1;
+  return 1 + (r.progression - 1) * (L - k) / (L - 1);
+}
+
+// Ordre de priorité : la date la plus proche d'abord.
+function comparerPriorite(a, b) {
+  if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+  if (a.type !== b.type) return a.type === 'examen' ? -1 : 1;
+  if (a.niveau !== b.niveau) return b.niveau - a.niveau;
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+/* ---------------------------------------------------------------------
+   LE PLAN : comment l'appli répartit le travail
+   ---------------------------------------------------------------------
+   Pour chaque échéance à venir :
+     • temps restant = temps estimé − blocs déjà faits, converti en blocs ;
+     • jours possibles : de 7 jours avant (test) ou 21 jours avant
+       (examen) jusqu'à la veille — jamais le jour même ;
+     • chaque jour a un "poids" qui grandit à l'approche de la date ;
+     • on pose les blocs un par un sur le jour qui en "mérite" le plus
+       (poids ÷ (blocs déjà posés ce jour-là + 1)), sans dépasser le
+       temps dispo du jour.
+   Les échéances passent de la plus proche à la plus lointaine : la plus
+   proche se sert en premier (elle est prioritaire). Quand il n'y a plus
+   de place, on essaie de décaler un bloc d'une autre échéance vers un
+   jour libre ; sinon, ce qui ne rentre pas devient une alerte.
+   --------------------------------------------------------------------- */
+function calculerPlan(jour = aujourdhui(), d = donnees) {
+  const r = d.reglages;
+  const W = r.travail;                  // durée d'un bloc (25 min)
+  const demain = ajouterJours(jour, 1);
+
+  // a) Minutes déjà travaillées pour chaque échéance : avant aujourd'hui, et aujourd'hui.
+  const faitAvant = {};
+  const faitAujourdhui = {};
+  for (const b of d.blocs) {
+    if (!b.echeanceId) continue;
+    if (b.date < jour) faitAvant[b.echeanceId] = (faitAvant[b.echeanceId] || 0) + b.minutes;
+    else if (b.date === jour) faitAujourdhui[b.echeanceId] = (faitAujourdhui[b.echeanceId] || 0) + b.minutes;
+  }
+
+  // b) Les échéances à préparer (date après aujourd'hui), la plus proche d'abord.
+  const infos = d.echeances
+    .filter(e => e.date > jour)
+    .sort(comparerPriorite)
+    .map(e => {
+      const total = tempsEstime(e, r);
+      const avant = faitAvant[e.id] || 0;
+      return {
+        echeance: e,
+        total,                                     // minutes nécessaires au total
+        faitAvant: avant,                          // minutes faites les jours d'avant
+        faitAujourdhui: faitAujourdhui[e.id] || 0, // minutes faites aujourd'hui
+        restant: Math.max(0, total - avant),       // minutes à faire à partir d'aujourd'hui
+        premierJour: ajouterJours(e.date, -(r.joursAvant[e.type] || 7)),
+        veille: ajouterJours(e.date, -1),
+      };
+    });
+
+  // c) Nombre de blocs possibles chaque jour, d'aujourd'hui jusqu'à la dernière veille.
+  const capacites = {};
+  const dernierJour = infos.reduce((max, i) => (i.veille > max ? i.veille : max), jour);
+  for (let j = jour; j <= dernierJour; j = ajouterJours(j, 1)) capacites[j] = capaciteDuJour(j, r);
+
+  // La "demande" d'une échéance : combien de blocs, sur quels jours, avec quels poids.
+  function demande(info, aPartirDe, blocs) {
+    const jours = [];
+    const poids = [];
+    const debut = info.premierJour > aPartirDe ? info.premierJour : aPartirDe;
+    for (let j = debut; j <= info.veille; j = ajouterJours(j, 1)) {
+      jours.push(j);
+      poids.push(poidsDuJour(j, info.echeance, r));
+    }
+    return { id: info.echeance.id, blocs, jours, poids };
+  }
+
+  // d) 1er passage : on répartit tout ce qui reste à partir d'aujourd'hui.
+  //    On en garde le plan d'aujourd'hui (il reste fixe toute la journée).
+  const passage1 = repartir(infos.map(i => demande(i, jour, Math.round(i.restant / W))), capacites);
+  for (const i of infos) i.prevuAujourdhui = passage1.alloc[i.echeance.id][jour] || 0;
+
+  // e) 2e passage : ce qui restera après aujourd'hui est réparti sur les jours suivants.
+  //    (si tu fais plus que prévu aujourd'hui, les jours suivants s'allègent tout de suite)
+  const capacitesFutures = Object.assign({}, capacites);
+  delete capacitesFutures[jour];
+  for (const i of infos) {
+    const compteAujourdhui = Math.max(i.prevuAujourdhui * W, i.faitAujourdhui);
+    i.restantApres = Math.max(0, i.restant - compteAujourdhui);
+  }
+  const passage2 = repartir(infos.map(i => demande(i, demain, Math.round(i.restantApres / W))), capacitesFutures);
+  for (const i of infos) {
+    i.futur = passage2.alloc[i.echeance.id];    // ex : { "2026-11-24": 2, "2026-11-25": 1 }
+    i.manque = passage2.manque[i.echeance.id];  // blocs qu'on n'a pas pu placer
+    i.faitsAujourdhui = Math.floor(i.faitAujourdhui / W + 0.01);  // blocs entiers faits aujourd'hui
+  }
+
+  // f) Ce qu'on affiche : le plan du jour, les 7 prochains jours, les alertes.
+  const lignesDuJour = infos
+    .filter(i => i.prevuAujourdhui > 0 || i.faitsAujourdhui > 0)
+    .map(i => ({ info: i, prevus: i.prevuAujourdhui, faits: i.faitsAujourdhui }));
+
+  const semaine = [];
+  for (let n = 1; n <= 7; n++) {
+    const j = ajouterJours(jour, n);
+    const items = infos.filter(i => i.futur[j] > 0).map(i => ({ info: i, blocs: i.futur[j] }));
+    semaine.push({
+      jour: j,
+      capacite: capacites[j] !== undefined ? capacites[j] : capaciteDuJour(j, r),
+      total: items.reduce((somme, x) => somme + x.blocs, 0),
+      items,
+      echeancesDuJour: d.echeances.filter(e => e.date === j).sort(comparerPriorite),
+    });
+  }
+
+  const alertes = infos.filter(i => i.manque > 0).map(i => ({ info: i, minutes: i.manque * W }));
+  const parId = {};
+  for (const i of infos) parId[i.echeance.id] = i;
+
+  return { jour, W, capaciteAujourdhui: capacites[jour], infos, lignesDuJour, semaine, alertes, parId };
+}
+
+// Répartit des blocs sur des jours.
+//   demandes  : liste (de la plus prioritaire à la moins prioritaire) de { id, blocs, jours, poids }
+//   capacites : { "2026-11-23": 2, "2026-11-24": 5, ... } = blocs possibles par jour
+// Renvoie { alloc: { id: { jour: nombreDeBlocs } }, manque: { id: blocsNonPlaces } }
+function repartir(demandes, capacites) {
+  const libre = Object.assign({}, capacites);  // places encore libres chaque jour
+  const alloc = {};
+  const manque = {};
+  const dejaTraitees = [];
+  for (const dem of demandes) {
+    const a = {};
+    for (const j of dem.jours) a[j] = 0;
+    alloc[dem.id] = a;
+    let reste = dem.blocs;
+    while (reste > 0) {
+      const k = meilleurJour(dem, a, libre);
+      if (k === -1) {
+        // Plus aucune place : on tente de décaler un bloc d'une échéance plus proche.
+        if (faireDeLaPlace(dem, dejaTraitees, alloc, libre)) continue;
+        break;
+      }
+      const j = dem.jours[k];
+      a[j] += 1;
+      libre[j] -= 1;
+      reste -= 1;
+    }
+    manque[dem.id] = reste;
+    dejaTraitees.push(dem);
+  }
+  return { alloc, manque };
+}
+
+// Choisit le jour qui "mérite" le plus le prochain bloc (en cas d'égalité : le plus proche de la date).
+function meilleurJour(dem, a, libre) {
+  let meilleur = -1;
+  let meilleurScore = -1;
+  dem.jours.forEach((j, k) => {
+    if (!(libre[j] > 0)) return;
+    const score = dem.poids[k] / (a[j] + 1);
+    if (score >= meilleurScore - 1e-9) {
+      meilleur = k;
+      meilleurScore = score;
+    }
+  });
+  return meilleur;
+}
+
+// Libère une place sur un des jours de "dem" en déplaçant un bloc d'une échéance
+// déjà placée vers un autre de SES jours possibles qui a encore de la place.
+// On déplace le bloc qui compte le moins pour l'autre échéance (souvent un de ses
+// premiers jours) : elle garde ainsi ses révisions juste avant sa date.
+function faireDeLaPlace(dem, dejaTraitees, alloc, libre) {
+  let choix = null;
+  for (const autre of dejaTraitees) {
+    // Le jour libre que l'autre échéance préfère (le plus proche de sa date).
+    const cible = [...autre.jours].reverse().find(j => libre[j] > 0);
+    if (!cible) continue;
+    autre.jours.forEach((jour, k) => {
+      const n = alloc[autre.id][jour];
+      if (!(n > 0) || !dem.jours.includes(jour)) return;
+      const cout = autre.poids[k] / n;   // ce que vaut ce bloc pour l'autre échéance
+      if (!choix || cout < choix.cout) choix = { autre, jour, cible, cout };
+    });
+  }
+  if (!choix) return false;
+  alloc[choix.autre.id][choix.jour] -= 1;   // l'autre échéance quitte ce jour…
+  alloc[choix.autre.id][choix.cible] += 1;  // … pour un jour qui a encore de la place
+  libre[choix.cible] -= 1;
+  libre[choix.jour] += 1;                   // une place se libère pour "dem"
+  return true;
+}
+
+
+/* =====================================================================
+   5. AFFICHAGE DES ÉCRANS
+   Chaque écran est "dessiné" par une fonction qui fabrique du HTML.
+   Quand les données changent, on appelle rafraichir() pour redessiner.
+   ===================================================================== */
+
+let vueActive = 'aujourdhui';
+let choixChrono = null;          // échéance choisie dans l'écran Chrono
+let passeesOuvertes = false;     // section "Échéances passées" ouverte ?
+
+// Petites icônes dessinées en SVG (elles s'affichent pareil sur tous les téléphones).
+const ICONES = {
+  lecture: '<svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>',
+  pause: '<svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.2"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.2"/></svg>',
+  stop: '<svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="2.5"/></svg>',
+  suivant: '<svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14l9.5-7zM15.5 5h3v14h-3z"/></svg>',
+};
+
+function afficherVue(nom) {
+  vueActive = nom;
+  for (const v of ['aujourdhui', 'echeances', 'chrono', 'reglages']) {
+    document.getElementById('vue-' + v).hidden = v !== nom;
+  }
+  document.querySelectorAll('.onglet').forEach(b => {
+    if (b.dataset.onglet === nom) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+  rafraichir();
+  window.scrollTo(0, 0);
+}
+
+function rafraichir() {
+  if (vueActive === 'aujourdhui') afficherAujourdhui();
+  else if (vueActive === 'echeances') afficherEcheances();
+  else if (vueActive === 'chrono') afficherChrono();
+  else afficherReglages();
+  majOngletChrono();
+}
+
+/* ---------- Écran "Aujourd'hui" ---------- */
+
+function afficherAujourdhui() {
+  const jour = aujourdhui();
+  let h = `<header class="entete"><div><p class="surtitre">${dateLongue(jour)}</p><h1>Aujourd'hui</h1></div></header>`;
+
+  if (!donnees.echeances.length) {
+    document.getElementById('vue-aujourdhui').innerHTML = h + carteBienvenue();
+    return;
+  }
+
+  const plan = calculerPlan(jour);
+  h += bandeauChrono();
+
+  for (const e of donnees.echeances.filter(x => x.date === jour)) {
+    h += `<div class="info-jour" style="${styleMatiere(e.matiereId)}">📌 C'est aujourd'hui : <strong>${echapper(nomEcheanceLong(e))}</strong>. Bonne chance !</div>`;
+  }
+  if (plan.alertes.length) {
+    const messages = plan.alertes.map(a => {
+      const e = a.info.echeance;
+      return `<p class="alerte-ligne"><strong>Pas assez de temps pour ${echapper(nomEcheanceLong(e))} (<span class="insecable">${quandCourt(e.date, jour)}</span>), il manque <span class="insecable">${formaterDuree(a.minutes)}</span>.</strong></p>`;
+    }).join('');
+    h += `<div class="alerte" role="alert"><span aria-hidden="true">⚠️</span><div>
+        ${messages}
+        <div class="aide">Augmente ton temps dispo dans Réglages, ou fais des blocs en plus.</div>
+      </div></div>`;
+  }
+  h += cartePlanDuJour(plan);
+  h += carteSemaine(plan);
+  document.getElementById('vue-aujourdhui').innerHTML = h;
+}
+
+function carteBienvenue() {
+  return `<section class="carte bienvenue">
+      <h2>Bienvenue ! 👋</h2>
+      <p class="aide">Cette appli calcule chaque jour combien de temps étudier pour tes tests et examens.</p>
+      <ol>
+        <li>Ajoute tes <strong>matières</strong> (maths, chimie…)</li>
+        <li>Ajoute tes <strong>tests et examens</strong></li>
+        <li>Reviens ici : ton plan du jour s'affiche, lance un bloc ⏱</li>
+      </ol>
+      <div class="pile">
+        <button class="btn btn-principal btn-plein" data-action="ajouter-echeance" type="button">+ Ajouter un test ou un examen</button>
+        <button class="btn btn-plein" data-action="exemple" type="button">Essayer avec un exemple</button>
+      </div>
+    </section>`;
+}
+
+function bandeauChrono() {
+  const c = donnees.chrono;
+  if (!c) return '';
+  const p = infosPhase(c);
+  return `<button class="bandeau-chrono" data-action="aller-chrono" type="button" style="--phase:${p.couleur}">
+      <span>⏱ ${p.libelle} – ${echapper(sujetChrono(c))}</span>
+      <strong id="bandeau-temps">${c.phase === 'attente' ? 'Prêt ?' : formaterChrono(restantMs(c))}</strong>
+    </button>`;
+}
+
+function cartePlanDuJour(plan) {
+  const r = donnees.reglages;
+  const totalPrevus = plan.lignesDuJour.reduce((somme, l) => somme + l.prevus, 0);
+  const dispo = estWeekend(plan.jour) ? r.dispoWeekend : r.dispoSemaine;
+
+  let h = `<section class="carte"><div class="carte-titre"><h2>Mon plan du jour</h2>`;
+  if (totalPrevus) h += `<span class="etiquette">${pluriel(totalPrevus, 'bloc')} · ${formaterDuree(totalPrevus * plan.W)}</span>`;
+  h += `</div>`;
+
+  if (!plan.lignesDuJour.length) {
+    h += `<p class="vide">Rien de prévu aujourd'hui 😌</p>`;
+    const prochaine = texteProchaineSeance(plan);
+    if (prochaine) h += `<p class="aide centre">${prochaine}</p>`;
+    else if (!plan.infos.length) {
+      h += `<p class="aide centre">Aucun test ni examen à venir.</p>
+        <div class="pile"><button class="btn btn-plein" data-action="ajouter-echeance" type="button">+ Ajouter une échéance</button></div>`;
+    }
+  } else {
+    h += `<ul class="liste-plan">${plan.lignesDuJour.map(l => lignePlan(l, plan)).join('')}</ul>`;
+  }
+  h += `<p class="aide">Temps dispo aujourd'hui : ${formaterDuree(dispo)}, soit ${pluriel(plan.capaciteAujourdhui, 'bloc')} max (pauses comprises).</p>`;
+  return h + `</section>`;
+}
+
+// Une ligne du plan : "Chimie – test jeudi – 2 blocs" + bouton Lancer.
+function lignePlan(l, plan) {
+  const e = l.info.echeance;
+  const restants = Math.max(0, l.prevus - l.faits);
+  let points = '';
+  for (let k = 0; k < Math.max(l.prevus, l.faits); k++) points += `<span class="point${k < l.faits ? ' fait' : ''}"></span>`;
+
+  const titre = `${echapper(nomMatiere(e.matiereId))} – ${e.type} <span class="insecable">${quandCourt(e.date, plan.jour)}</span> <span class="insecable">– ${l.prevus ? pluriel(l.prevus, 'bloc') : 'en plus'}</span>`;
+  let sous;
+  if (restants > 0) {
+    sous = l.faits ? `${pluriel(l.faits, 'bloc')} fait${l.faits > 1 ? 's' : ''}, encore ${restants}` : `${formaterDuree(l.prevus * plan.W)} de travail`;
+  } else {
+    sous = l.prevus ? "✓ Fini pour aujourd'hui, bravo !" : `✓ ${pluriel(l.faits, 'bloc')} en plus, bien joué !`;
+  }
+  const bouton = restants > 0
+    ? `<button class="btn btn-lancer" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer</button>`
+    : `<button class="btn btn-petit" data-action="lancer" data-id="${e.id}" type="button" aria-label="Faire un bloc en plus">+1 bloc</button>`;
+
+  return `<li class="ligne-plan" style="${styleMatiere(e.matiereId)}">
+      <div class="ligne-texte">
+        <div class="ligne-titre">${titre}</div>
+        <div class="points" aria-hidden="true">${points}</div>
+        <div class="ligne-sous">${sous}</div>
+      </div>
+      ${bouton}
+    </li>`;
+}
+
+// "Prochaine séance : jeudi (Maths)" quand rien n'est prévu aujourd'hui.
+function texteProchaineSeance(plan) {
+  let meilleur = null;
+  for (const i of plan.infos) {
+    for (const j of Object.keys(i.futur)) {
+      if (i.futur[j] > 0 && (!meilleur || j < meilleur.jour)) meilleur = { jour: j, info: i };
+    }
+  }
+  if (!meilleur) return '';
+  return `Prochaine séance : ${quandCourt(meilleur.jour, plan.jour)} (${echapper(nomMatiere(meilleur.info.echeance.matiereId))}).`;
+}
+
+function carteSemaine(plan) {
+  let h = `<section class="carte"><div class="carte-titre"><h2>Les 7 prochains jours</h2><span class="aide-mini">blocs prévus /<br>possibles</span></div><ul class="semaine">`;
+  for (const s of plan.semaine) {
+    const d = dateDepuisCle(s.jour);
+    let contenu = '';
+    for (const e of s.echeancesDuJour) {
+      contenu += `<div class="jour-echeance" style="${styleMatiere(e.matiereId)}">📌 ${e.type === 'examen' ? 'Examen' : 'Test'} ${echapper(de(nomMatiere(e.matiereId)))}</div>`;
+    }
+    if (s.items.length) {
+      const puces = s.items.map(x => {
+        const e = x.info.echeance;
+        const doublon = s.items.filter(y => y.info.echeance.matiereId === e.matiereId).length > 1;
+        return `<span class="puce" style="${styleMatiere(e.matiereId)}">${echapper(nomMatiere(e.matiereId))}${doublon ? ` (${e.type})` : ''} · ${x.blocs}</span>`;
+      }).join('');
+      contenu += `<div class="puces">${puces}</div>`;
+    } else if (!s.echeancesDuJour.length) {
+      contenu += `<span class="repos">Rien de prévu</span>`;
+    }
+    h += `<li class="jour">
+        <div class="jour-nom">${JOURS_COURTS[d.getDay()]}<small>${d.getDate()} ${MOIS_COURTS[d.getMonth()]}</small></div>
+        <div class="jour-contenu">${contenu}</div>
+        <div class="jour-charge${s.total && s.total >= s.capacite ? ' plein' : ''}">${s.total}/${s.capacite}</div>
+      </li>`;
+  }
+  return h + `</ul></section>`;
+}
+
+/* ---------- Écran "Échéances" ---------- */
+
+function afficherEcheances() {
+  const jour = aujourdhui();
+  const plan = calculerPlan(jour);
+  const aVenir = donnees.echeances.filter(e => e.date >= jour).sort(comparerPriorite);
+  const passees = donnees.echeances.filter(e => e.date < jour).sort((a, b) => (a.date < b.date ? 1 : -1));
+
+  let h = `<header class="entete"><h1>Échéances</h1><button class="btn btn-principal btn-petit" data-action="ajouter-echeance" type="button">+ Ajouter</button></header>`;
+
+  if (!donnees.matieres.length) {
+    h += `<section class="carte bienvenue">
+        <h2>Commence par tes matières</h2>
+        <p class="aide">Ajoute les matières que tu étudies (maths, chimie, philo, anglais…). Ensuite tu pourras ajouter tes tests et examens.</p>
+        <div class="pile"><button class="btn btn-principal btn-plein" data-action="ajouter-matiere" type="button">+ Ajouter une matière</button></div>
+      </section>`;
+    document.getElementById('vue-echeances').innerHTML = h;
+    return;
+  }
+
+  if (!aVenir.length) {
+    h += `<div class="carte"><p class="vide">Aucun test ni examen à venir.</p><p class="aide centre">Appuie sur « + Ajouter » pour en créer un.</p></div>`;
+  }
+  h += aVenir.map(e => carteEcheance(e, plan)).join('');
+  if (passees.length) {
+    h += `<details class="passees"${passeesOuvertes ? ' open' : ''}><summary>Échéances passées (${passees.length})</summary>
+        ${passees.map(e => carteEcheance(e, plan)).join('')}
+      </details>`;
+  }
+  h += sectionMatieres();
+  document.getElementById('vue-echeances').innerHTML = h;
+}
+
+function carteEcheance(e, plan) {
+  const total = tempsEstime(e);
+  const fait = minutesFaites(e.id);
+  const pourcent = total > 0 ? Math.min(100, Math.round((fait / total) * 100)) : 100;
+  return `<article class="carte echeance${e.date < plan.jour ? ' passee' : ''}" style="${styleMatiere(e.matiereId)}"
+        data-action="modifier-echeance" data-id="${e.id}" role="button" tabindex="0" aria-label="Modifier ${echapper(nomEcheanceLong(e))}">
+      <div class="ech-haut">
+        <span class="ech-matiere">${echapper(nomMatiere(e.matiereId))}</span>
+        <span class="badge badge-${e.type}">${e.type === 'examen' ? 'Examen' : 'Test'}</span>
+      </div>
+      <div class="ech-date">${capitaliser(dateLongue(e.date))} · ${delai(e.date, plan.jour)}</div>
+      <div class="ech-details">Niveau ${e.niveau} (${NIVEAUX[e.niveau]}) · ${pluriel(e.chapitres, 'chapitre')} · ≈ ${formaterDuree(total)} d'étude</div>
+      <div class="barre"><div style="width:${pourcent}%"></div></div>
+      <div class="ech-progres">${formaterDuree(fait)} faites sur ${formaterDuree(total)}${total > 0 && fait >= total ? ' ✓' : ''}</div>
+      ${e.note ? `<div class="ech-note">📝 ${echapper(e.note)}</div>` : ''}
+      ${statutEcheance(e, plan)}
+    </article>`;
+}
+
+function statutEcheance(e, plan) {
+  if (e.date === plan.jour) return `<div class="ech-statut">📌 C'est aujourd'hui, bonne chance !</div>`;
+  const i = plan.parId[e.id];
+  if (!i) return '';
+  if (i.manque > 0) return `<div class="ech-statut ech-alerte">⚠️ Pas assez de temps : il manque ${formaterDuree(i.manque * plan.W)}</div>`;
+  const resteAujourdhui = i.prevuAujourdhui - i.faitsAujourdhui;
+  if (resteAujourdhui > 0) return `<div class="ech-statut">📅 Aujourd'hui : ${pluriel(resteAujourdhui, 'bloc')} à faire</div>`;
+  const prochain = Object.keys(i.futur).filter(j => i.futur[j] > 0).sort()[0];
+  if (prochain) return `<div class="ech-statut">📅 Prochaine séance : ${quandCourt(prochain, plan.jour)} (${pluriel(i.futur[prochain], 'bloc')})</div>`;
+  if (i.total > 0) return `<div class="ech-statut ech-ok">✓ Révisions terminées, bravo !</div>`;
+  return '';
+}
+
+function sectionMatieres() {
+  const jour = aujourdhui();
+  const triees = [...donnees.matieres].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+  let h = `<section class="carte" id="matieres">
+      <div class="carte-titre"><h2>Mes matières</h2><button class="btn btn-petit" data-action="ajouter-matiere" type="button">+ Ajouter</button></div>
+      <ul class="liste-matieres">`;
+  for (const m of triees) {
+    const n = donnees.echeances.filter(e => e.matiereId === m.id && e.date >= jour).length;
+    h += `<li><button class="ligne-matiere" data-action="modifier-matiere" data-id="${m.id}" type="button" style="${styleCouleur(m.couleur)}">
+        <span class="rond"></span>
+        <span class="nom">${echapper(m.nom)}</span>
+        <span class="aide-mini">${n ? `${pluriel(n, 'échéance')}` : ''}</span>
+        <span class="chevron" aria-hidden="true">›</span>
+      </button></li>`;
+  }
+  return h + `</ul></section>`;
+}
+
+/* ---------- Écran "Chrono" ---------- */
+
+function afficherChrono() {
+  const c = donnees.chrono;
+  let h = `<header class="entete"><h1>Chrono</h1></header>`;
+  h += c ? chronoActif(c) : chronoAuRepos();
+  h += resumeBlocsDuJour();
+  document.getElementById('vue-chrono').innerHTML = h;
+  majAffichageChrono();
+}
+
+function chronoAuRepos() {
+  const r = donnees.reglages;
+  const jour = aujourdhui();
+  const plan = calculerPlan(jour);
+  const possibles = donnees.echeances.filter(e => e.date >= jour).sort(comparerPriorite);
+
+  // Échéance proposée : celle choisie avant, sinon la 1re qui a encore des blocs prévus aujourd'hui.
+  let choix = choixChrono;
+  if (choix !== '' && !possibles.some(e => e.id === choix)) {
+    const aFaire = plan.infos.find(i => i.prevuAujourdhui > i.faitsAujourdhui);
+    choix = aFaire ? aFaire.echeance.id : (possibles[0] ? possibles[0].id : '');
+  }
+  const options = possibles.map(e => {
+    const i = plan.parId[e.id];
+    const reste = i ? i.prevuAujourdhui - i.faitsAujourdhui : 0;
+    const precision = reste > 0 ? ` (${pluriel(reste, 'bloc')} prévu${reste > 1 ? 's' : ''} aujourd'hui)` : '';
+    return `<option value="${e.id}"${e.id === choix ? ' selected' : ''}>${echapper(nomEcheanceCourt(e, jour))}${precision}</option>`;
+  }).join('');
+
+  return `<section class="carte">
+      <label class="champ">Je travaille sur…
+        <select id="choix-echeance">${options}<option value=""${choix === '' ? ' selected' : ''}>Étude libre (sans échéance)</option></select>
+      </label>
+      <button class="btn btn-principal btn-geant" data-action="demarrer" type="button">${ICONES.lecture} Démarrer un bloc de ${r.travail} min</button>
+      <p class="aide">Travail ${r.travail} min → petite pause ${r.pauseCourte} min. Grande pause de ${r.pauseLongue} min tous les ${r.blocsAvantPauseLongue} blocs.</p>
+      ${possibles.length ? '' : `<p class="aide">Astuce : ajoute une échéance pour que tes blocs comptent dans ton plan.</p>`}
+    </section>`;
+}
+
+function chronoActif(c) {
+  const r = donnees.reglages;
+  const p = infosPhase(c);
+  const enPause = !c.debut && c.phase !== 'attente';
+  let info = '';
+  if (c.phase === 'travail') {
+    const longue = (c.blocsSerie + 1) % r.blocsAvantPauseLongue === 0;
+    info = `Bloc n°${c.blocsSerie + 1} · ensuite ${longue ? `grande pause (${r.pauseLongue} min)` : `petite pause (${r.pauseCourte} min)`}`;
+  } else if (c.phase === 'attente') {
+    info = `Bravo, ${pluriel(c.blocsSerie, 'bloc')} dans cette série 💪`;
+  } else {
+    info = `Ensuite : bloc n°${c.blocsSerie + 1}`;
+  }
+  const e = c.echeanceId ? trouverEcheance(c.echeanceId) : null;
+  const ligne = e ? calculerPlan().lignesDuJour.find(l => l.info.echeance.id === e.id) : null;
+  if (ligne && ligne.prevus) info += `<br>Pour cette échéance aujourd'hui : ${ligne.faits} fait${ligne.faits > 1 ? 's' : ''} sur ${ligne.prevus}`;
+
+  let boutons;
+  if (c.phase === 'attente') {
+    boutons = `<div class="pile">
+        <button class="btn btn-principal btn-geant" data-action="bloc-suivant" type="button">${ICONES.lecture} Bloc suivant (${r.travail} min)</button>
+        <button class="btn btn-plein" data-action="terminer" type="button">Terminer pour l'instant</button>
+      </div>`;
+  } else {
+    boutons = `<div class="chrono-boutons">
+        ${enPause
+          ? `<button class="btn btn-principal btn-geant" data-action="reprendre" type="button">${ICONES.lecture} Reprendre</button>`
+          : `<button class="btn btn-geant" data-action="pause" type="button">${ICONES.pause} Pause</button>`}
+        <button class="btn btn-geant btn-danger" data-action="arreter" type="button">${ICONES.stop} Arrêter</button>
+      </div>
+      ${c.phase !== 'travail' ? `<button class="btn btn-plein" data-action="passer-pause" type="button">${ICONES.suivant} Passer la pause</button>` : ''}`;
+  }
+
+  return `<section class="chrono" style="--phase:${p.couleur}">
+      <div class="chrono-phase">${p.libelle}</div>
+      <div class="chrono-sujet"><span class="rond" style="--couleur:${c.matiereId ? couleurMatiere(c.matiereId) : 'var(--accent)'}"></span>${echapper(sujetChrono(c))}</div>
+      <div class="anneau">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="anneau-fond" cx="60" cy="60" r="54"></circle>
+          <circle class="anneau-progres" id="anneau" cx="60" cy="60" r="54"></circle>
+        </svg>
+        <div class="chrono-temps" id="chrono-temps" role="timer" aria-live="off"></div>
+      </div>
+      <p class="chrono-info">${info}</p>
+      ${boutons}
+    </section>`;
+}
+
+function resumeBlocsDuJour() {
+  const jour = aujourdhui();
+  const blocs = donnees.blocs.filter(b => b.date === jour);
+  if (!blocs.length) return `<p class="aide centre" style="margin-top:20px">Aucun bloc terminé aujourd'hui pour l'instant.</p>`;
+  const total = blocs.reduce((somme, b) => somme + b.minutes, 0);
+  const lignes = blocs.slice().reverse().map(b => {
+    const e = b.echeanceId ? trouverEcheance(b.echeanceId) : null;
+    const nom = e ? nomEcheanceCourt(e, jour) : (b.matiereId ? nomMatiere(b.matiereId) : 'Étude libre');
+    const heure = new Date(b.debut || Date.now());
+    const hh = String(heure.getHours()).padStart(2, '0') + ':' + String(heure.getMinutes()).padStart(2, '0');
+    return `<li style="--couleur:${b.matiereId ? couleurMatiere(b.matiereId) : 'var(--accent)'}">
+        <span class="rond"></span>
+        <span class="texte">${echapper(nom)}<small>${hh} · ${b.minutes} min</small></span>
+        <button class="supprimer-bloc" data-action="supprimer-bloc" data-id="${b.id}" type="button" aria-label="Supprimer ce bloc">×</button>
+      </li>`;
+  }).join('');
+  return `<section class="carte" style="margin-top:18px">
+      <div class="carte-titre"><h2>Fait aujourd'hui</h2><span class="etiquette">${pluriel(blocs.length, 'bloc')} · ${formaterDuree(total)}</span></div>
+      <ul class="liste-faits">${lignes}</ul>
+    </section>`;
+}
+
+// Mise à jour du gros chrono (appelée 2 fois par seconde, sans tout redessiner).
+function majAffichageChrono() {
+  const c = donnees.chrono;
+  const temps = document.getElementById('chrono-temps');
+  const anneau = document.getElementById('anneau');
+  if (!c || !temps || !anneau) return;
+  const circonference = 339.292;  // 2 × π × 54
+  if (c.phase === 'attente') {
+    temps.textContent = 'Prêt ?';
+    temps.classList.add('petit');
+    anneau.style.strokeDashoffset = 0;
+    return;
+  }
+  const reste = restantMs(c);
+  temps.textContent = formaterChrono(reste);
+  temps.classList.remove('petit');
+  anneau.style.strokeDashoffset = circonference * (1 - (c.dureeMs > 0 ? reste / c.dureeMs : 0));
+}
+
+// Onglet "Chrono" : affiche le temps restant quand un chrono tourne (+ titre de la page).
+function majOngletChrono() {
+  const c = donnees.chrono;
+  const bouton = document.getElementById('onglet-chrono');
+  const texte = document.getElementById('onglet-chrono-texte');
+  const bandeau = document.getElementById('bandeau-temps');
+  if (c && c.phase !== 'attente') {
+    const temps = formaterChrono(restantMs(c));
+    const p = infosPhase(c);
+    texte.textContent = temps;
+    bouton.classList.add('chrono-actif');
+    bouton.style.setProperty('--phase', p.couleur);
+    if (bandeau) bandeau.textContent = temps;
+    document.title = `${temps} · ${p.libelle} – Plan d'étude`;
+  } else {
+    texte.textContent = 'Chrono';
+    bouton.classList.remove('chrono-actif');
+    document.title = "Plan d'étude";
+  }
+}
+
+/* ---------- Écran "Réglages" ---------- */
+
+function afficherReglages() {
+  const r = donnees.reglages;
+  const capSemaine = blocsDansDuree(r.dispoSemaine, r);
+  const capWeekend = blocsDansDuree(r.dispoWeekend, r);
+  const facteur = n => formaterDecimal(r.coefBase + r.coefChapitre * n);
+  const exemple = r.tempsBase.test[2] * (r.coefBase + r.coefChapitre * 4);
+
+  let h = `<header class="entete"><h1>Réglages</h1></header>`;
+
+  h += `<section class="carte"><h2>⏰ Mon temps disponible</h2>
+      ${ligneReglage('dispoSemaine', 'En semaine', 'du lundi au vendredi', 15, 0, 720, 'duree')}
+      ${ligneReglage('dispoWeekend', 'Le week-end', 'samedi et dimanche', 15, 0, 720, 'duree')}
+      <p class="aide">Pauses comprises, ça fait <strong>${pluriel(capSemaine, 'bloc')}</strong> par jour en semaine et <strong>${pluriel(capWeekend, 'bloc')}</strong> le week-end.</p>
+    </section>`;
+
+  h += `<section class="carte"><h2>🍅 Pomodoro</h2>
+      ${ligneReglage('travail', 'Travail', 'durée d\'un bloc', 5, 5, 90, 'min')}
+      ${ligneReglage('pauseCourte', 'Petite pause', 'après chaque bloc', 1, 1, 30, 'min')}
+      ${ligneReglage('pauseLongue', 'Grande pause', '', 5, 5, 60, 'min')}
+      ${ligneReglage('blocsAvantPauseLongue', 'Grande pause tous les', '', 1, 2, 10, 'blocs')}
+    </section>`;
+
+  h += `<section class="carte"><h2>📚 Temps d'étude de base</h2>
+      <p class="aide">Selon le niveau, avant l'ajustement par chapitres.</p>
+      <h3>Test</h3>
+      ${[1, 2, 3, 4].map(n => ligneReglage(`tempsBase.test.${n - 1}`, `Niveau ${n}`, NIVEAUX[n], 15, 15, 1200, 'duree')).join('')}
+      <h3>Examen</h3>
+      ${[1, 2, 3, 4].map(n => ligneReglage(`tempsBase.examen.${n - 1}`, `Niveau ${n}`, NIVEAUX[n], 15, 15, 3000, 'duree')).join('')}
+    </section>`;
+
+  h += `<section class="carte"><h2>📖 Ajustement par chapitres</h2>
+      <p class="formule">temps = base × (${formaterDecimal(r.coefBase)} + ${formaterDecimal(r.coefChapitre)} × chapitres)</p>
+      ${ligneReglage('coefBase', 'Part fixe', '', 0.05, 0, 3, 'decimal')}
+      ${ligneReglage('coefChapitre', 'Par chapitre', '', 0.05, 0, 2, 'decimal')}
+      <p class="aide">${[1, 2, 4, 6].map(n => `<span class="insecable">${pluriel(n, 'chapitre')} → × ${facteur(n)}</span>`).join(' · ')}<br>
+        Ex : test niveau 3 de 4 chapitres = ${formaterDuree(exemple)}.</p>
+    </section>`;
+
+  h += `<section class="carte"><h2>📅 Planification</h2>
+      ${ligneReglage('joursAvant.test', 'Un test', 'commence au plus tôt', 1, 1, 30, 'avant')}
+      ${ligneReglage('joursAvant.examen', 'Un examen', 'commence au plus tôt', 1, 1, 60, 'avant')}
+      ${ligneReglage('progression', 'Montée en puissance', 'la veille vs le 1er jour', 0.5, 1, 10, 'fois')}
+      <p class="aide">Avec × ${formaterDecimal(r.progression)}, la veille on étudie ${formaterDecimal(r.progression)} fois plus que le premier jour.</p>
+    </section>`;
+
+  h += `<section class="carte"><h2>🔔 Alertes du chrono</h2>
+      ${ligneInterrupteur('son', 'Son', 'sur iPhone : pas en mode silencieux')}
+      ${ligneInterrupteur('vibration', 'Vibration', 'Android seulement (pas possible sur iPhone)')}
+      ${ligneInterrupteur('ecranAllume', "Garder l'écran allumé", 'pendant un bloc, si le téléphone le permet')}
+      <div class="pile"><button class="btn btn-plein" data-action="tester-alerte" type="button">🔊 Tester le son et la vibration</button></div>
+    </section>`;
+
+  h += `<section class="carte"><h2>💾 Mes données</h2>
+      <p class="aide">Tout est enregistré uniquement dans ce navigateur, sur cet appareil.</p>
+      <div class="pile">
+        <button class="btn btn-plein" data-action="exemple" type="button">Ajouter des exemples (pour tester)</button>
+        <button class="btn btn-plein" data-action="reglages-defaut" type="button">Remettre les réglages par défaut</button>
+        <button class="btn btn-plein btn-danger" data-action="tout-effacer" type="button">Tout effacer</button>
+      </div>
+    </section>
+    <p class="aide centre">Plan d'étude · V1</p>`;
+
+  document.getElementById('vue-reglages').innerHTML = h;
+}
+
+// Une ligne de réglage avec des boutons − et +.
+function ligneReglage(chemin, libelle, precision, pas, min, max, format) {
+  const valeur = lireChemin(donnees.reglages, chemin);
+  return `<div class="ligne-reglage">
+      <div class="libelle">${libelle}${precision ? `<small>${precision}</small>` : ''}</div>
+      <div class="stepper" data-chemin="${chemin}" data-pas="${pas}" data-min="${min}" data-max="${max}">
+        <button type="button" data-action="moins" aria-label="Diminuer ${libelle}">−</button>
+        <output>${formaterValeur(valeur, format)}</output>
+        <button type="button" data-action="plus" aria-label="Augmenter ${libelle}">+</button>
+      </div>
+    </div>`;
+}
+
+function ligneInterrupteur(chemin, libelle, precision) {
+  return `<label class="ligne-reglage">
+      <span class="libelle">${libelle}${precision ? `<small>${precision}</small>` : ''}</span>
+      <span class="interrupteur"><input type="checkbox" data-reglage="${chemin}"${donnees.reglages[chemin] ? ' checked' : ''}><span></span></span>
+    </label>`;
+}
+
+function formaterValeur(v, format) {
+  if (format === 'duree') return formaterDuree(v);
+  if (format === 'min') return `${v} min`;
+  if (format === 'blocs') return `${v} blocs`;
+  if (format === 'avant') return `${v} j avant`;
+  if (format === 'fois') return `× ${formaterDecimal(v)}`;
+  return formaterDecimal(v);
+}
+
+function changerReglage(bouton, sens) {
+  const s = bouton.closest('.stepper');
+  const pas = Number(s.dataset.pas);
+  const valeur = lireChemin(donnees.reglages, s.dataset.chemin) + sens * pas;
+  const arrondie = Math.round(valeur * 100) / 100;
+  ecrireChemin(donnees.reglages, s.dataset.chemin, borner(arrondie, Number(s.dataset.min), Number(s.dataset.max)));
+  sauvegarder();
+  afficherReglages();
+}
+
+/* ---------- Petits messages ---------- */
+
+let minuteurToast = null;
+function afficherToast(texte) {
+  const t = document.getElementById('toast');
+  t.textContent = texte;
+  t.classList.add('visible');
+  clearTimeout(minuteurToast);
+  minuteurToast = setTimeout(() => t.classList.remove('visible'), 2800);
+}
+
+function flasher(couleur) {
+  const f = document.getElementById('flash');
+  f.style.background = couleur;
+  f.classList.remove('actif');
+  void f.offsetWidth;  // relance l'animation
+  f.classList.add('actif');
+}
+
+
+/* =====================================================================
+   6. FORMULAIRES ET CONFIRMATIONS
+   ===================================================================== */
+
+/* ---------- La feuille qui monte du bas ---------- */
+
+let minuteurFeuille = null;
+
+function ouvrirFeuille(html) {
+  const fond = document.getElementById('fond-feuille');
+  const feuille = document.getElementById('feuille');
+  clearTimeout(minuteurFeuille);
+  feuille.innerHTML = `<div class="poignee"></div>${html}`;
+  feuille.scrollTop = 0;
+  fond.hidden = false;
+  document.body.classList.add('bloque');
+  void fond.offsetWidth;  // pour que l'animation se lance
+  fond.classList.add('ouvert');
+}
+
+function fermerFeuille() {
+  const fond = document.getElementById('fond-feuille');
+  fond.classList.remove('ouvert');
+  document.body.classList.remove('bloque');
+  clearTimeout(minuteurFeuille);
+  minuteurFeuille = setTimeout(() => {
+    fond.hidden = true;
+    document.getElementById('feuille').innerHTML = '';
+  }, 250);
+}
+
+/* ---------- Boîte de confirmation ---------- */
+
+// Affiche un message et des boutons ; renvoie (plus tard) la valeur du bouton choisi.
+function choisir(message, options) {
+  return new Promise(resolve => {
+    const fond = document.getElementById('fond-dialogue');
+    fond.innerHTML = `<div class="dialogue" role="alertdialog" aria-modal="true" aria-label="Confirmation">
+        <p>${echapper(message)}</p>
+        <div class="pile">${options.map((o, i) => `<button class="btn btn-plein${o.style ? ' btn-' + o.style : ''}" data-choix="${i}" type="button">${echapper(o.texte)}</button>`).join('')}</div>
+      </div>`;
+    fond.hidden = false;
+    const echap = ev => { if (ev.key === 'Escape') fermer(null); };
+    function fermer(valeur) {
+      fond.hidden = true;
+      fond.innerHTML = '';
+      fond.onclick = null;
+      document.removeEventListener('keydown', echap);
+      resolve(valeur);
+    }
+    document.addEventListener('keydown', echap);
+    fond.onclick = ev => {
+      const bouton = ev.target.closest('[data-choix]');
+      if (bouton) fermer(options[Number(bouton.dataset.choix)].valeur);
+      else if (ev.target === fond) fermer(null);
+    };
+  });
+}
+
+async function confirmer(message, texteOui, danger = false) {
+  const reponse = await choisir(message, [
+    { valeur: true, texte: texteOui, style: danger ? 'danger-plein' : 'principal' },
+    { valeur: false, texte: 'Annuler' },
+  ]);
+  return reponse === true;
+}
+
+function erreurForm(message) {
+  const p = document.getElementById('erreur-form');
+  if (!p) return;
+  p.textContent = message;
+  p.hidden = false;
+  p.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+/* ---------- Formulaire d'une échéance ---------- */
+
+function ouvrirFormEcheance(id, preselection = {}) {
+  if (!donnees.matieres.length) {
+    ouvrirFormMatiere(null, { puisEcheance: true });
+    return;
+  }
+  const e = id ? trouverEcheance(id) : null;
+  const v = e || {
+    matiereId: preselection.matiereId || (donnees.matieres.length === 1 ? donnees.matieres[0].id : ''),
+    type: 'test',
+    date: ajouterJours(aujourdhui(), 7),
+    niveau: 2,
+    chapitres: 2,
+    note: '',
+  };
+  const matieres = [...donnees.matieres].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+
+  ouvrirFeuille(`<form id="form-echeance" data-id="${e ? e.id : ''}" novalidate>
+      <h2>${e ? "Modifier l'échéance" : 'Nouvelle échéance'}</h2>
+      <fieldset>
+        <legend>Matière</legend>
+        <div class="choix-puces">
+          ${matieres.map(m => `<label class="puce-choix" style="${styleCouleur(m.couleur)}"><input type="radio" name="matiere" value="${m.id}"${m.id === v.matiereId ? ' checked' : ''}><span>${echapper(m.nom)}</span></label>`).join('')}
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Type</legend>
+        <div class="segments">
+          <label><input type="radio" name="type" value="test"${v.type === 'test' ? ' checked' : ''}><span>Test</span></label>
+          <label><input type="radio" name="type" value="examen"${v.type === 'examen' ? ' checked' : ''}><span>Examen</span></label>
+        </div>
+      </fieldset>
+      <label class="champ">Date<input type="date" name="date" value="${v.date}" required></label>
+      <fieldset>
+        <legend>Niveau d'étude</legend>
+        <div class="segments">
+          ${[1, 2, 3, 4].map(n => `<label><input type="radio" name="niveau" value="${n}"${v.niveau === n ? ' checked' : ''}><span>${n}<small>${NIVEAUX[n]}</small></span></label>`).join('')}
+        </div>
+      </fieldset>
+      <div class="champ-ligne">
+        <span>Nombre de chapitres</span>
+        <div class="stepper">
+          <button type="button" data-action="chapitres-moins" aria-label="Un chapitre de moins">−</button>
+          <input type="number" name="chapitres" value="${v.chapitres}" min="1" max="99" inputmode="numeric" aria-label="Nombre de chapitres">
+          <button type="button" data-action="chapitres-plus" aria-label="Un chapitre de plus">+</button>
+        </div>
+      </div>
+      <label class="champ">Note <span class="facultatif">(facultatif)</span>
+        <input type="text" name="note" maxlength="120" value="${echapper(v.note)}" placeholder="ex : chapitres 3 à 5" autocomplete="off">
+      </label>
+      <div class="estimation" id="estimation"></div>
+      <p class="erreur" id="erreur-form" hidden></p>
+      <div class="pile">
+        <button type="submit" class="btn btn-principal btn-geant">Enregistrer</button>
+        <button type="button" class="btn btn-plein" data-action="fermer">Annuler</button>
+        ${e ? `<button type="button" class="btn btn-plein btn-danger" data-action="supprimer-echeance" data-id="${e.id}">Supprimer cette échéance</button>` : ''}
+      </div>
+    </form>`);
+  majEstimation();
+}
+
+// Affiche en direct le temps d'étude estimé pendant qu'on remplit le formulaire.
+function majEstimation() {
+  const form = document.getElementById('form-echeance');
+  if (!form) return;
+  const f = new FormData(form);
+  const r = donnees.reglages;
+  const e = {
+    type: f.get('type') === 'examen' ? 'examen' : 'test',
+    niveau: Number(f.get('niveau')) || 1,
+    chapitres: Math.max(0, parseInt(f.get('chapitres'), 10) || 0),
+    date: f.get('date'),
+  };
+  const minutes = tempsEstime(e, r);
+  let texte = `Temps d'étude estimé : <strong>${formaterDuree(minutes)}</strong> (≈ ${pluriel(Math.round(minutes / r.travail), 'bloc')} de ${r.travail} min)`;
+  if (estCleDate(e.date)) {
+    const jour = aujourdhui();
+    const debut = ajouterJours(e.date, -r.joursAvant[e.type]);
+    if (e.date <= jour) texte += `<div class="aide">⚠️ Cette date est aujourd'hui ou déjà passée : rien ne sera planifié.</div>`;
+    else texte += `<div class="aide">Révisions ${debut > jour ? `à partir du ${dateLongue(debut)}` : "dès aujourd'hui"}, jusqu'à la veille.</div>`;
+  }
+  document.getElementById('estimation').innerHTML = texte;
+}
+
+function changerChapitres(sens) {
+  const champ = document.querySelector('#form-echeance input[name="chapitres"]');
+  if (!champ) return;
+  champ.value = borner((parseInt(champ.value, 10) || 0) + sens, 1, 99);
+  majEstimation();
+}
+
+function enregistrerEcheance(form) {
+  const f = new FormData(form);
+  const matiereId = f.get('matiere');
+  const date = f.get('date');
+  const chapitres = parseInt(f.get('chapitres'), 10);
+  if (!matiereId) return erreurForm('Choisis une matière.');
+  if (!estCleDate(date)) return erreurForm('Choisis une date.');
+  if (!(chapitres >= 1 && chapitres <= 99)) return erreurForm('Le nombre de chapitres doit être entre 1 et 99.');
+
+  const valeurs = {
+    matiereId,
+    type: f.get('type') === 'examen' ? 'examen' : 'test',
+    date,
+    niveau: borner(Number(f.get('niveau')) || 2, 1, 4),
+    chapitres,
+    note: String(f.get('note') || '').trim(),
+  };
+  const id = form.dataset.id;
+  if (id) Object.assign(trouverEcheance(id), valeurs);
+  else donnees.echeances.push({ id: nouvelId(), ...valeurs });
+  sauvegarder();
+  fermerFeuille();
+  rafraichir();
+  afficherToast(date <= aujourdhui() ? 'Enregistré (attention : date passée)' : (id ? 'Échéance modifiée ✓' : 'Échéance ajoutée ✓'));
+}
+
+async function supprimerEcheance(id) {
+  const e = trouverEcheance(id);
+  if (!e) return;
+  const ok = await confirmer(`Supprimer ${nomEcheanceLong(e)} du ${dateLongue(e.date)} ?`, 'Supprimer', true);
+  if (!ok) return;
+  donnees.echeances = donnees.echeances.filter(x => x.id !== id);
+  sauvegarder();
+  fermerFeuille();
+  rafraichir();
+  afficherToast('Échéance supprimée');
+}
+
+/* ---------- Formulaire d'une matière ---------- */
+
+function ouvrirFormMatiere(id, options = {}) {
+  const m = id ? trouverMatiere(id) : null;
+  const prises = donnees.matieres.map(x => x.couleur);
+  const libre = PALETTE.find(c => !prises.includes(c.code));
+  const couleur = m ? m.couleur : (libre ? libre.code : PALETTE[donnees.matieres.length % PALETTE.length].code);
+  const couleurs = PALETTE.some(c => c.code === couleur) ? PALETTE : [...PALETTE, { nom: 'Actuelle', code: couleur }];
+
+  ouvrirFeuille(`<form id="form-matiere" data-id="${m ? m.id : ''}" data-puis-echeance="${options.puisEcheance ? 'oui' : ''}" novalidate>
+      <h2>${m ? 'Modifier la matière' : 'Nouvelle matière'}</h2>
+      ${options.puisEcheance ? `<p class="aide" style="margin:-6px 0 16px">D'abord une matière, ensuite tu pourras créer ton test ou examen.</p>` : ''}
+      <label class="champ">Nom<input type="text" name="nom" maxlength="30" value="${m ? echapper(m.nom) : ''}" placeholder="ex : Maths, Chimie, Philo…" autocomplete="off" enterkeyhint="done"></label>
+      <fieldset>
+        <legend>Couleur</legend>
+        <div class="palette">
+          ${couleurs.map(c => `<label class="pastille-choix" style="--couleur:${c.code}"><input type="radio" name="couleur" value="${c.code}" aria-label="${c.nom}"${c.code === couleur ? ' checked' : ''}><span></span></label>`).join('')}
+        </div>
+      </fieldset>
+      <p class="erreur" id="erreur-form" hidden></p>
+      <div class="pile">
+        <button type="submit" class="btn btn-principal btn-geant">${options.puisEcheance ? 'Continuer' : 'Enregistrer'}</button>
+        <button type="button" class="btn btn-plein" data-action="fermer">Annuler</button>
+        ${m ? `<button type="button" class="btn btn-plein btn-danger" data-action="supprimer-matiere" data-id="${m.id}">Supprimer cette matière</button>` : ''}
+      </div>
+    </form>`);
+}
+
+function enregistrerMatiere(form) {
+  const f = new FormData(form);
+  const nom = String(f.get('nom') || '').trim().replace(/\s+/g, ' ');
+  const couleur = /^#[0-9a-f]{6}$/i.test(f.get('couleur')) ? f.get('couleur') : PALETTE[0].code;
+  const id = form.dataset.id;
+  if (!nom) return erreurForm('Donne un nom à la matière.');
+  if (donnees.matieres.some(m => m.id !== id && m.nom.toLowerCase() === nom.toLowerCase())) return erreurForm('Cette matière existe déjà.');
+
+  let idFinal = id;
+  if (id) {
+    Object.assign(trouverMatiere(id), { nom, couleur });
+  } else {
+    idFinal = nouvelId();
+    donnees.matieres.push({ id: idFinal, nom, couleur });
+  }
+  sauvegarder();
+  rafraichir();
+  if (form.dataset.puisEcheance) {
+    ouvrirFormEcheance(null, { matiereId: idFinal });
+  } else {
+    fermerFeuille();
+    afficherToast(id ? 'Matière modifiée ✓' : 'Matière ajoutée ✓');
+  }
+}
+
+async function supprimerMatiere(id) {
+  const m = trouverMatiere(id);
+  if (!m) return;
+  const liees = donnees.echeances.filter(e => e.matiereId === id).length;
+  const message = liees
+    ? `Supprimer « ${m.nom} » ? ${liees > 1 ? `Ses ${liees} échéances seront aussi supprimées.` : 'Son échéance sera aussi supprimée.'}`
+    : `Supprimer la matière « ${m.nom} » ?`;
+  if (!(await confirmer(message, 'Supprimer', true))) return;
+  donnees.matieres = donnees.matieres.filter(x => x.id !== id);
+  donnees.echeances = donnees.echeances.filter(e => e.matiereId !== id);
+  sauvegarder();
+  fermerFeuille();
+  rafraichir();
+  afficherToast('Matière supprimée');
+}
+
+/* ---------- Données : exemples, remise à zéro ---------- */
+
+async function chargerExemple() {
+  if (!(await confirmer("Ajouter 4 matières et 4 échéances d'exemple ? Tu pourras les supprimer ensuite.", 'Ajouter les exemples'))) return;
+  const jour = aujourdhui();
+  const matiere = (nom, couleur) => {
+    let m = donnees.matieres.find(x => x.nom.toLowerCase() === nom.toLowerCase());
+    if (!m) {
+      m = { id: nouvelId(), nom, couleur };
+      donnees.matieres.push(m);
+    }
+    return m;
+  };
+  const chimie = matiere('Chimie', '#51cf66');
+  const anglais = matiere('Anglais', '#ffa94d');
+  const maths = matiere('Maths', '#4dabf7');
+  const philo = matiere('Philo', '#b197fc');
+  const ajouter = (m, type, dansNJours, niveau, chapitres, note) => {
+    donnees.echeances.push({ id: nouvelId(), matiereId: m.id, type, date: ajouterJours(jour, dansNJours), niveau, chapitres, note });
+  };
+  ajouter(chimie, 'test', 3, 2, 3, 'chapitres 3 à 5');
+  ajouter(anglais, 'test', 6, 1, 2, 'vocabulaire unités 4 et 5');
+  ajouter(maths, 'examen', 12, 3, 3, 'fonctions et dérivées');
+  ajouter(philo, 'examen', 25, 2, 4, 'dissertation');
+  sauvegarder();
+  afficherVue('aujourdhui');
+  afficherToast('Exemples ajoutés ✓');
+}
+
+async function reglagesParDefaut() {
+  if (!(await confirmer('Remettre tous les réglages par défaut ?', 'Remettre par défaut'))) return;
+  donnees.reglages = copie(REGLAGES_DEFAUT);
+  sauvegarder();
+  rafraichir();
+  afficherToast('Réglages par défaut ✓');
+}
+
+async function toutEffacer() {
+  if (!(await confirmer('Tout effacer ? Matières, échéances, blocs faits et réglages seront supprimés définitivement.', 'Tout effacer', true))) return;
+  donnees = donneesVides();
+  sauvegarder();
+  majVerrouEcran();
+  afficherVue('aujourdhui');
+  afficherToast('Tout a été effacé');
+}
+
+async function supprimerBloc(id) {
+  const b = donnees.blocs.find(x => x.id === id);
+  if (!b) return;
+  if (!(await confirmer(`Supprimer ce bloc de ${b.minutes} min ? Il ne comptera plus dans ton plan.`, 'Supprimer', true))) return;
+  donnees.blocs = donnees.blocs.filter(x => x.id !== id);
+  sauvegarder();
+  rafraichir();
+}
+
+
+/* =====================================================================
+   7. CHRONO POMODORO
+   Le chrono ne compte PAS les secondes une par une. Il retient l'heure
+   de départ (Date.now()) et calcule : temps écoulé = maintenant − départ.
+   Comme ça il reste juste même si l'écran se verrouille ou si l'appli
+   est fermée : à ton retour, il se recale tout seul.
+   ===================================================================== */
+
+// Temps écoulé dans la phase en cours (en millisecondes).
+function ecouleMs(c) {
+  return c.dejaEcouleMs + (c.debut ? Date.now() - c.debut : 0);
+}
+
+function restantMs(c) {
+  return Math.max(0, c.dureeMs - ecouleMs(c));
+}
+
+function infosPhase(c) {
+  if (c.phase === 'attente') return { libelle: 'Pause terminée', couleur: 'var(--accent)' };
+  if (!c.debut) return { libelle: 'En pause', couleur: 'var(--texte-2)' };
+  if (c.phase === 'travail') return { libelle: 'Travail', couleur: 'var(--travail)' };
+  if (c.phase === 'pauseLongue') return { libelle: 'Grande pause', couleur: 'var(--pause-longue)' };
+  return { libelle: 'Petite pause', couleur: 'var(--pause)' };
+}
+
+function sujetChrono(c) {
+  const e = c.echeanceId ? trouverEcheance(c.echeanceId) : null;
+  if (e) return nomEcheanceCourt(e);
+  return c.matiereId && trouverMatiere(c.matiereId) ? nomMatiere(c.matiereId) : 'Étude libre';
+}
+
+// Bouton "Lancer" du plan du jour.
+function lancerDepuisPlan(echeanceId) {
+  const c = donnees.chrono;
+  if (c && c.phase !== 'attente') {
+    afficherToast('Un bloc est déjà en cours ⏱');
+    afficherVue('chrono');
+    return;
+  }
+  demarrerBloc(echeanceId, c ? c.blocsSerie : 0);
+}
+
+function demarrerBloc(echeanceId, blocsSerie = 0) {
+  preparerSon();
+  const e = echeanceId ? trouverEcheance(echeanceId) : null;
+  const maintenant = Date.now();
+  donnees.chrono = {
+    phase: 'travail',
+    echeanceId: e ? e.id : null,
+    matiereId: e ? e.matiereId : null,
+    dureeMs: donnees.reglages.travail * 60000,
+    debut: maintenant,     // heure de départ (null quand le chrono est en pause)
+    dejaEcouleMs: 0,       // temps déjà écoulé avant une pause
+    debutBloc: maintenant, // pour enregistrer la date du bloc
+    blocsSerie,            // blocs déjà terminés dans cette série
+  };
+  if (e) choixChrono = e.id;
+  sauvegarder();
+  majVerrouEcran();
+  afficherVue('chrono');
+}
+
+function mettreEnPause() {
+  verifierChrono();
+  const c = donnees.chrono;
+  if (!c || !c.debut || c.phase === 'attente') return;
+  c.dejaEcouleMs = ecouleMs(c);
+  c.debut = null;
+  sauvegarder();
+  majVerrouEcran();
+  rafraichir();
+}
+
+function reprendre() {
+  preparerSon();
+  const c = donnees.chrono;
+  if (!c || c.debut || c.phase === 'attente') return;
+  c.debut = Date.now();
+  sauvegarder();
+  majVerrouEcran();
+  rafraichir();
+}
+
+async function arreter() {
+  verifierChrono();
+  const c = donnees.chrono;
+  if (!c) return;
+  if (c.phase === 'travail') {
+    const minutes = Math.floor(ecouleMs(c) / 60000);
+    if (minutes >= 1) {
+      const choix = await choisir(`Tu as travaillé ${minutes} min sur ce bloc. On les garde ?`, [
+        { valeur: 'garder', texte: 'Garder ces minutes et arrêter', style: 'principal' },
+        { valeur: 'jeter', texte: 'Arrêter sans les garder', style: 'danger' },
+        { valeur: null, texte: 'Continuer le bloc' },
+      ]);
+      if (!choix) return;
+      verifierChrono();  // le bloc a pu se terminer pendant qu'on répondait
+      if (donnees.chrono !== c) return;
+      if (choix === 'garder' && c.phase === 'travail') {
+        enregistrerBloc(c, Math.floor(ecouleMs(c) / 60000));
+      }
+    }
+  }
+  donnees.chrono = null;
+  sauvegarder();
+  majVerrouEcran();
+  rafraichir();
+}
+
+function passerPause() {
+  verifierChrono();
+  const c = donnees.chrono;
+  if (!c || c.phase === 'travail') return;
+  demarrerBloc(c.echeanceId, c.blocsSerie);
+}
+
+function terminerSerie() {
+  donnees.chrono = null;
+  sauvegarder();
+  majVerrouEcran();
+  rafraichir();
+}
+
+// Enregistre un bloc de travail terminé (il compte ensuite dans le plan).
+function enregistrerBloc(c, minutes) {
+  if (minutes <= 0) return;
+  donnees.blocs.push({
+    id: nouvelId(),
+    echeanceId: c.echeanceId,
+    matiereId: c.matiereId,
+    date: cleDate(new Date(c.debutBloc)),
+    debut: c.debutBloc,
+    minutes,
+  });
+}
+
+// Vérifie si la phase en cours est finie (appelé 2 fois par seconde et au retour dans l'appli).
+// La boucle "while" rattrape tout ce qui s'est passé si l'écran était verrouillé longtemps.
+// "silencieux" = sans son ni vibration (à l'ouverture de l'appli).
+function verifierChrono(silencieux = false) {
+  const c = donnees.chrono;
+  if (!c) return;
+  const r = donnees.reglages;
+  let fin = null;
+  let blocsEnregistres = 0;
+  let securite = 0;
+  while (c.debut && c.phase !== 'attente' && ecouleMs(c) >= c.dureeMs && securite++ < 10) {
+    const momentFin = c.debut + (c.dureeMs - c.dejaEcouleMs);  // l'heure exacte où la phase s'est finie
+    if (c.phase === 'travail') {
+      enregistrerBloc(c, Math.round(c.dureeMs / 60000));
+      blocsEnregistres++;
+      c.blocsSerie += 1;
+      const longue = c.blocsSerie % r.blocsAvantPauseLongue === 0;
+      c.phase = longue ? 'pauseLongue' : 'pause';
+      c.dureeMs = (longue ? r.pauseLongue : r.pauseCourte) * 60000;
+      c.debut = momentFin;   // la pause a commencé à la fin du travail
+      c.dejaEcouleMs = 0;
+      fin = 'travail';
+    } else {
+      c.phase = 'attente';
+      c.finPause = momentFin;
+      c.debut = null;
+      c.dejaEcouleMs = 0;
+      c.dureeMs = 0;
+      fin = 'pause';
+    }
+  }
+  if (!fin) return;
+  sauvegarder();
+  if (!silencieux) alerter(fin);
+  if (fin === 'travail') {
+    afficherToast(`✓ Bloc enregistré ! ${c.phase === 'pauseLongue' ? 'Grande pause' : 'Petite pause'} de ${Math.round(c.dureeMs / 60000)} min`);
+  } else {
+    afficherToast(blocsEnregistres ? '✓ Bloc enregistré · la pause est finie aussi' : 'Pause terminée ! On reprend ?');
+  }
+  majVerrouEcran();
+  rafraichir();
+}
+
+// Son + vibration + flash de l'écran.
+function alerter(fin) {
+  const r = donnees.reglages;
+  if (r.son) jouerSon(fin);
+  if (r.vibration && navigator.vibrate) {
+    try { navigator.vibrate(fin === 'travail' ? [400, 150, 400, 150, 400] : [250, 120, 250]); } catch (erreur) { /* pas grave */ }
+  }
+  flasher(fin === 'travail' ? '#34d399' : '#8b93ff');
+}
+
+/* ---------- Le son (fabriqué par le navigateur, sans fichier audio) ---------- */
+
+let contexteAudio = null;
+
+// Sur iPhone, le son doit être "débloqué" pendant un appui sur un bouton.
+function preparerSon() {
+  try {
+    const Contexte = window.AudioContext || window.webkitAudioContext;
+    if (!Contexte) return;
+    if (!contexteAudio) contexteAudio = new Contexte();
+    if (contexteAudio.state !== 'running') contexteAudio.resume();
+  } catch (erreur) { /* pas de son possible */ }
+}
+
+function jouerSon(fin) {
+  preparerSon();
+  const ctx = contexteAudio;
+  if (!ctx) return;
+  // Fin du travail : petite mélodie qui monte. Fin de pause : deux notes répétées.
+  const notes = fin === 'travail' ? [784, 988, 1175, 784, 988, 1175] : [1175, 880, 1175, 880];
+  const depart = ctx.currentTime + 0.05;
+  notes.forEach((frequence, i) => {
+    const t = depart + i * 0.22;
+    const oscillateur = ctx.createOscillator();
+    const volume = ctx.createGain();
+    oscillateur.type = 'triangle';
+    oscillateur.frequency.setValueAtTime(frequence, t);
+    volume.gain.setValueAtTime(0.0001, t);
+    volume.gain.exponentialRampToValueAtTime(0.35, t + 0.02);
+    volume.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+    oscillateur.connect(volume);
+    volume.connect(ctx.destination);
+    oscillateur.start(t);
+    oscillateur.stop(t + 0.22);
+  });
+}
+
+/* ---------- Garder l'écran allumé pendant un bloc (si le téléphone le permet) ---------- */
+
+let verrouEcran = null;
+let demandeEnCours = false;
+
+async function majVerrouEcran() {
+  if (!('wakeLock' in navigator)) return;
+  const c = donnees.chrono;
+  const voulu = Boolean(c && c.debut && c.phase !== 'attente' && donnees.reglages.ecranAllume && document.visibilityState === 'visible');
+  try {
+    if (voulu && !verrouEcran && !demandeEnCours) {
+      demandeEnCours = true;
+      verrouEcran = await navigator.wakeLock.request('screen');
+      verrouEcran.addEventListener('release', () => { verrouEcran = null; });
+    } else if (!voulu && verrouEcran) {
+      const v = verrouEcran;
+      verrouEcran = null;
+      await v.release();
+    }
+  } catch (erreur) {
+    verrouEcran = null;
+  } finally {
+    demandeEnCours = false;
+  }
+}
+
+
+/* =====================================================================
+   8. CLICS, ÉVÉNEMENTS ET DÉMARRAGE
+   Chaque bouton a un attribut data-action="..." qui dit ce qu'il fait.
+   Un seul "écouteur" reçoit tous les clics et lance la bonne action.
+   ===================================================================== */
+
+const ACTIONS = {
+  'lancer': id => lancerDepuisPlan(id),
+  'aller-chrono': () => afficherVue('chrono'),
+  'demarrer': () => {
+    const select = document.getElementById('choix-echeance');
+    demarrerBloc(select && select.value ? select.value : null);
+  },
+  'pause': () => mettreEnPause(),
+  'reprendre': () => reprendre(),
+  'arreter': () => arreter(),
+  'passer-pause': () => passerPause(),
+  'bloc-suivant': () => demarrerBloc(donnees.chrono ? donnees.chrono.echeanceId : null, donnees.chrono ? donnees.chrono.blocsSerie : 0),
+  'terminer': () => terminerSerie(),
+  'ajouter-echeance': () => ouvrirFormEcheance(null),
+  'modifier-echeance': id => ouvrirFormEcheance(id),
+  'supprimer-echeance': id => supprimerEcheance(id),
+  'ajouter-matiere': () => ouvrirFormMatiere(null),
+  'modifier-matiere': id => ouvrirFormMatiere(id),
+  'supprimer-matiere': id => supprimerMatiere(id),
+  'supprimer-bloc': id => supprimerBloc(id),
+  'fermer': () => fermerFeuille(),
+  'chapitres-moins': () => changerChapitres(-1),
+  'chapitres-plus': () => changerChapitres(1),
+  'tester-alerte': () => { preparerSon(); alerter('travail'); },
+  'exemple': () => chargerExemple(),
+  'reglages-defaut': () => reglagesParDefaut(),
+  'tout-effacer': () => toutEffacer(),
+};
+
+document.addEventListener('click', ev => {
+  const cible = ev.target.closest('[data-onglet], [data-action]');
+  if (!cible) return;
+  if (cible.dataset.onglet) {
+    afficherVue(cible.dataset.onglet);
+    return;
+  }
+  const action = cible.dataset.action;
+  if (action === 'plus' || action === 'moins') {
+    changerReglage(cible, action === 'plus' ? 1 : -1);
+    return;
+  }
+  if (ACTIONS[action]) ACTIONS[action](cible.dataset.id);
+});
+
+// Les cartes d'échéance se comportent comme des boutons au clavier (Entrée / Espace).
+document.addEventListener('keydown', ev => {
+  if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches('[role="button"][data-action]')) {
+    ev.preventDefault();
+    ev.target.click();
+  }
+  if (ev.key === 'Escape' && document.getElementById('fond-dialogue').hidden && !document.getElementById('fond-feuille').hidden) {
+    fermerFeuille();
+  }
+});
+
+// Envoi des formulaires (bouton "Enregistrer").
+document.addEventListener('submit', ev => {
+  ev.preventDefault();
+  if (ev.target.id === 'form-echeance') enregistrerEcheance(ev.target);
+  if (ev.target.id === 'form-matiere') enregistrerMatiere(ev.target);
+});
+
+// Changements dans les formulaires et les réglages.
+document.addEventListener('input', ev => {
+  if (ev.target.closest('#form-echeance')) majEstimation();
+});
+document.addEventListener('change', ev => {
+  const t = ev.target;
+  if (t.closest('#form-echeance')) majEstimation();
+  if (t.id === 'choix-echeance') choixChrono = t.value;
+  if (t.dataset.reglage) {
+    donnees.reglages[t.dataset.reglage] = t.checked;
+    sauvegarder();
+    majVerrouEcran();
+  }
+});
+document.addEventListener('toggle', ev => {
+  if (ev.target.matches && ev.target.matches('details.passees')) passeesOuvertes = ev.target.open;
+}, true);
+
+// Toucher le fond sombre ferme la feuille.
+document.getElementById('fond-feuille').addEventListener('click', ev => {
+  if (ev.target.id === 'fond-feuille') fermerFeuille();
+});
+
+// Pendant un chrono, chaque appui "débloque" le son (nécessaire sur iPhone).
+document.addEventListener('touchend', () => { if (donnees.chrono) preparerSon(); }, { passive: true });
+
+// Le "battement" de l'appli : 2 fois par seconde.
+let dernierJour = aujourdhui();
+function tic() {
+  verifierChrono();
+  majAffichageChrono();
+  majOngletChrono();
+  const jour = aujourdhui();
+  if (jour !== dernierJour) {  // on a passé minuit : on recalcule le plan
+    dernierJour = jour;
+    rafraichir();
+  }
+}
+
+// Quand on revient dans l'appli (écran déverrouillé, changement d'appli…).
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') tic();
+  majVerrouEcran();
+});
+window.addEventListener('pageshow', tic);
+
+// Si l'appli est ouverte dans un autre onglet et que les données changent là-bas.
+window.addEventListener('storage', ev => {
+  if (ev.key === CLE_STOCKAGE) {
+    charger();
+    rafraichir();
+  }
+});
+
+// ---- Démarrage ----
+charger();
+verifierChrono(true);
+// Une "pause terminée" d'un autre jour n'a plus d'intérêt : on l'oublie.
+const ancien = donnees.chrono;
+if (ancien && ancien.phase === 'attente' && cleDate(new Date(ancien.finPause || 0)) !== aujourdhui()) {
+  donnees.chrono = null;
+  sauvegarder();
+}
+// On ouvre sur le chrono seulement si un bloc ou une pause est en cours.
+afficherVue(donnees.chrono && donnees.chrono.phase !== 'attente' ? 'chrono' : 'aujourdhui');
+majVerrouEcran();
+setInterval(tic, 500);
+</script>
+</body>
+</html>
