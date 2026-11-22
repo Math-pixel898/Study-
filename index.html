@@ -104,6 +104,7 @@ h3 { margin: 18px 0 2px; font-size: 13px; color: var(--texte-2); text-transform:
 .btn-geant { width: 100%; min-height: 64px; font-size: 19px; border-radius: 18px; }
 .btn-petit { min-height: 42px; padding: 8px 14px; font-size: 15px; border-radius: 12px; }
 .btn-lancer { flex: none; min-width: 108px; background: var(--couleur, var(--accent)); color: var(--couleur-texte, var(--sur-accent)); }
+.lien { display: block; margin: 10px auto 0; padding: 8px 14px; border: 0; background: none; color: var(--texte-2); font-weight: 600; text-decoration: underline; }
 
 /* ---------- Barre d'onglets en bas ---------- */
 .onglets {
@@ -126,7 +127,7 @@ h3 { margin: 18px 0 2px; font-size: 13px; color: var(--texte-2); text-transform:
 .onglet.chrono-actif span { font-variant-numeric: tabular-nums; font-size: 13px; }
 
 /* ---------- Écran "Aujourd'hui" ---------- */
-.liste-plan, .semaine, .liste-matieres, .liste-faits { list-style: none; margin: 0; padding: 0; }
+.liste-plan, .semaine, .liste-matieres, .liste-faits, .liste-notes { list-style: none; margin: 0; padding: 0; }
 .ligne-plan { display: flex; align-items: center; gap: 12px; padding: 14px 0 14px 14px; border-top: 1px solid var(--bord); position: relative; }
 .ligne-plan:first-child { border-top: 0; padding-top: 4px; }
 .ligne-plan::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 5px; border-radius: 5px; background: var(--couleur); }
@@ -138,10 +139,11 @@ h3 { margin: 18px 0 2px; font-size: 13px; color: var(--texte-2); text-transform:
 .point { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--couleur); }
 .point.fait { background: var(--couleur); }
 
-.alerte { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.35); color: #fde68a; }
-.alerte .aide { color: #e5d3a1; margin-top: 4px; }
-.alerte-ligne { margin: 0 0 6px; }
-.info-jour { margin-bottom: 12px; padding: 12px 14px; border-radius: 14px; background: var(--couleur-fond); border: 1px solid var(--couleur); }
+.alerte { margin-bottom: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.35); color: #fde68a; }
+.alerte .aide { color: #e5d3a1; margin-top: 2px; }
+.alerte-ligne { display: flex; gap: 8px; margin: 0 0 8px; }
+.info-jour { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 12px 14px; border-radius: 14px; background: var(--couleur-fond); border: 1px solid var(--couleur); }
+.info-jour .texte { flex: 1; min-width: 0; }
 .bandeau-chrono {
   display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px;
   margin-bottom: 12px; padding: 14px 16px; border-radius: 14px;
@@ -165,16 +167,25 @@ h3 { margin: 18px 0 2px; font-size: 13px; color: var(--texte-2); text-transform:
 .bienvenue ol { margin: 12px 0 16px; padding-left: 22px; color: var(--texte-2); }
 .bienvenue li { margin-bottom: 6px; }
 
+/* ---------- Ressenti après un bloc ---------- */
+.ressenti { border-color: var(--accent); }
+.ressentis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ressentis .btn { flex-direction: column; gap: 4px; min-height: 70px; padding: 8px 4px; }
+.ressentis .emoji { font-size: 24px; line-height: 1; }
+
 /* ---------- Écran "Échéances" ---------- */
 .echeance { position: relative; overflow: hidden; padding-left: 22px; cursor: pointer; }
 .echeance::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: var(--couleur); }
 .echeance:active { filter: brightness(1.12); }
 .echeance.passee { opacity: 0.6; }
 .ech-haut { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.ech-matiere { font-size: 18px; font-weight: 750; }
+.ech-matiere { font-size: 18px; font-weight: 750; overflow-wrap: anywhere; }
+.badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
 .badge { flex: none; padding: 3px 9px; border-radius: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
 .badge-test { background: rgba(96, 165, 250, 0.16); color: #93c5fd; }
 .badge-examen { background: rgba(248, 113, 113, 0.16); color: #fca5a5; }
+.badge-travail { background: var(--carte-3); color: var(--texte-2); }
+.badge-passe { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
 .ech-date { margin-top: 2px; font-weight: 600; }
 .ech-details, .ech-progres { color: var(--texte-2); font-size: 14px; margin-top: 4px; }
 .ech-note { margin-top: 8px; font-size: 14px; font-style: italic; color: var(--texte-2); overflow-wrap: anywhere; }
@@ -192,10 +203,19 @@ details.passees summary { padding: 12px 4px; color: var(--texte-2); font-weight:
 .ligne-matiere .rond { width: 16px; height: 16px; }
 .chevron { color: var(--texte-3); font-size: 22px; line-height: 1; }
 
+/* Détail d'une échéance (dans la feuille) */
+.detail .ech-haut { align-items: flex-start; }
+.feuille .detail-titre { margin: 2px 0 4px; overflow-wrap: anywhere; }
+.liste-notes li { padding: 10px 0; border-top: 1px solid var(--bord); }
+.liste-notes li:first-child { border-top: 0; }
+.liste-notes .quand { display: block; color: var(--texte-2); font-size: 14px; font-weight: 600; }
+.liste-notes .texte-note { display: block; margin-top: 3px; font-style: italic; overflow-wrap: anywhere; }
+
 /* ---------- Écran "Chrono" ---------- */
 .chrono { text-align: center; }
 .chrono-phase { display: inline-block; padding: 7px 16px; border-radius: 999px; background: var(--carte-2); color: var(--phase); font-weight: 800; letter-spacing: 0.02em; }
 .chrono-sujet { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; font-size: 17px; font-weight: 650; }
+.derniere-note { margin: 8px 0 0; color: var(--texte-2); font-size: 15px; overflow-wrap: anywhere; }
 .anneau { position: relative; width: min(76vw, 300px); aspect-ratio: 1; margin: 16px auto 10px; }
 .anneau svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .anneau circle { fill: none; stroke-width: 8; }
@@ -207,9 +227,20 @@ details.passees summary { padding: 12px 4px; color: var(--texte-2); font-weight:
 .chrono-boutons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .liste-faits li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--bord); }
 .liste-faits li:first-child { border-top: 0; }
-.liste-faits .texte { flex: 1; min-width: 0; font-weight: 600; font-size: 15px; }
+.liste-faits .texte { flex: 1; min-width: 0; font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
 .liste-faits .texte small { display: block; color: var(--texte-3); font-weight: 500; }
 .supprimer-bloc { flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--carte-2); color: var(--texte-3); font-size: 18px; }
+
+/* Choix "Je travaille sur…" : une carte par échéance, le texte va à la ligne si besoin */
+.choix-sujet { display: grid; gap: 8px; }
+.option-sujet { position: relative; display: block; }
+.option-sujet input { position: absolute; opacity: 0; pointer-events: none; }
+.option-corps { position: relative; display: block; padding: 12px 14px 12px 42px; border: 2px solid var(--bord); border-radius: 14px; background: var(--carte-2); cursor: pointer; }
+.option-corps::before { content: ""; position: absolute; left: 15px; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 50%; background: var(--couleur, var(--accent)); }
+.option-corps strong { display: block; font-size: 16px; overflow-wrap: anywhere; }
+.option-corps small { display: block; margin-top: 2px; color: var(--texte-2); font-size: 14px; }
+.option-sujet input:checked + .option-corps { border-color: var(--couleur, var(--accent)); background: var(--couleur-fond, rgba(139, 147, 255, 0.12)); }
+.option-sujet input:focus-visible + .option-corps { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 /* ---------- Écran "Réglages" ---------- */
 .ligne-reglage { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--bord); }
@@ -244,11 +275,6 @@ label.ligne-reglage { cursor: pointer; }
   font-size: 17px; font-weight: 500; -webkit-appearance: none; appearance: none;
 }
 .champ input:focus, .champ select:focus { border-color: var(--accent); }
-.champ select {
-  padding-right: 44px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a9afbc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center; background-size: 18px;
-}
 input[type="date"]::-webkit-date-and-time-value { text-align: left; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8); }
 .champ .facultatif { color: var(--texte-3); font-weight: 500; }
@@ -259,7 +285,7 @@ legend { margin-bottom: 8px; padding: 0; font-weight: 650; font-size: 15px; }
 .segments { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border-radius: 14px; background: var(--carte-2); }
 .segments label { position: relative; }
 .segments input { position: absolute; opacity: 0; pointer-events: none; }
-.segments span { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px; padding: 6px 2px; border-radius: 11px; color: var(--texte-2); font-weight: 750; text-align: center; cursor: pointer; }
+.segments span { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px; height: 100%; padding: 6px 2px; border-radius: 11px; color: var(--texte-2); font-weight: 750; text-align: center; cursor: pointer; }
 .segments span small { font-size: 12px; font-weight: 600; }
 .segments input:checked + span { background: var(--accent); color: var(--sur-accent); }
 .segments input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
@@ -345,27 +371,29 @@ legend { margin-bottom: 8px; padding: 0; font-weight: 650; font-size: 15px; }
   </button>
 </nav>
 
-<!-- La "feuille" qui monte du bas (formulaires) et la boîte de confirmation -->
+<!-- La "feuille" qui monte du bas (formulaires, détail) et la boîte de confirmation -->
 <div id="fond-feuille" class="fond-feuille" hidden>
   <div id="feuille" class="feuille" role="dialog" aria-modal="true" aria-label="Formulaire"></div>
 </div>
 <div id="fond-dialogue" class="fond-dialogue" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="flash" class="flash"></div>
+<!-- Sélecteur de fichier (invisible) pour importer une sauvegarde -->
+<input type="file" id="fichier-import" hidden>
 
 <script>
 'use strict';
 /* =====================================================================
-   COMPORTEMENT (JavaScript)
+   COMPORTEMENT (JavaScript) — V2
 
    Organisation :
      1. Réglages par défaut et données
-     2. Sauvegarde dans le navigateur (localStorage)
+     2. Sauvegarde dans le navigateur (localStorage) + migration V1 → V2
      3. Petits outils (dates, durées, textes, couleurs)
-     4. Calculs : temps d'étude, temps dispo et LE PLAN
+     4. Calculs : temps d'étude, difficulté perso, temps dispo et LE PLAN
      5. Affichage des 4 écrans
-     6. Formulaires (matières, échéances) et confirmations
-     7. Chrono Pomodoro
+     6. Formulaires, détail d'une échéance, export / import
+     7. Chrono Pomodoro (+ ressenti après chaque bloc)
      8. Clics, événements et démarrage
    ===================================================================== */
 
@@ -375,7 +403,13 @@ legend { margin-bottom: 8px; padding: 0; font-weight: 650; font-size: 15px; }
    ===================================================================== */
 
 // Nom du "tiroir" du localStorage où toutes les données sont rangées.
+// (on garde le nom de la V1 pour retrouver tes données)
 const CLE_STOCKAGE = 'plan-etude-v1';
+// Copie de secours des données d'avant la mise à jour V2 (faite une seule fois).
+const CLE_SECOURS = 'plan-etude-copie-avant-v2';
+// Version du format des données. La V1 = 1 ; la V2 ajoute le type de travail,
+// le ressenti des blocs, l'historique et le suivi du rythme.
+const VERSION_DONNEES = 2;
 
 // Couleurs proposées pour les matières.
 const PALETTE = [
@@ -394,6 +428,21 @@ const PALETTE = [
 // Nom des niveaux d'étude (la case 0 n'est pas utilisée).
 const NIVEAUX = ['', 'léger', 'moyen', 'costaud', 'très dur'];
 
+// Types de travail d'une échéance.
+const TRAVAUX = {
+  parcoeur: { nom: 'Par cœur', exemple: 'dates, vocabulaire…' },
+  exercices: { nom: 'Exercices', exemple: 'maths, chimie…' },
+  mixte: { nom: 'Mixte', exemple: 'un peu des deux' },
+};
+
+// Ressentis après un bloc. Le "score" sert au coefficient de difficulté de la matière.
+const RESSENTIS = {
+  facile: { nom: 'Facile', emoji: '😊', score: -0.6 },
+  ok: { nom: 'Ok', emoji: '🙂', score: 0 },
+  dur: { nom: 'Dur', emoji: '😓', score: 1 },
+};
+const NB_RESSENTIS = 8;  // le coefficient regarde tes 8 derniers ressentis dans la matière
+
 // Les réglages de départ. Toutes les durées sont en minutes.
 const REGLAGES_DEFAUT = {
   dispoSemaine: 60,          // temps dispo du lundi au vendredi
@@ -410,6 +459,8 @@ const REGLAGES_DEFAUT = {
   coefChapitre: 0.25,
   joursAvant: { test: 7, examen: 21 },  // on commence à réviser au plus tôt N jours avant
   progression: 3,            // la veille, on étudie 3 fois plus que le premier jour
+  joursEnPlusParCoeur: 7,    // "par cœur" : on peut commencer 7 jours plus tôt
+  blocsParSession: 2,        // "exercices" : au moins 2 blocs d'affilée
   son: true,
   vibration: true,
   ecranAllume: true,
@@ -420,12 +471,14 @@ let donnees = donneesVides();
 
 function donneesVides() {
   return {
-    version: 1,
+    version: VERSION_DONNEES,
     matieres: [],   // { id, nom, couleur }
-    echeances: [],  // { id, matiereId, type: 'test' | 'examen', date: 'AAAA-MM-JJ', niveau: 1 à 4, chapitres, note }
-    blocs: [],      // blocs de travail terminés : { id, echeanceId, matiereId, date, debut, minutes }
+    echeances: [],  // { id, matiereId, type: 'test' | 'examen', date: 'AAAA-MM-JJ', niveau: 1 à 4, chapitres, note,
+                    //   travail: 'parcoeur' | 'exercices' | 'mixte', terminee, termineeLe, rythme }
+    blocs: [],      // blocs de travail faits : { id, echeanceId, matiereId, date, debut, minutes, ressenti, note }
     reglages: copie(REGLAGES_DEFAUT),
     chrono: null,   // le chrono en cours (ou null s'il n'y en a pas)
+    aEvaluer: null, // le bloc dont on attend le ressenti (Facile / Ok / Dur)
   };
 }
 
@@ -449,19 +502,36 @@ function sauvegarder() {
 }
 
 function charger() {
+  let texte = null;
   let lu = null;
   try {
-    lu = JSON.parse(localStorage.getItem(CLE_STOCKAGE));
+    texte = localStorage.getItem(CLE_STOCKAGE);
+    lu = JSON.parse(texte);
   } catch (erreur) {
     lu = null;
   }
-  donnees = donneesVides();
-  if (!lu || typeof lu !== 'object') return;
+  donnees = normaliser(lu);
 
-  // On recopie les données lues en vérifiant qu'elles sont correctes.
+  // MIGRATION : si les données viennent d'une version plus ancienne (V1),
+  // on garde d'abord une copie de secours, puis on les réenregistre au format V2.
+  if (lu && typeof lu === 'object' && !(lu.version >= VERSION_DONNEES)) {
+    try {
+      if (!localStorage.getItem(CLE_SECOURS)) localStorage.setItem(CLE_SECOURS, texte);
+    } catch (erreur) { /* pas grave */ }
+    sauvegarder();
+  }
+}
+
+// Vérifie et complète des données lues (localStorage ou fichier importé).
+// Les champs qui manquent (données de la V1) reçoivent une valeur par défaut :
+// c'est ça, la migration automatique.
+function normaliser(lu) {
+  const d = donneesVides();
+  if (!lu || typeof lu !== 'object') return d;
   const idPropre = v => (v ? String(v).replace(/[^a-zA-Z0-9_-]/g, '') : null);
+
   if (Array.isArray(lu.matieres)) {
-    donnees.matieres = lu.matieres
+    d.matieres = lu.matieres
       .filter(m => m && m.id && m.nom)
       .map(m => ({
         id: idPropre(m.id),
@@ -470,7 +540,7 @@ function charger() {
       }));
   }
   if (Array.isArray(lu.echeances)) {
-    donnees.echeances = lu.echeances
+    d.echeances = lu.echeances
       .filter(e => e && e.id && estCleDate(e.date))
       .map(e => ({
         id: idPropre(e.id),
@@ -480,10 +550,14 @@ function charger() {
         niveau: borner(Math.round(Number(e.niveau)) || 1, 1, 4),
         chapitres: borner(Math.round(Number(e.chapitres)) || 1, 1, 99),
         note: String(e.note || ''),
+        travail: Object.keys(TRAVAUX).includes(e.travail) ? e.travail : 'mixte',  // nouveau en V2
+        terminee: e.terminee === true,                                           // nouveau en V2
+        termineeLe: estCleDate(e.termineeLe) ? e.termineeLe : null,              // nouveau en V2
+        rythme: normaliserRythme(e.rythme),                                      // nouveau en V2
       }));
   }
   if (Array.isArray(lu.blocs)) {
-    donnees.blocs = lu.blocs
+    d.blocs = lu.blocs
       .filter(b => b && estCleDate(b.date) && Number(b.minutes) > 0)
       .map(b => ({
         id: idPropre(b.id) || nouvelId(),
@@ -492,17 +566,32 @@ function charger() {
         date: b.date,
         debut: Number(b.debut) || 0,
         minutes: Number(b.minutes),
+        ressenti: Object.keys(RESSENTIS).includes(b.ressenti) ? b.ressenti : null,  // nouveau en V2
+        note: String(b.note || ''),                                                // nouveau en V2
       }));
   }
-  donnees.reglages = completerReglages(lu.reglages);
+  d.reglages = completerReglages(lu.reglages);
   const c = lu.chrono;
-  if (c && ['travail', 'pause', 'pauseLongue', 'attente'].includes(c.phase)) {
-    donnees.chrono = { ...c, echeanceId: idPropre(c.echeanceId), matiereId: idPropre(c.matiereId) };
+  if (c && typeof c === 'object' && ['travail', 'pause', 'pauseLongue', 'attente'].includes(c.phase)) {
+    d.chrono = { ...c, echeanceId: idPropre(c.echeanceId), matiereId: idPropre(c.matiereId) };
   }
+  const aEvaluer = idPropre(lu.aEvaluer);
+  if (aEvaluer && d.blocs.some(b => b.id === aEvaluer)) d.aEvaluer = aEvaluer;
+  return d;
+}
+
+// Le "rythme prévu" d'une échéance : { depuis: "AAAA-MM-JJ", prevu: { "AAAA-MM-JJ": minutes } }
+function normaliserRythme(r) {
+  if (!r || typeof r !== 'object' || !estCleDate(r.depuis) || !r.prevu || typeof r.prevu !== 'object') return null;
+  const prevu = {};
+  for (const [jour, minutes] of Object.entries(r.prevu)) {
+    if (estCleDate(jour) && Number.isFinite(minutes) && minutes > 0) prevu[jour] = minutes;
+  }
+  return { depuis: r.depuis, prevu };
 }
 
 // Part des réglages par défaut et remplace par ceux enregistrés (s'ils sont valides).
-// Utile pour plus tard : si la V2 ajoute un réglage, il prendra sa valeur par défaut.
+// Les réglages ajoutés en V2 prennent donc leur valeur par défaut.
 function completerReglages(lus) {
   const r = copie(REGLAGES_DEFAUT);
   if (!lus || typeof lus !== 'object') return r;
@@ -581,6 +670,12 @@ function dateLongue(cle) {
   return `${JOURS[d.getDay()]} ${d.getDate() === 1 ? '1er' : d.getDate()} ${MOIS[d.getMonth()]}`;
 }
 
+// "jeu. 26 nov."
+function dateCourte(cle) {
+  const d = dateDepuisCle(cle);
+  return `${JOURS_COURTS[d.getDay()]} ${d.getDate()} ${MOIS_COURTS[d.getMonth()]}`;
+}
+
 // "aujourd'hui", "demain", "jeudi" (dans la semaine), sinon "le 3 déc."
 function quandCourt(cle, jour = aujourdhui()) {
   const n = ecartJours(jour, cle);
@@ -591,6 +686,16 @@ function quandCourt(cle, jour = aujourdhui()) {
   return `le ${d.getDate() === 1 ? '1er' : d.getDate()} ${MOIS_COURTS[d.getMonth()]}`;
 }
 
+// "jusqu'à demain", "jusqu'à lundi", sinon "jusqu'au 3 déc."
+function jusqua(cle, jour = aujourdhui()) {
+  const n = ecartJours(jour, cle);
+  const d = dateDepuisCle(cle);
+  if (n <= 0) return "aujourd'hui";
+  if (n === 1) return "jusqu'à demain";
+  if (n < 7) return `jusqu'à ${JOURS[d.getDay()]}`;
+  return `jusqu'au ${d.getDate() === 1 ? '1er' : d.getDate()} ${MOIS_COURTS[d.getMonth()]}`;
+}
+
 // "dans 4 jours", "demain", "aujourd'hui", "hier", "il y a 3 jours"
 function delai(cle, jour = aujourdhui()) {
   const n = ecartJours(jour, cle);
@@ -598,6 +703,12 @@ function delai(cle, jour = aujourdhui()) {
   if (n === 1) return 'demain';
   if (n === -1) return 'hier';
   return n > 1 ? `dans ${n} jours` : `il y a ${-n} jours`;
+}
+
+// Heure "14:05" d'un moment (Date.now())
+function heure(moment) {
+  const d = new Date(moment || Date.now());
+  return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
 }
 
 function capitaliser(texte) {
@@ -646,6 +757,10 @@ function de(nom) {
   return /^[aeiouhàâäéèêëîïôöùûüœæ]/i.test(nom) ? `d'${nom}` : `de ${nom}`;
 }
 
+function estIphone() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
 // Couleur "#ff6b6b" → version transparente, et couleur de texte lisible dessus.
 function rgba(hex, alpha) {
   const n = parseInt(hex.slice(1), 16);
@@ -677,6 +792,9 @@ function couleurMatiere(id) {
 function styleMatiere(id) {
   return styleCouleur(couleurMatiere(id));
 }
+function nomTravail(e) {
+  return (TRAVAUX[e.travail] || TRAVAUX.mixte).nom;
+}
 // "le test de Chimie" / "l'examen d'Anglais"
 function nomEcheanceLong(e) {
   const nom = nomMatiere(e.matiereId);
@@ -689,6 +807,14 @@ function nomEcheanceCourt(e, jour = aujourdhui()) {
 // Total des minutes déjà travaillées pour une échéance.
 function minutesFaites(echeanceId) {
   return donnees.blocs.filter(b => b.echeanceId === echeanceId).reduce((total, b) => total + b.minutes, 0);
+}
+// Les blocs faits pour une échéance, du plus récent au plus ancien.
+function blocsDe(echeanceId) {
+  return donnees.blocs.filter(b => b.echeanceId === echeanceId).sort((x, y) => (y.debut || 0) - (x.debut || 0));
+}
+// Le dernier bloc où tu as écrit une note ("exercices p. 42"), pour savoir où tu en étais.
+function derniereNote(echeanceId) {
+  return blocsDe(echeanceId).find(b => b.note) || null;
 }
 
 // Lire / écrire un réglage à partir de son "chemin", ex : "tempsBase.test.2".
@@ -707,12 +833,55 @@ function ecrireChemin(objet, chemin, valeur) {
    ===================================================================== */
 
 // Temps d'étude total estimé pour une échéance (en minutes) :
-// temps = temps de base (selon le type et le niveau) × (0,5 + 0,25 × nombre de chapitres)
-function tempsEstime(e, r = donnees.reglages) {
+// temps = temps de base (selon le type et le niveau) × (0,5 + 0,25 × chapitres) × difficulté perso
+function tempsEstime(e, r = donnees.reglages, coef = 1) {
   const bases = r.tempsBase[e.type] || r.tempsBase.test;
   const base = bases[(e.niveau || 1) - 1] || 0;
   const facteur = r.coefBase + r.coefChapitre * (e.chapitres || 0);
-  return Math.max(0, Math.round(base * facteur));
+  return Math.max(0, Math.round(base * facteur * coef));
+}
+
+// Même calcul pour une échéance des vraies données (avec le coefficient de sa matière).
+function tempsEcheance(e) {
+  return tempsEstime(e, donnees.reglages, coefMatiere(e.matiereId));
+}
+
+// Nombre de blocs pour un temps donné : TOUJOURS arrondi vers le haut.
+// Ex. avec des blocs de 25 min : 25 min → 1 bloc, 30 min → 2 blocs, 50 min → 2 blocs.
+function blocsPour(minutes, dureeBloc) {
+  return minutes > 0 ? Math.ceil(minutes / dureeBloc) : 0;
+}
+
+/* ---------- Coefficient de difficulté perso ----------
+   Chaque matière part de 1,0. On regarde tes 8 derniers ressentis dans la matière :
+   "Dur" compte +1, "Ok" 0, "Facile" −0,6. Coefficient = 1 + 0,5 × moyenne.
+   → 8 fois "Dur" = 1,5 (le maximum) ; 8 fois "Facile" = 0,7 (le minimum) ;
+     un seul "Dur" ne fait monter que d'un peu (1,05).                       */
+function coefsDifficulte(blocs) {
+  const listes = {};
+  const notes = blocs.filter(b => b.matiereId && b.ressenti).sort((x, y) => (x.debut || 0) - (y.debut || 0));
+  for (const b of notes) (listes[b.matiereId] = listes[b.matiereId] || []).push(b.ressenti);
+  const coefs = {};
+  for (const id of Object.keys(listes)) {
+    const derniers = listes[id].slice(-NB_RESSENTIS);
+    const somme = derniers.reduce((total, r) => total + RESSENTIS[r].score, 0);
+    const coef = 1 + 0.5 * somme / NB_RESSENTIS;
+    coefs[id] = borner(Math.round(coef * 20) / 20, 0.7, 1.5);  // arrondi à 0,05 près
+  }
+  return coefs;
+}
+
+function coefMatiere(matiereId) {
+  return coefsDifficulte(donnees.blocs)[matiereId] || 1;
+}
+
+// Les derniers ressentis d'une matière (pour l'expliquer à l'écran).
+function derniersRessentis(matiereId) {
+  return donnees.blocs
+    .filter(b => b.matiereId === matiereId && b.ressenti)
+    .sort((x, y) => (x.debut || 0) - (y.debut || 0))
+    .slice(-NB_RESSENTIS)
+    .map(b => b.ressenti);
 }
 
 // Durée (en minutes) de "nb" blocs enchaînés, avec les pauses entre les blocs.
@@ -738,11 +907,17 @@ function capaciteDuJour(cle, r = donnees.reglages) {
   return blocsDansDuree(estWeekend(cle) ? r.dispoWeekend : r.dispoSemaine, r);
 }
 
+// Combien de jours avant la date on peut commencer à réviser.
+// "Par cœur" commence plus tôt (7 jours de plus par défaut).
+function dureeFenetre(e, r) {
+  return (r.joursAvant[e.type] || 7) + (e.travail === 'parcoeur' ? (r.joursEnPlusParCoeur || 0) : 0);
+}
+
 // "Poids" d'un jour pour une échéance : 1 le premier jour possible,
 // puis ça augmente jusqu'à 3 la veille (avec le réglage "progression" = 3).
 function poidsDuJour(cle, e, r) {
-  const L = r.joursAvant[e.type] || 7;     // 7 jours (test) ou 21 jours (examen)
-  const k = ecartJours(cle, e.date);       // 1 = la veille, L = le premier jour possible
+  const L = dureeFenetre(e, r);           // 7 jours (test) ou 21 jours (examen), plus pour "par cœur"
+  const k = ecartJours(cle, e.date);      // 1 = la veille, L = le premier jour possible
   if (L <= 1) return 1;
   return 1 + (r.progression - 1) * (L - k) / (L - 1);
 }
@@ -758,23 +933,30 @@ function comparerPriorite(a, b) {
 /* ---------------------------------------------------------------------
    LE PLAN : comment l'appli répartit le travail
    ---------------------------------------------------------------------
-   Pour chaque échéance à venir :
-     • temps restant = temps estimé − blocs déjà faits, converti en blocs ;
+   Chaque jour, pour chaque échéance à venir :
+     • temps restant = temps estimé − temps déjà étudié pour cette
+       échéance, converti en blocs (arrondi vers le haut) ;
      • jours possibles : de 7 jours avant (test) ou 21 jours avant
        (examen) jusqu'à la veille — jamais le jour même ;
      • chaque jour a un "poids" qui grandit à l'approche de la date ;
-     • on pose les blocs un par un sur le jour qui en "mérite" le plus
-       (poids ÷ (blocs déjà posés ce jour-là + 1)), sans dépasser le
-       temps dispo du jour.
+     • on pose les blocs sur les jours qui en "méritent" le plus, sans
+       dépasser le temps dispo du jour, selon le type de travail :
+         - mixte     : bloc par bloc, selon le poids ;
+         - par cœur  : 1 bloc par jour sur le plus de jours possible ;
+         - exercices : des séances d'au moins 2 blocs d'affilée.
    Les échéances passent de la plus proche à la plus lointaine : la plus
    proche se sert en premier (elle est prioritaire). Quand il n'y a plus
    de place, on essaie de décaler un bloc d'une autre échéance vers un
    jour libre ; sinon, ce qui ne rentre pas devient une alerte.
+   Comme le plan repart chaque jour du temps qui reste vraiment, un jour
+   sauté est automatiquement réparti sur les jours suivants, et un jour
+   où tu en fais plus allège les jours suivants.
    --------------------------------------------------------------------- */
 function calculerPlan(jour = aujourdhui(), d = donnees) {
   const r = d.reglages;
   const W = r.travail;                  // durée d'un bloc (25 min)
   const demain = ajouterJours(jour, 1);
+  const coefs = coefsDifficulte(d.blocs);
 
   // a) Minutes déjà travaillées pour chaque échéance : avant aujourd'hui, et aujourd'hui.
   const faitAvant = {};
@@ -785,20 +967,22 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
     else if (b.date === jour) faitAujourdhui[b.echeanceId] = (faitAujourdhui[b.echeanceId] || 0) + b.minutes;
   }
 
-  // b) Les échéances à préparer (date après aujourd'hui), la plus proche d'abord.
+  // b) Les échéances à préparer (pas terminées, date après aujourd'hui), la plus proche d'abord.
   const infos = d.echeances
-    .filter(e => e.date > jour)
+    .filter(e => !e.terminee && e.date > jour)
     .sort(comparerPriorite)
     .map(e => {
-      const total = tempsEstime(e, r);
+      const coef = coefs[e.matiereId] || 1;
+      const total = tempsEstime(e, r, coef);
       const avant = faitAvant[e.id] || 0;
       return {
         echeance: e,
+        coef,                                      // difficulté perso de la matière
         total,                                     // minutes nécessaires au total
         faitAvant: avant,                          // minutes faites les jours d'avant
         faitAujourdhui: faitAujourdhui[e.id] || 0, // minutes faites aujourd'hui
         restant: Math.max(0, total - avant),       // minutes à faire à partir d'aujourd'hui
-        premierJour: ajouterJours(e.date, -(r.joursAvant[e.type] || 7)),
+        premierJour: ajouterJours(e.date, -dureeFenetre(e, r)),
         veille: ajouterJours(e.date, -1),
       };
     });
@@ -808,7 +992,7 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
   const dernierJour = infos.reduce((max, i) => (i.veille > max ? i.veille : max), jour);
   for (let j = jour; j <= dernierJour; j = ajouterJours(j, 1)) capacites[j] = capaciteDuJour(j, r);
 
-  // La "demande" d'une échéance : combien de blocs, sur quels jours, avec quels poids.
+  // La "demande" d'une échéance : combien de blocs, sur quels jours, avec quels poids, et comment.
   function demande(info, aPartirDe, blocs) {
     const jours = [];
     const poids = [];
@@ -817,12 +1001,16 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
       jours.push(j);
       poids.push(poidsDuJour(j, info.echeance, r));
     }
-    return { id: info.echeance.id, blocs, jours, poids };
+    const mode = info.echeance.travail || 'mixte';
+    const session = Math.max(1, r.blocsParSession || 1);
+    // "groupe" = taille d'une séance (2 blocs d'affilée pour les exercices, sinon 1)
+    const groupe = mode === 'exercices' && blocs >= session ? session : 1;
+    return { id: info.echeance.id, blocs, jours, poids, mode, groupe };
   }
 
   // d) 1er passage : on répartit tout ce qui reste à partir d'aujourd'hui.
   //    On en garde le plan d'aujourd'hui (il reste fixe toute la journée).
-  const passage1 = repartir(infos.map(i => demande(i, jour, Math.round(i.restant / W))), capacites);
+  const passage1 = repartir(infos.map(i => demande(i, jour, blocsPour(i.restant, W))), capacites);
   for (const i of infos) i.prevuAujourdhui = passage1.alloc[i.echeance.id][jour] || 0;
 
   // e) 2e passage : ce qui restera après aujourd'hui est réparti sur les jours suivants.
@@ -833,14 +1021,53 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
     const compteAujourdhui = Math.max(i.prevuAujourdhui * W, i.faitAujourdhui);
     i.restantApres = Math.max(0, i.restant - compteAujourdhui);
   }
-  const passage2 = repartir(infos.map(i => demande(i, demain, Math.round(i.restantApres / W))), capacitesFutures);
+  const passage2 = repartir(infos.map(i => demande(i, demain, blocsPour(i.restantApres, W))), capacitesFutures);
   for (const i of infos) {
     i.futur = passage2.alloc[i.echeance.id];    // ex : { "2026-11-24": 2, "2026-11-25": 1 }
     i.manque = passage2.manque[i.echeance.id];  // blocs qu'on n'a pas pu placer
     i.faitsAujourdhui = Math.floor(i.faitAujourdhui / W + 0.01);  // blocs entiers faits aujourd'hui
+    i.resteAFaire = Math.max(0, i.prevuAujourdhui - i.faitsAujourdhui) + Object.values(i.futur).reduce((s, n) => s + n, 0);
   }
 
-  // f) Ce qu'on affiche : le plan du jour, les 7 prochains jours, les alertes.
+  // f) Marge et retard de chaque échéance (de la plus urgente à la moins urgente).
+  //    Une échéance passe avant les moins urgentes : les places qu'elles occupent comptent
+  //    donc comme de la marge pour elle. "utilises" = places prises par elle et les plus urgentes.
+  const utilises = {};
+  for (const i of infos) {
+    utilises[jour] = (utilises[jour] || 0) + i.prevuAujourdhui;
+    for (const [j, n] of Object.entries(i.futur)) utilises[j] = (utilises[j] || 0) + n;
+
+    // Marge = places encore disponibles pour elle sur ses jours possibles.
+    let marge = 0;
+    let joursUtiles = 0;
+    for (let j = i.premierJour > jour ? i.premierJour : jour; j <= i.veille; j = ajouterJours(j, 1)) {
+      marge += Math.max(0, capacites[j] - (utilises[j] || 0));
+      if (capacites[j] > 0) joursUtiles++;
+    }
+    i.marge = marge;
+    // Zéro marge : tous les jours possibles sont déjà au maximum → sauter un jour = être en retard.
+    i.zeroMarge = i.manque === 0 && i.resteAFaire > 0 && marge === 0;
+
+    // Retard : on compare ce qui était prévu les jours passés (le "rythme" retenu)
+    // avec ce que tu as vraiment fait ces jours-là.
+    i.retard = null;
+    const ref = i.echeance.rythme;
+    if (ref && ref.depuis < jour) {
+      let attendu = 0;
+      for (const [j, minutes] of Object.entries(ref.prevu)) if (j >= ref.depuis && j < jour) attendu += minutes;
+      const fait = d.blocs
+        .filter(b => b.echeanceId === i.echeance.id && b.date >= ref.depuis && b.date < jour)
+        .reduce((s, b) => s + b.minutes, 0);
+      const retard = Math.min(attendu - fait, i.restant);
+      if (retard >= W && joursUtiles > 0) {
+        const parJour = Math.ceil(retard / joursUtiles / 5) * 5;   // arrondi aux 5 min au-dessus
+        // "Trop serré" = au moins 10 min de plus par jour : là, on te prévient.
+        i.retard = { minutes: retard, parJour, jusqua: i.veille, visible: parJour >= 10 };
+      }
+    }
+  }
+
+  // g) Ce qu'on affiche : le plan du jour, les 7 prochains jours, les alertes.
   const lignesDuJour = infos
     .filter(i => i.prevuAujourdhui > 0 || i.faitsAujourdhui > 0)
     .map(i => ({ info: i, prevus: i.prevuAujourdhui, faits: i.faitsAujourdhui }));
@@ -854,19 +1081,52 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
       capacite: capacites[j] !== undefined ? capacites[j] : capaciteDuJour(j, r),
       total: items.reduce((somme, x) => somme + x.blocs, 0),
       items,
-      echeancesDuJour: d.echeances.filter(e => e.date === j).sort(comparerPriorite),
+      echeancesDuJour: d.echeances.filter(e => e.date === j && !e.terminee).sort(comparerPriorite),
     });
   }
 
-  const alertes = infos.filter(i => i.manque > 0).map(i => ({ info: i, minutes: i.manque * W }));
+  // Une seule alerte par échéance, la plus grave : manque de temps > retard > zéro marge.
+  const alertes = [];
+  for (const i of infos) {
+    if (i.manque > 0) alertes.push({ info: i, type: 'manque', minutes: i.manque * W });
+    else if (i.retard && i.retard.visible) alertes.push({ info: i, type: 'retard', minutes: i.retard.minutes });
+    else if (i.zeroMarge) alertes.push({ info: i, type: 'marge', minutes: 0 });
+  }
   const parId = {};
   for (const i of infos) parId[i.echeance.id] = i;
 
   return { jour, W, capaciteAujourdhui: capacites[jour], infos, lignesDuJour, semaine, alertes, parId };
 }
 
+// Retient le "rythme prévu" de chaque échéance tant que tu es à jour.
+// Si tu prends du retard, on garde l'ancien rythme : c'est lui qui permet de mesurer le retard.
+// Renvoie true si quelque chose a changé (il faut alors sauvegarder).
+function memoriserRythme(plan) {
+  let change = false;
+  for (const i of plan.infos) {
+    if (i.retard) continue;
+    const prevu = {};
+    if (i.prevuAujourdhui > 0) prevu[plan.jour] = i.prevuAujourdhui * plan.W;
+    for (const [j, n] of Object.entries(i.futur)) if (n > 0) prevu[j] = n * plan.W;
+    const nouveau = { depuis: plan.jour, prevu };
+    if (JSON.stringify(i.echeance.rythme) !== JSON.stringify(nouveau)) {
+      i.echeance.rythme = nouveau;
+      change = true;
+    }
+  }
+  return change;
+}
+
+// Le plan d'aujourd'hui pour tes vraies données (et on retient le rythme prévu).
+function planActuel() {
+  const plan = calculerPlan(aujourdhui(), donnees);
+  if (memoriserRythme(plan)) sauvegarder();
+  return plan;
+}
+
 // Répartit des blocs sur des jours.
-//   demandes  : liste (de la plus prioritaire à la moins prioritaire) de { id, blocs, jours, poids }
+//   demandes  : liste (de la plus prioritaire à la moins prioritaire) de
+//               { id, blocs, jours, poids, mode, groupe }
 //   capacites : { "2026-11-23": 2, "2026-11-24": 5, ... } = blocs possibles par jour
 // Renvoie { alloc: { id: { jour: nombreDeBlocs } }, manque: { id: blocsNonPlaces } }
 function repartir(demandes, capacites) {
@@ -880,16 +1140,15 @@ function repartir(demandes, capacites) {
     alloc[dem.id] = a;
     let reste = dem.blocs;
     while (reste > 0) {
-      const k = meilleurJour(dem, a, libre);
-      if (k === -1) {
-        // Plus aucune place : on tente de décaler un bloc d'une échéance plus proche.
-        if (faireDeLaPlace(dem, dejaTraitees, alloc, libre)) continue;
-        break;
-      }
-      const j = dem.jours[k];
-      a[j] += 1;
-      libre[j] -= 1;
-      reste -= 1;
+      let pose = placer(dem, a, libre, reste);
+      // Plus de place : on décale un bloc d'une échéance plus proche (si ça permet de poser une séance)…
+      if (!pose && faireDeLaPlace(dem, dejaTraitees, alloc, libre, j => placeUtile(dem, a, libre, j, reste))) continue;
+      // … pour les exercices, un bloc seul vaut mieux que rien…
+      if (!pose && dem.groupe > 1) pose = placerUnBloc(dem, a, libre);
+      // … et en dernier recours, on décale n'importe quel bloc.
+      if (!pose && faireDeLaPlace(dem, dejaTraitees, alloc, libre)) continue;
+      if (!pose) break;
+      reste -= pose;
     }
     manque[dem.id] = reste;
     dejaTraitees.push(dem);
@@ -897,44 +1156,93 @@ function repartir(demandes, capacites) {
   return { alloc, manque };
 }
 
-// Choisit le jour qui "mérite" le plus le prochain bloc (en cas d'égalité : le plus proche de la date).
-function meilleurJour(dem, a, libre) {
+// Pose 1 ou plusieurs blocs selon le type de travail. Renvoie le nombre de blocs posés (0 = pas de place).
+function placer(dem, a, libre, reste) {
+  if (dem.mode === 'parcoeur') {
+    // Par cœur : d'abord les jours qui n'ont encore aucun bloc de cette échéance (1 bloc par jour),
+    // et parmi eux, le jour au plus grand poids.
+    return poserSur(dem, a, libre, choisirJour(dem, j => libre[j] > 0, (j, k) => dem.poids[k] - 1000 * a[j]), 1);
+  }
+  if (dem.groupe > 1) {
+    // Exercices : une nouvelle séance de 2 blocs d'affilée, sur un jour qui a la place…
+    if (reste >= dem.groupe) {
+      const k = choisirJour(dem, j => libre[j] >= dem.groupe, (j, k2) => dem.poids[k2] / (a[j] / dem.groupe + 1));
+      if (k !== -1) return poserSur(dem, a, libre, k, dem.groupe);
+    }
+    // … sinon on allonge une séance déjà prévue (jamais de bloc tout seul ici).
+    return poserSur(dem, a, libre, choisirJour(dem, j => libre[j] > 0 && a[j] >= dem.groupe, (j, k) => dem.poids[k] / (a[j] + 1)), 1);
+  }
+  return placerUnBloc(dem, a, libre);
+}
+
+// Mixte : le jour qui "mérite" le plus le bloc = poids ÷ (blocs déjà posés ce jour-là + 1).
+function placerUnBloc(dem, a, libre) {
+  return poserSur(dem, a, libre, choisirJour(dem, j => libre[j] > 0, (j, k) => dem.poids[k] / (a[j] + 1)), 1);
+}
+
+function poserSur(dem, a, libre, k, n) {
+  if (k === -1) return 0;
+  const j = dem.jours[k];
+  a[j] += n;
+  libre[j] -= n;
+  return n;
+}
+
+// Parmi les jours acceptés, celui qui a le meilleur score (en cas d'égalité : le plus proche de la date).
+function choisirJour(dem, accepte, score) {
   let meilleur = -1;
-  let meilleurScore = -1;
+  let meilleurScore = -Infinity;
   dem.jours.forEach((j, k) => {
-    if (!(libre[j] > 0)) return;
-    const score = dem.poids[k] / (a[j] + 1);
-    if (score >= meilleurScore - 1e-9) {
+    if (!accepte(j)) return;
+    const s = score(j, k);
+    if (s >= meilleurScore - 1e-9) {
       meilleur = k;
-      meilleurScore = score;
+      meilleurScore = s;
     }
   });
   return meilleur;
+}
+
+// Libérer une place ce jour-là servirait-il ? (pour les exercices : il faut pouvoir y poser une séance)
+function placeUtile(dem, a, libre, j, reste) {
+  if (dem.groupe <= 1) return true;
+  return (reste >= dem.groupe && libre[j] + 1 >= dem.groupe) || a[j] >= dem.groupe;
 }
 
 // Libère une place sur un des jours de "dem" en déplaçant un bloc d'une échéance
 // déjà placée vers un autre de SES jours possibles qui a encore de la place.
 // On déplace le bloc qui compte le moins pour l'autre échéance (souvent un de ses
 // premiers jours) : elle garde ainsi ses révisions juste avant sa date.
-function faireDeLaPlace(dem, dejaTraitees, alloc, libre) {
+function faireDeLaPlace(dem, dejaTraitees, alloc, libre, utile = () => true) {
   let choix = null;
   for (const autre of dejaTraitees) {
-    // Le jour libre que l'autre échéance préfère (le plus proche de sa date).
-    const cible = [...autre.jours].reverse().find(j => libre[j] > 0);
-    if (!cible) continue;
+    const a = alloc[autre.id];
     autre.jours.forEach((jour, k) => {
-      const n = alloc[autre.id][jour];
-      if (!(n > 0) || !dem.jours.includes(jour)) return;
-      const cout = autre.poids[k] / n;   // ce que vaut ce bloc pour l'autre échéance
-      if (!choix || cout < choix.cout) choix = { autre, jour, cible, cout };
+      if (!(a[jour] > 0) || !dem.jours.includes(jour) || !utile(jour)) return;
+      const cible = cibleDeplacement(autre, a, libre, jour);
+      if (!cible) return;
+      const cout = autre.poids[k] / a[jour];   // ce que vaut ce bloc pour l'autre échéance
+      if (!choix || cout < choix.cout) choix = { a, jour, cible, cout };
     });
   }
   if (!choix) return false;
-  alloc[choix.autre.id][choix.jour] -= 1;   // l'autre échéance quitte ce jour…
-  alloc[choix.autre.id][choix.cible] += 1;  // … pour un jour qui a encore de la place
+  choix.a[choix.jour] -= 1;      // l'autre échéance quitte ce jour…
+  choix.a[choix.cible] += 1;     // … pour un jour qui a encore de la place
   libre[choix.cible] -= 1;
-  libre[choix.jour] += 1;                   // une place se libère pour "dem"
+  libre[choix.jour] += 1;        // une place se libère pour "dem"
   return true;
+}
+
+// Le jour où un bloc de "autre" peut aller (le plus proche de sa date), en respectant son type de travail.
+function cibleDeplacement(autre, a, libre, depuis) {
+  for (let m = autre.jours.length - 1; m >= 0; m--) {
+    const j = autre.jours[m];
+    if (j === depuis || !(libre[j] > 0)) continue;
+    if (autre.mode === 'parcoeur' && a[j] >= a[depuis]) continue;   // garder 1 bloc par jour
+    if (autre.groupe > 1 && (a[depuis] - 1 < autre.groupe || a[j] < autre.groupe)) continue;  // ne pas casser une séance
+    return j;
+  }
+  return null;
 }
 
 
@@ -946,7 +1254,8 @@ function faireDeLaPlace(dem, dejaTraitees, alloc, libre) {
 
 let vueActive = 'aujourdhui';
 let choixChrono = null;          // échéance choisie dans l'écran Chrono
-let passeesOuvertes = false;     // section "Échéances passées" ouverte ?
+let passeesOuvertes = false;     // section "Historique" ouverte ?
+let brouillonNote = '';          // note en cours d'écriture après un bloc (gardée si l'écran se redessine)
 
 // Petites icônes dessinées en SVG (elles s'affichent pareil sur tous les téléphones).
 const ICONES = {
@@ -977,36 +1286,77 @@ function rafraichir() {
   majOngletChrono();
 }
 
+/* ---------- Ressenti après un bloc ("Facile / Ok / Dur" + note) ---------- */
+
+function carteRessenti() {
+  const b = donnees.aEvaluer ? donnees.blocs.find(x => x.id === donnees.aEvaluer) : null;
+  if (!b) return '';
+  const e = b.echeanceId ? trouverEcheance(b.echeanceId) : null;
+  const sujet = e ? nomEcheanceCourt(e) : (b.matiereId ? nomMatiere(b.matiereId) : 'Étude libre');
+  const boutons = Object.entries(RESSENTIS).map(([cle, r]) =>
+    `<button class="btn" data-action="ressenti" data-valeur="${cle}" type="button"><span class="emoji" aria-hidden="true">${r.emoji}</span>${r.nom}</button>`).join('');
+  return `<section class="carte ressenti" aria-label="Ressenti du bloc">
+      <h2>Bloc terminé ! Comment c'était ?</h2>
+      <p class="aide" style="margin:2px 0 14px">${echapper(sujet)} · ${b.minutes} min</p>
+      <label class="champ">Note <span class="facultatif">(facultatif)</span>
+        <input type="text" class="note-bloc" maxlength="120" value="${echapper(brouillonNote)}" placeholder="ex : exercices p. 42" autocomplete="off" enterkeyhint="done">
+      </label>
+      <div class="ressentis">${boutons}</div>
+      <button class="lien" data-action="ressenti" data-valeur="" type="button">Passer</button>
+    </section>`;
+}
+
 /* ---------- Écran "Aujourd'hui" ---------- */
 
 function afficherAujourdhui() {
   const jour = aujourdhui();
   let h = `<header class="entete"><div><p class="surtitre">${dateLongue(jour)}</p><h1>Aujourd'hui</h1></div></header>`;
+  h += carteRessenti();
 
   if (!donnees.echeances.length) {
     document.getElementById('vue-aujourdhui').innerHTML = h + carteBienvenue();
     return;
   }
 
-  const plan = calculerPlan(jour);
+  const plan = planActuel();
   h += bandeauChrono();
 
-  for (const e of donnees.echeances.filter(x => x.date === jour)) {
-    h += `<div class="info-jour" style="${styleMatiere(e.matiereId)}">📌 C'est aujourd'hui : <strong>${echapper(nomEcheanceLong(e))}</strong>. Bonne chance !</div>`;
+  for (const e of donnees.echeances.filter(x => x.date === jour && !x.terminee)) {
+    h += `<div class="info-jour" style="${styleMatiere(e.matiereId)}">
+        <span class="texte">📌 C'est aujourd'hui : <strong>${echapper(nomEcheanceLong(e))}</strong>. Bonne chance !</span>
+        <button class="btn btn-petit" data-action="test-passe" data-id="${e.id}" type="button">✓ Passé</button>
+      </div>`;
   }
-  if (plan.alertes.length) {
-    const messages = plan.alertes.map(a => {
-      const e = a.info.echeance;
-      return `<p class="alerte-ligne"><strong>Pas assez de temps pour ${echapper(nomEcheanceLong(e))} (<span class="insecable">${quandCourt(e.date, jour)}</span>), il manque <span class="insecable">${formaterDuree(a.minutes)}</span>.</strong></p>`;
-    }).join('');
-    h += `<div class="alerte" role="alert"><span aria-hidden="true">⚠️</span><div>
-        ${messages}
-        <div class="aide">Augmente ton temps dispo dans Réglages, ou fais des blocs en plus.</div>
-      </div></div>`;
-  }
+  h += carteAlertes(plan);
   h += cartePlanDuJour(plan);
   h += carteSemaine(plan);
   document.getElementById('vue-aujourdhui').innerHTML = h;
+}
+
+// Les avertissements : pas assez de temps, retard, zéro marge.
+function carteAlertes(plan) {
+  if (!plan.alertes.length) return '';
+  const icones = { manque: '⚠️', retard: '⏰', marge: '🟡' };
+  const lignes = plan.alertes.map(a =>
+    `<p class="alerte-ligne"><span aria-hidden="true">${icones[a.type]}</span><strong>${texteAlerte(a, plan.jour)}</strong></p>`).join('');
+  let conseil = 'Garde un peu de marge : ajoute du temps dispo dans Réglages si tu peux.';
+  if (plan.alertes.some(a => a.type === 'retard')) conseil = 'Le temps en retard est réparti sur les jours qui restent.';
+  if (plan.alertes.some(a => a.type === 'manque')) conseil = 'Augmente ton temps dispo dans Réglages, ou fais des blocs en plus.';
+  return `<div class="alerte" role="alert">${lignes}<div class="aide">${conseil}</div></div>`;
+}
+
+function texteAlerte(a, jour) {
+  const e = a.info.echeance;
+  const nom = echapper(nomEcheanceLong(e));
+  if (a.type === 'manque') {
+    return `Pas assez de temps pour ${nom} (<span class="insecable">${quandCourt(e.date, jour)}</span>), il manque <span class="insecable">${formaterDuree(a.minutes)}</span>.`;
+  }
+  if (a.type === 'retard') {
+    const r = a.info.retard;
+    const quand = r.jusqua <= jour ? "aujourd'hui" : `par jour ${jusqua(r.jusqua, jour)}`;
+    return `Tu es en retard sur ${nom} : <span class="insecable">+${formaterDuree(r.parJour)}</span> ${quand}.`;
+  }
+  return `Zéro marge sur ${nom} : si tu sautes un jour, tu seras en retard.`;
 }
 
 function carteBienvenue() {
@@ -1069,7 +1419,8 @@ function lignePlan(l, plan) {
   const titre = `${echapper(nomMatiere(e.matiereId))} – ${e.type} <span class="insecable">${quandCourt(e.date, plan.jour)}</span> <span class="insecable">– ${l.prevus ? pluriel(l.prevus, 'bloc') : 'en plus'}</span>`;
   let sous;
   if (restants > 0) {
-    sous = l.faits ? `${pluriel(l.faits, 'bloc')} fait${l.faits > 1 ? 's' : ''}, encore ${restants}` : `${formaterDuree(l.prevus * plan.W)} de travail`;
+    const affilee = e.travail === 'exercices' && l.prevus >= 2 ? ", d'affilée" : '';
+    sous = l.faits ? `${pluriel(l.faits, 'bloc')} fait${l.faits > 1 ? 's' : ''}, encore ${restants}` : `${formaterDuree(l.prevus * plan.W)} de travail${affilee}`;
   } else {
     sous = l.prevus ? "✓ Fini pour aujourd'hui, bravo !" : `✓ ${pluriel(l.faits, 'bloc')} en plus, bien joué !`;
   }
@@ -1130,9 +1481,9 @@ function carteSemaine(plan) {
 
 function afficherEcheances() {
   const jour = aujourdhui();
-  const plan = calculerPlan(jour);
-  const aVenir = donnees.echeances.filter(e => e.date >= jour).sort(comparerPriorite);
-  const passees = donnees.echeances.filter(e => e.date < jour).sort((a, b) => (a.date < b.date ? 1 : -1));
+  const plan = planActuel();
+  const aVenir = donnees.echeances.filter(e => !e.terminee && e.date >= jour).sort(comparerPriorite);
+  const historique = donnees.echeances.filter(e => e.terminee || e.date < jour).sort((a, b) => (a.date < b.date ? 1 : -1));
 
   let h = `<header class="entete"><h1>Échéances</h1><button class="btn btn-principal btn-petit" data-action="ajouter-echeance" type="button">+ Ajouter</button></header>`;
 
@@ -1150,39 +1501,56 @@ function afficherEcheances() {
     h += `<div class="carte"><p class="vide">Aucun test ni examen à venir.</p><p class="aide centre">Appuie sur « + Ajouter » pour en créer un.</p></div>`;
   }
   h += aVenir.map(e => carteEcheance(e, plan)).join('');
-  if (passees.length) {
-    h += `<details class="passees"${passeesOuvertes ? ' open' : ''}><summary>Échéances passées (${passees.length})</summary>
-        ${passees.map(e => carteEcheance(e, plan)).join('')}
+  if (historique.length) {
+    h += `<details class="passees"${passeesOuvertes ? ' open' : ''}><summary>Historique (${historique.length})</summary>
+        ${historique.map(e => carteEcheance(e, plan)).join('')}
       </details>`;
   }
   h += sectionMatieres();
   document.getElementById('vue-echeances').innerHTML = h;
 }
 
+// Les petites étiquettes : TEST / EXAMEN, type de travail, passé.
+function badgesEcheance(e) {
+  let h = `<span class="badge badge-${e.type}">${e.type === 'examen' ? 'Examen' : 'Test'}</span>`;
+  if (e.travail && e.travail !== 'mixte') h += `<span class="badge badge-travail">${nomTravail(e)}</span>`;
+  if (e.terminee) h += `<span class="badge badge-passe">✓ Passé</span>`;
+  return `<span class="badges">${h}</span>`;
+}
+
 function carteEcheance(e, plan) {
-  const total = tempsEstime(e);
+  const coef = coefMatiere(e.matiereId);
+  const total = tempsEcheance(e);
   const fait = minutesFaites(e.id);
   const pourcent = total > 0 ? Math.min(100, Math.round((fait / total) * 100)) : 100;
-  return `<article class="carte echeance${e.date < plan.jour ? ' passee' : ''}" style="${styleMatiere(e.matiereId)}"
-        data-action="modifier-echeance" data-id="${e.id}" role="button" tabindex="0" aria-label="Modifier ${echapper(nomEcheanceLong(e))}">
+  const derniere = derniereNote(e.id);
+  return `<article class="carte echeance${e.terminee || e.date < plan.jour ? ' passee' : ''}" style="${styleMatiere(e.matiereId)}"
+        data-action="detail-echeance" data-id="${e.id}" role="button" tabindex="0" aria-label="Voir ${echapper(nomEcheanceLong(e))}">
       <div class="ech-haut">
         <span class="ech-matiere">${echapper(nomMatiere(e.matiereId))}</span>
-        <span class="badge badge-${e.type}">${e.type === 'examen' ? 'Examen' : 'Test'}</span>
+        ${badgesEcheance(e)}
       </div>
       <div class="ech-date">${capitaliser(dateLongue(e.date))} · ${delai(e.date, plan.jour)}</div>
-      <div class="ech-details">Niveau ${e.niveau} (${NIVEAUX[e.niveau]}) · ${pluriel(e.chapitres, 'chapitre')} · ≈ ${formaterDuree(total)} d'étude</div>
+      <div class="ech-details">Niveau ${e.niveau} (${NIVEAUX[e.niveau]}) · ${pluriel(e.chapitres, 'chapitre')} · ≈ ${formaterDuree(total)} d'étude${coef !== 1 ? ` (difficulté × ${formaterDecimal(coef)})` : ''}</div>
       <div class="barre"><div style="width:${pourcent}%"></div></div>
       <div class="ech-progres">${formaterDuree(fait)} faites sur ${formaterDuree(total)}${total > 0 && fait >= total ? ' ✓' : ''}</div>
       ${e.note ? `<div class="ech-note">📝 ${echapper(e.note)}</div>` : ''}
+      ${derniere ? `<div class="ech-note">🔖 Dernière fois : « ${echapper(derniere.note)} »</div>` : ''}
       ${statutEcheance(e, plan)}
     </article>`;
 }
 
 function statutEcheance(e, plan) {
+  if (e.terminee) return `<div class="ech-statut ech-ok">✓ Rangé dans l'historique${e.termineeLe ? ` (${dateCourte(e.termineeLe)})` : ''}</div>`;
   if (e.date === plan.jour) return `<div class="ech-statut">📌 C'est aujourd'hui, bonne chance !</div>`;
   const i = plan.parId[e.id];
   if (!i) return '';
   if (i.manque > 0) return `<div class="ech-statut ech-alerte">⚠️ Pas assez de temps : il manque ${formaterDuree(i.manque * plan.W)}</div>`;
+  if (i.retard && i.retard.visible) {
+    const quand = i.retard.jusqua <= plan.jour ? "aujourd'hui" : `par jour ${jusqua(i.retard.jusqua, plan.jour)}`;
+    return `<div class="ech-statut ech-alerte">⏰ En retard : +${formaterDuree(i.retard.parJour)} ${quand}</div>`;
+  }
+  if (i.zeroMarge) return `<div class="ech-statut ech-alerte">🟡 Zéro marge : si tu sautes un jour, tu seras en retard</div>`;
   const resteAujourdhui = i.prevuAujourdhui - i.faitsAujourdhui;
   if (resteAujourdhui > 0) return `<div class="ech-statut">📅 Aujourd'hui : ${pluriel(resteAujourdhui, 'bloc')} à faire</div>`;
   const prochain = Object.keys(i.futur).filter(j => i.futur[j] > 0).sort()[0];
@@ -1193,16 +1561,21 @@ function statutEcheance(e, plan) {
 
 function sectionMatieres() {
   const jour = aujourdhui();
+  const coefs = coefsDifficulte(donnees.blocs);
   const triees = [...donnees.matieres].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
   let h = `<section class="carte" id="matieres">
       <div class="carte-titre"><h2>Mes matières</h2><button class="btn btn-petit" data-action="ajouter-matiere" type="button">+ Ajouter</button></div>
       <ul class="liste-matieres">`;
   for (const m of triees) {
-    const n = donnees.echeances.filter(e => e.matiereId === m.id && e.date >= jour).length;
+    const n = donnees.echeances.filter(e => e.matiereId === m.id && !e.terminee && e.date >= jour).length;
+    const coef = coefs[m.id] || 1;
+    const infos = [];
+    if (n) infos.push(pluriel(n, 'échéance'));
+    if (coef !== 1) infos.push(`difficulté × ${formaterDecimal(coef)}`);
     h += `<li><button class="ligne-matiere" data-action="modifier-matiere" data-id="${m.id}" type="button" style="${styleCouleur(m.couleur)}">
         <span class="rond"></span>
         <span class="nom">${echapper(m.nom)}</span>
-        <span class="aide-mini">${n ? `${pluriel(n, 'échéance')}` : ''}</span>
+        <span class="aide-mini">${infos.join('<br>')}</span>
         <span class="chevron" aria-hidden="true">›</span>
       </button></li>`;
   }
@@ -1214,35 +1587,46 @@ function sectionMatieres() {
 function afficherChrono() {
   const c = donnees.chrono;
   let h = `<header class="entete"><h1>Chrono</h1></header>`;
+  h += carteRessenti();
   h += c ? chronoActif(c) : chronoAuRepos();
   h += resumeBlocsDuJour();
   document.getElementById('vue-chrono').innerHTML = h;
   majAffichageChrono();
 }
 
+// Une carte à cocher "Je travaille sur…" (le texte va à la ligne : rien n'est coupé).
+function optionSujet(valeur, titre, details, style, coche) {
+  return `<label class="option-sujet" style="${style}">
+      <input type="radio" name="sujet-chrono" value="${valeur}"${coche ? ' checked' : ''}>
+      <span class="option-corps"><strong>${echapper(titre)}</strong><small>${details}</small></span>
+    </label>`;
+}
+
 function chronoAuRepos() {
   const r = donnees.reglages;
   const jour = aujourdhui();
-  const plan = calculerPlan(jour);
-  const possibles = donnees.echeances.filter(e => e.date >= jour).sort(comparerPriorite);
-
-  // Échéance proposée : celle choisie avant, sinon la 1re qui a encore des blocs prévus aujourd'hui.
-  let choix = choixChrono;
-  if (choix !== '' && !possibles.some(e => e.id === choix)) {
-    const aFaire = plan.infos.find(i => i.prevuAujourdhui > i.faitsAujourdhui);
-    choix = aFaire ? aFaire.echeance.id : (possibles[0] ? possibles[0].id : '');
-  }
-  const options = possibles.map(e => {
+  const plan = planActuel();
+  const possibles = donnees.echeances.filter(e => !e.terminee && e.date >= jour).sort(comparerPriorite);
+  const reste = e => {
     const i = plan.parId[e.id];
-    const reste = i ? i.prevuAujourdhui - i.faitsAujourdhui : 0;
-    const precision = reste > 0 ? ` (${pluriel(reste, 'bloc')} prévu${reste > 1 ? 's' : ''} aujourd'hui)` : '';
-    return `<option value="${e.id}"${e.id === choix ? ' selected' : ''}>${echapper(nomEcheanceCourt(e, jour))}${precision}</option>`;
-  }).join('');
+    return i ? Math.max(0, i.prevuAujourdhui - i.faitsAujourdhui) : 0;
+  };
+  // D'abord les échéances qui ont des blocs prévus aujourd'hui.
+  const ordre = [...possibles.filter(e => reste(e) > 0), ...possibles.filter(e => reste(e) === 0)];
+
+  // Échéance proposée : celle choisie avant, sinon la première de la liste.
+  let choix = choixChrono;
+  if (choix !== '' && !ordre.some(e => e.id === choix)) choix = ordre.length ? ordre[0].id : '';
+
+  const options = ordre.map(e => {
+    const n = reste(e);
+    let details = `${capitaliser(e.type)} ${quandCourt(e.date, jour)}`;
+    if (n > 0) details += ` · ${pluriel(n, 'bloc')} prévu${n > 1 ? 's' : ''} aujourd'hui`;
+    return optionSujet(e.id, nomMatiere(e.matiereId), details, styleMatiere(e.matiereId), e.id === choix);
+  }).join('') + optionSujet('', 'Étude libre', 'sans échéance', 'color:inherit', choix === '');
 
   return `<section class="carte">
-      <label class="champ">Je travaille sur…
-        <select id="choix-echeance">${options}<option value=""${choix === '' ? ' selected' : ''}>Étude libre (sans échéance)</option></select>
-      </label>
+      <fieldset class="choix-sujet"><legend>Je travaille sur…</legend>${options}</fieldset>
       <button class="btn btn-principal btn-geant" data-action="demarrer" type="button">${ICONES.lecture} Démarrer un bloc de ${r.travail} min</button>
       <p class="aide">Travail ${r.travail} min → petite pause ${r.pauseCourte} min. Grande pause de ${r.pauseLongue} min tous les ${r.blocsAvantPauseLongue} blocs.</p>
       ${possibles.length ? '' : `<p class="aide">Astuce : ajoute une échéance pour que tes blocs comptent dans ton plan.</p>`}
@@ -1263,8 +1647,9 @@ function chronoActif(c) {
     info = `Ensuite : bloc n°${c.blocsSerie + 1}`;
   }
   const e = c.echeanceId ? trouverEcheance(c.echeanceId) : null;
-  const ligne = e ? calculerPlan().lignesDuJour.find(l => l.info.echeance.id === e.id) : null;
+  const ligne = e ? planActuel().lignesDuJour.find(l => l.info.echeance.id === e.id) : null;
   if (ligne && ligne.prevus) info += `<br>Pour cette échéance aujourd'hui : ${ligne.faits} fait${ligne.faits > 1 ? 's' : ''} sur ${ligne.prevus}`;
+  const derniere = e && c.phase === 'travail' ? derniereNote(e.id) : null;
 
   let boutons;
   if (c.phase === 'attente') {
@@ -1285,6 +1670,7 @@ function chronoActif(c) {
   return `<section class="chrono" style="--phase:${p.couleur}">
       <div class="chrono-phase">${p.libelle}</div>
       <div class="chrono-sujet"><span class="rond" style="--couleur:${c.matiereId ? couleurMatiere(c.matiereId) : 'var(--accent)'}"></span>${echapper(sujetChrono(c))}</div>
+      ${derniere ? `<p class="derniere-note">🔖 La dernière fois : « ${echapper(derniere.note)} »</p>` : ''}
       <div class="anneau">
         <svg viewBox="0 0 120 120" aria-hidden="true">
           <circle class="anneau-fond" cx="60" cy="60" r="54"></circle>
@@ -1305,11 +1691,11 @@ function resumeBlocsDuJour() {
   const lignes = blocs.slice().reverse().map(b => {
     const e = b.echeanceId ? trouverEcheance(b.echeanceId) : null;
     const nom = e ? nomEcheanceCourt(e, jour) : (b.matiereId ? nomMatiere(b.matiereId) : 'Étude libre');
-    const heure = new Date(b.debut || Date.now());
-    const hh = String(heure.getHours()).padStart(2, '0') + ':' + String(heure.getMinutes()).padStart(2, '0');
+    const ressenti = b.ressenti ? ` · ${RESSENTIS[b.ressenti].emoji} ${RESSENTIS[b.ressenti].nom}` : '';
+    const note = b.note ? ` · « ${echapper(b.note)} »` : '';
     return `<li style="--couleur:${b.matiereId ? couleurMatiere(b.matiereId) : 'var(--accent)'}">
         <span class="rond"></span>
-        <span class="texte">${echapper(nom)}<small>${hh} · ${b.minutes} min</small></span>
+        <span class="texte">${echapper(nom)}<small>${heure(b.debut)} · ${b.minutes} min${ressenti}${note}</small></span>
         <button class="supprimer-bloc" data-action="supprimer-bloc" data-id="${b.id}" type="button" aria-label="Supprimer ce bloc">×</button>
       </li>`;
   }).join('');
@@ -1397,14 +1783,17 @@ function afficherReglages() {
       ${ligneReglage('coefBase', 'Part fixe', '', 0.05, 0, 3, 'decimal')}
       ${ligneReglage('coefChapitre', 'Par chapitre', '', 0.05, 0, 2, 'decimal')}
       <p class="aide">${[1, 2, 4, 6].map(n => `<span class="insecable">${pluriel(n, 'chapitre')} → × ${facteur(n)}</span>`).join(' · ')}<br>
-        Ex : test niveau 3 de 4 chapitres = ${formaterDuree(exemple)}.</p>
+        Ex : test niveau 3 de 4 chapitres = ${formaterDuree(exemple)}.<br>
+        Ce temps est ensuite multiplié par ta difficulté perso dans la matière (entre × 0,7 et × 1,5, selon tes ressentis).</p>
     </section>`;
 
   h += `<section class="carte"><h2>📅 Planification</h2>
       ${ligneReglage('joursAvant.test', 'Un test', 'commence au plus tôt', 1, 1, 30, 'avant')}
       ${ligneReglage('joursAvant.examen', 'Un examen', 'commence au plus tôt', 1, 1, 60, 'avant')}
       ${ligneReglage('progression', 'Montée en puissance', 'la veille vs le 1er jour', 0.5, 1, 10, 'fois')}
-      <p class="aide">Avec × ${formaterDecimal(r.progression)}, la veille on étudie ${formaterDecimal(r.progression)} fois plus que le premier jour.</p>
+      ${ligneReglage('joursEnPlusParCoeur', 'Par cœur', 'commence plus tôt de', 1, 0, 30, 'plusjours')}
+      ${ligneReglage('blocsParSession', 'Exercices', "blocs d'affilée minimum", 1, 1, 4, 'blocs')}
+      <p class="aide">Avec × ${formaterDecimal(r.progression)}, la veille on étudie ${formaterDecimal(r.progression)} fois plus que le premier jour. « Par cœur » : 1 bloc par jour sur plus de jours. « Exercices » : des séances d'au moins ${pluriel(r.blocsParSession, 'bloc')} d'affilée.</p>
     </section>`;
 
   h += `<section class="carte"><h2>🔔 Alertes du chrono</h2>
@@ -1415,14 +1804,16 @@ function afficherReglages() {
     </section>`;
 
   h += `<section class="carte"><h2>💾 Mes données</h2>
-      <p class="aide">Tout est enregistré uniquement dans ce navigateur, sur cet appareil.</p>
+      <p class="aide">Tout est enregistré uniquement dans ce navigateur, sur cet appareil. Exporte une sauvegarde de temps en temps, et avant de changer de téléphone.</p>
       <div class="pile">
+        <button class="btn btn-principal btn-plein" data-action="exporter" type="button">⬇️ Exporter mes données</button>
+        <button class="btn btn-plein" data-action="importer" type="button">⬆️ Importer une sauvegarde</button>
         <button class="btn btn-plein" data-action="exemple" type="button">Ajouter des exemples (pour tester)</button>
         <button class="btn btn-plein" data-action="reglages-defaut" type="button">Remettre les réglages par défaut</button>
         <button class="btn btn-plein btn-danger" data-action="tout-effacer" type="button">Tout effacer</button>
       </div>
     </section>
-    <p class="aide centre">Plan d'étude · V1</p>`;
+    <p class="aide centre">Plan d'étude · V2</p>`;
 
   document.getElementById('vue-reglages').innerHTML = h;
 }
@@ -1450,8 +1841,9 @@ function ligneInterrupteur(chemin, libelle, precision) {
 function formaterValeur(v, format) {
   if (format === 'duree') return formaterDuree(v);
   if (format === 'min') return `${v} min`;
-  if (format === 'blocs') return `${v} blocs`;
+  if (format === 'blocs') return pluriel(v, 'bloc');
   if (format === 'avant') return `${v} j avant`;
+  if (format === 'plusjours') return `+${v} j`;
   if (format === 'fois') return `× ${formaterDecimal(v)}`;
   return formaterDecimal(v);
 }
@@ -1476,8 +1868,6 @@ function appliInstallee() {
 
 function carteInstaller() {
   if (appliInstallee()) return '';
-  const ua = navigator.userAgent;
-  const iphone = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   let corps;
   if (location.protocol === 'file:') {
     corps = `<p class="aide">Tu as ouvert le <strong>fichier</strong> directement : impossible de l'installer comme ça. Ouvre l'<strong>adresse web</strong> de l'appli (qui commence par https://).</p>`;
@@ -1485,7 +1875,7 @@ function carteInstaller() {
     corps = `<p class="aide">L'adresse doit commencer par <strong>https://</strong> pour pouvoir installer l'appli.</p>`;
   } else if (invitationInstall) {
     corps = `<div class="pile"><button class="btn btn-principal btn-plein" data-action="installer" type="button">Installer l'application</button></div>`;
-  } else if (iphone) {
+  } else if (estIphone()) {
     corps = `<ol><li>Ouvre cette page dans <strong>Safari</strong> (pas dans une autre appli).</li>
         <li>Touche le bouton <strong>Partager</strong> (le carré avec une flèche vers le haut).</li>
         <li>Choisis <strong>« Sur l'écran d'accueil »</strong>, puis <strong>Ajouter</strong>.</li></ol>
@@ -1550,7 +1940,7 @@ function flasher(couleur) {
 
 
 /* =====================================================================
-   6. FORMULAIRES ET CONFIRMATIONS
+   6. FORMULAIRES, DÉTAIL D'UNE ÉCHÉANCE, EXPORT / IMPORT
    ===================================================================== */
 
 /* ---------- La feuille qui monte du bas ---------- */
@@ -1571,6 +1961,7 @@ function ouvrirFeuille(html) {
 
 function fermerFeuille() {
   const fond = document.getElementById('fond-feuille');
+  if (fond.hidden) return;
   fond.classList.remove('ouvert');
   document.body.classList.remove('bloque');
   clearTimeout(minuteurFeuille);
@@ -1624,6 +2015,73 @@ function erreurForm(message) {
   p.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
+/* ---------- Détail d'une échéance (avec les notes des blocs précédents) ---------- */
+
+function ouvrirDetailEcheance(id) {
+  const e = trouverEcheance(id);
+  if (!e) return;
+  const plan = planActuel();
+  const coef = coefMatiere(e.matiereId);
+  const total = tempsEcheance(e);
+  const fait = minutesFaites(e.id);
+  const pourcent = total > 0 ? Math.min(100, Math.round((fait / total) * 100)) : 100;
+  const active = !e.terminee && e.date >= plan.jour;
+  const blocs = blocsDe(e.id);
+  const notes = blocs.length
+    ? `<ul class="liste-notes">${blocs.map(b => `<li>
+          <span class="quand">${capitaliser(dateCourte(b.date))} · ${b.minutes} min${b.ressenti ? ` · ${RESSENTIS[b.ressenti].emoji} ${RESSENTIS[b.ressenti].nom}` : ''}</span>
+          ${b.note ? `<span class="texte-note">« ${echapper(b.note)} »</span>` : ''}
+        </li>`).join('')}</ul>`
+    : `<p class="aide">Aucun bloc pour l'instant.</p>`;
+
+  ouvrirFeuille(`<div class="detail" style="${styleMatiere(e.matiereId)}">
+      <div class="ech-haut"><h2 class="detail-titre">${echapper(nomMatiere(e.matiereId))}</h2>${badgesEcheance(e)}</div>
+      <div class="ech-date">${capitaliser(dateLongue(e.date))} · ${delai(e.date, plan.jour)}</div>
+      <div class="ech-details">Niveau ${e.niveau} (${NIVEAUX[e.niveau]}) · ${pluriel(e.chapitres, 'chapitre')} · ${nomTravail(e)}</div>
+      <div class="ech-details">≈ ${formaterDuree(total)} d'étude${coef !== 1 ? ` (dont difficulté perso × ${formaterDecimal(coef)})` : ''}</div>
+      <div class="barre"><div style="width:${pourcent}%"></div></div>
+      <div class="ech-progres">${formaterDuree(fait)} faites sur ${formaterDuree(total)}</div>
+      ${e.note ? `<div class="ech-note">📝 ${echapper(e.note)}</div>` : ''}
+      ${statutEcheance(e, plan)}
+      ${active ? `<div class="pile" style="margin-top:14px"><button class="btn btn-lancer btn-plein" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer un bloc</button></div>` : ''}
+      <h3>Mes blocs et mes notes</h3>
+      ${notes}
+      <div class="pile" style="margin-top:18px">
+        ${e.terminee
+          ? `<button class="btn btn-plein" data-action="remettre" data-id="${e.id}" type="button">↩ Remettre dans le plan</button>`
+          : `<button class="btn btn-plein btn-principal" data-action="test-passe" data-id="${e.id}" type="button">✓ ${e.type === 'examen' ? 'Examen' : 'Test'} passé</button>`}
+        <button class="btn btn-plein" data-action="modifier-echeance" data-id="${e.id}" type="button">Modifier</button>
+        <button class="btn btn-plein btn-danger" data-action="supprimer-echeance" data-id="${e.id}" type="button">Supprimer</button>
+        <button class="btn btn-plein" data-action="fermer" type="button">Fermer</button>
+      </div>
+    </div>`);
+}
+
+// "Test passé" : l'échéance sort du plan et va dans l'historique.
+function marquerPassee(id) {
+  const e = trouverEcheance(id);
+  if (!e) return;
+  e.terminee = true;
+  e.termineeLe = aujourdhui();
+  e.rythme = null;
+  sauvegarder();
+  fermerFeuille();
+  rafraichir();
+  afficherToast(`${e.type === 'examen' ? 'Examen' : 'Test'} rangé dans l'historique ✓`);
+}
+
+function remettreDansPlan(id) {
+  const e = trouverEcheance(id);
+  if (!e) return;
+  e.terminee = false;
+  e.termineeLe = null;
+  e.rythme = null;
+  sauvegarder();
+  fermerFeuille();
+  rafraichir();
+  afficherToast('Remis dans le plan ✓');
+}
+
 /* ---------- Formulaire d'une échéance ---------- */
 
 function ouvrirFormEcheance(id, preselection = {}) {
@@ -1639,6 +2097,7 @@ function ouvrirFormEcheance(id, preselection = {}) {
     niveau: 2,
     chapitres: 2,
     note: '',
+    travail: 'mixte',
   };
   const matieres = [...donnees.matieres].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
 
@@ -1662,6 +2121,12 @@ function ouvrirFormEcheance(id, preselection = {}) {
         <legend>Niveau d'étude</legend>
         <div class="segments">
           ${[1, 2, 3, 4].map(n => `<label><input type="radio" name="niveau" value="${n}"${v.niveau === n ? ' checked' : ''}><span>${n}<small>${NIVEAUX[n]}</small></span></label>`).join('')}
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Type de travail</legend>
+        <div class="segments">
+          ${Object.entries(TRAVAUX).map(([cle, t]) => `<label><input type="radio" name="travail" value="${cle}"${(v.travail || 'mixte') === cle ? ' checked' : ''}><span>${t.nom}<small>${t.exemple}</small></span></label>`).join('')}
         </div>
       </fieldset>
       <div class="champ-ligne">
@@ -1693,16 +2158,22 @@ function majEstimation() {
   const f = new FormData(form);
   const r = donnees.reglages;
   const e = {
+    matiereId: f.get('matiere'),
     type: f.get('type') === 'examen' ? 'examen' : 'test',
     niveau: Number(f.get('niveau')) || 1,
     chapitres: Math.max(0, parseInt(f.get('chapitres'), 10) || 0),
     date: f.get('date'),
+    travail: Object.keys(TRAVAUX).includes(f.get('travail')) ? f.get('travail') : 'mixte',
   };
-  const minutes = tempsEstime(e, r);
-  let texte = `Temps d'étude estimé : <strong>${formaterDuree(minutes)}</strong> (≈ ${pluriel(Math.round(minutes / r.travail), 'bloc')} de ${r.travail} min)`;
+  const coef = e.matiereId ? coefMatiere(e.matiereId) : 1;
+  const minutes = tempsEstime(e, r, coef);
+  let texte = `Temps d'étude estimé : <strong>${formaterDuree(minutes)}</strong> (${pluriel(blocsPour(minutes, r.travail), 'bloc')} de ${r.travail} min)`;
+  if (coef !== 1) texte += `<div class="aide">Ta difficulté perso en ${echapper(nomMatiere(e.matiereId))} (× ${formaterDecimal(coef)}) est comptée.</div>`;
+  if (e.travail === 'parcoeur') texte += `<div class="aide">Par cœur : petits morceaux, 1 bloc par jour, sur plus de jours.</div>`;
+  if (e.travail === 'exercices') texte += `<div class="aide">Exercices : séances d'au moins ${pluriel(r.blocsParSession, 'bloc')} d'affilée.</div>`;
   if (estCleDate(e.date)) {
     const jour = aujourdhui();
-    const debut = ajouterJours(e.date, -r.joursAvant[e.type]);
+    const debut = ajouterJours(e.date, -dureeFenetre(e, r));
     if (e.date <= jour) texte += `<div class="aide">⚠️ Cette date est aujourd'hui ou déjà passée : rien ne sera planifié.</div>`;
     else texte += `<div class="aide">Révisions ${debut > jour ? `à partir du ${dateLongue(debut)}` : "dès aujourd'hui"}, jusqu'à la veille.</div>`;
   }
@@ -1732,10 +2203,18 @@ function enregistrerEcheance(form) {
     niveau: borner(Number(f.get('niveau')) || 2, 1, 4),
     chapitres,
     note: String(f.get('note') || '').trim(),
+    travail: Object.keys(TRAVAUX).includes(f.get('travail')) ? f.get('travail') : 'mixte',
   };
   const id = form.dataset.id;
-  if (id) Object.assign(trouverEcheance(id), valeurs);
-  else donnees.echeances.push({ id: nouvelId(), ...valeurs });
+  if (id) {
+    const e = trouverEcheance(id);
+    // Si ce qui compte pour le plan change, on repart d'un rythme neuf (pas de faux retard).
+    const change = ['matiereId', 'type', 'date', 'niveau', 'chapitres', 'travail'].some(cle => e[cle] !== valeurs[cle]);
+    Object.assign(e, valeurs);
+    if (change) e.rythme = null;
+  } else {
+    donnees.echeances.push({ id: nouvelId(), ...valeurs, terminee: false, termineeLe: null, rythme: null });
+  }
   sauvegarder();
   fermerFeuille();
   rafraichir();
@@ -1763,6 +2242,19 @@ function ouvrirFormMatiere(id, options = {}) {
   const couleur = m ? m.couleur : (libre ? libre.code : PALETTE[donnees.matieres.length % PALETTE.length].code);
   const couleurs = PALETTE.some(c => c.code === couleur) ? PALETTE : [...PALETTE, { nom: 'Actuelle', code: couleur }];
 
+  // Difficulté perso de la matière (expliquée à partir des derniers ressentis).
+  let difficulte = '';
+  if (m) {
+    const derniers = derniersRessentis(m.id);
+    const compte = Object.keys(RESSENTIS)
+      .map(cle => [cle, derniers.filter(x => x === cle).length])
+      .filter(([, n]) => n > 0)
+      .map(([cle, n]) => `${n} ${RESSENTIS[cle].emoji} ${RESSENTIS[cle].nom}`)
+      .join(' · ');
+    difficulte = `<div class="estimation">Difficulté perso : <strong>× ${formaterDecimal(coefMatiere(m.id))}</strong>
+        <div class="aide">${derniers.length ? `D'après tes ${derniers.length} derniers ressentis : ${compte}.` : 'Elle bougera selon tes ressentis après chaque bloc (Facile / Ok / Dur).'}</div></div>`;
+  }
+
   ouvrirFeuille(`<form id="form-matiere" data-id="${m ? m.id : ''}" data-puis-echeance="${options.puisEcheance ? 'oui' : ''}" novalidate>
       <h2>${m ? 'Modifier la matière' : 'Nouvelle matière'}</h2>
       ${options.puisEcheance ? `<p class="aide" style="margin:-6px 0 16px">D'abord une matière, ensuite tu pourras créer ton test ou examen.</p>` : ''}
@@ -1773,6 +2265,7 @@ function ouvrirFormMatiere(id, options = {}) {
           ${couleurs.map(c => `<label class="pastille-choix" style="--couleur:${c.code}"><input type="radio" name="couleur" value="${c.code}" aria-label="${c.nom}"${c.code === couleur ? ' checked' : ''}><span></span></label>`).join('')}
         </div>
       </fieldset>
+      ${difficulte}
       <p class="erreur" id="erreur-form" hidden></p>
       <div class="pile">
         <button type="submit" class="btn btn-principal btn-geant">${options.puisEcheance ? 'Continuer' : 'Enregistrer'}</button>
@@ -1840,13 +2333,16 @@ async function chargerExemple() {
   const anglais = matiere('Anglais', '#ffa94d');
   const maths = matiere('Maths', '#4dabf7');
   const philo = matiere('Philo', '#b197fc');
-  const ajouter = (m, type, dansNJours, niveau, chapitres, note) => {
-    donnees.echeances.push({ id: nouvelId(), matiereId: m.id, type, date: ajouterJours(jour, dansNJours), niveau, chapitres, note });
+  const ajouter = (m, type, dansNJours, niveau, chapitres, travail, note) => {
+    donnees.echeances.push({
+      id: nouvelId(), matiereId: m.id, type, date: ajouterJours(jour, dansNJours), niveau, chapitres, note,
+      travail, terminee: false, termineeLe: null, rythme: null,
+    });
   };
-  ajouter(chimie, 'test', 3, 2, 3, 'chapitres 3 à 5');
-  ajouter(anglais, 'test', 6, 1, 2, 'vocabulaire unités 4 et 5');
-  ajouter(maths, 'examen', 12, 3, 3, 'fonctions et dérivées');
-  ajouter(philo, 'examen', 25, 2, 4, 'dissertation');
+  ajouter(chimie, 'test', 3, 2, 3, 'exercices', 'chapitres 3 à 5');
+  ajouter(anglais, 'test', 6, 1, 2, 'parcoeur', 'vocabulaire unités 4 et 5');
+  ajouter(maths, 'examen', 12, 3, 3, 'exercices', 'fonctions et dérivées');
+  ajouter(philo, 'examen', 25, 2, 4, 'mixte', 'dissertation');
   sauvegarder();
   afficherVue('aujourdhui');
   afficherToast('Exemples ajoutés ✓');
@@ -1861,7 +2357,7 @@ async function reglagesParDefaut() {
 }
 
 async function toutEffacer() {
-  if (!(await confirmer('Tout effacer ? Matières, échéances, blocs faits et réglages seront supprimés définitivement.', 'Tout effacer', true))) return;
+  if (!(await confirmer('Tout effacer ? Matières, échéances, blocs faits et réglages seront supprimés définitivement. Pense à exporter une sauvegarde avant.', 'Tout effacer', true))) return;
   donnees = donneesVides();
   sauvegarder();
   majVerrouEcran();
@@ -1874,8 +2370,72 @@ async function supprimerBloc(id) {
   if (!b) return;
   if (!(await confirmer(`Supprimer ce bloc de ${b.minutes} min ? Il ne comptera plus dans ton plan.`, 'Supprimer', true))) return;
   donnees.blocs = donnees.blocs.filter(x => x.id !== id);
+  if (donnees.aEvaluer === id) donnees.aEvaluer = null;
   sauvegarder();
   rafraichir();
+}
+
+/* ---------- Sauvegarde dans un fichier : exporter / importer ---------- */
+
+// Le contenu du fichier : tout ce qui compte (pas le chrono en cours).
+function contenuExport() {
+  return {
+    application: "Plan d'étude",
+    format: VERSION_DONNEES,
+    exporteLe: new Date().toISOString(),
+    matieres: donnees.matieres,
+    echeances: donnees.echeances,
+    blocs: donnees.blocs,
+    reglages: donnees.reglages,
+  };
+}
+
+async function exporterDonnees() {
+  const texte = JSON.stringify(contenuExport(), null, 2);
+  const nom = `plan-etude-sauvegarde-${aujourdhui()}.json`;
+  const fichier = new File([texte], nom, { type: 'application/json' });
+  // Sur iPhone, le menu "Partager" est le plus sûr (→ "Enregistrer dans Fichiers").
+  if (estIphone() && navigator.canShare && navigator.canShare({ files: [fichier] })) {
+    try {
+      await navigator.share({ files: [fichier], title: nom });
+      afficherToast('Sauvegarde prête ✓');
+    } catch (erreur) { /* partage annulé */ }
+    return;
+  }
+  const url = URL.createObjectURL(fichier);
+  const lien = document.createElement('a');
+  lien.href = url;
+  lien.download = nom;
+  document.body.appendChild(lien);
+  lien.click();
+  lien.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+  afficherToast('Sauvegarde téléchargée ✓');
+}
+
+async function importerFichier(fichier) {
+  let lu = null;
+  try {
+    lu = JSON.parse(await fichier.text());
+  } catch (erreur) {
+    lu = null;
+  }
+  if (!lu || typeof lu !== 'object' || !Array.isArray(lu.matieres) || !Array.isArray(lu.echeances)) {
+    afficherToast("⚠️ Ce fichier n'est pas une sauvegarde de Plan d'étude");
+    return;
+  }
+  const date = new Date(lu.exporteLe);
+  const quand = isNaN(date) ? '' : ` du ${dateLongue(cleDate(date))}`;
+  const resume = `${pluriel(lu.matieres.length, 'matière')}, ${pluriel(lu.echeances.length, 'échéance')}, ${pluriel((lu.blocs || []).length, 'bloc')}`;
+  const ok = await confirmer(`Remplacer toutes tes données actuelles par la sauvegarde${quand} (${resume}) ? Tes données actuelles seront écrasées.`, 'Remplacer mes données', true);
+  if (!ok) return;
+  const chrono = donnees.chrono;
+  donnees = normaliser(lu);   // mêmes vérifications que pour le localStorage (+ migration si c'est un vieux fichier)
+  if (chrono && (!chrono.echeanceId || trouverEcheance(chrono.echeanceId))) donnees.chrono = chrono;
+  sauvegarder();
+  majVerrouEcran();
+  afficherVue('aujourdhui');
+  afficherToast('Données importées ✓');
 }
 
 
@@ -1910,8 +2470,9 @@ function sujetChrono(c) {
   return c.matiereId && trouverMatiere(c.matiereId) ? nomMatiere(c.matiereId) : 'Étude libre';
 }
 
-// Bouton "Lancer" du plan du jour.
+// Bouton "Lancer" du plan du jour (ou du détail d'une échéance).
 function lancerDepuisPlan(echeanceId) {
+  fermerFeuille();
   const c = donnees.chrono;
   if (c && c.phase !== 'attente') {
     afficherToast('Un bloc est déjà en cours ⏱');
@@ -2002,17 +2563,49 @@ function terminerSerie() {
   rafraichir();
 }
 
-// Enregistre un bloc de travail terminé (il compte ensuite dans le plan).
+// Enregistre un bloc de travail fait (il compte ensuite dans le plan),
+// puis on te demandera ton ressenti (Facile / Ok / Dur).
 function enregistrerBloc(c, minutes) {
-  if (minutes <= 0) return;
-  donnees.blocs.push({
+  if (minutes <= 0) return null;
+  const bloc = {
     id: nouvelId(),
     echeanceId: c.echeanceId,
     matiereId: c.matiereId,
     date: cleDate(new Date(c.debutBloc)),
     debut: c.debutBloc,
     minutes,
-  });
+    ressenti: null,
+    note: '',
+  };
+  donnees.blocs.push(bloc);
+  donnees.aEvaluer = bloc.id;
+  brouillonNote = '';
+  return bloc;
+}
+
+// Ta réponse "Facile / Ok / Dur" (+ la note) sur le dernier bloc.
+// (on lit la note dans la carte où tu as appuyé : la question peut être affichée sur 2 écrans)
+function noterBloc(valeur, bouton) {
+  const b = donnees.blocs.find(x => x.id === donnees.aEvaluer);
+  const carte = bouton && bouton.closest('.ressenti');
+  const champ = carte && carte.querySelector('.note-bloc');
+  const note = (champ ? champ.value : brouillonNote).trim().slice(0, 120);
+  donnees.aEvaluer = null;
+  brouillonNote = '';
+  if (!b) {
+    sauvegarder();
+    rafraichir();
+    return;
+  }
+  const avant = b.matiereId ? coefMatiere(b.matiereId) : 1;
+  b.ressenti = Object.keys(RESSENTIS).includes(valeur) ? valeur : null;
+  b.note = note;
+  sauvegarder();
+  rafraichir();
+  const apres = b.matiereId ? coefMatiere(b.matiereId) : 1;
+  let message = b.ressenti ? `Noté : ${RESSENTIS[b.ressenti].nom} ${RESSENTIS[b.ressenti].emoji}` : (note ? 'Note enregistrée ✓' : 'OK, sans ressenti');
+  if (apres !== avant) message += ` · ${nomMatiere(b.matiereId)} : difficulté × ${formaterDecimal(apres)}`;
+  afficherToast(message);
 }
 
 // Vérifie si la phase en cours est finie (appelé 2 fois par seconde et au retour dans l'appli).
@@ -2051,8 +2644,10 @@ function verifierChrono(silencieux = false) {
   if (!silencieux) alerter(fin);
   if (fin === 'travail') {
     afficherToast(`✓ Bloc enregistré ! ${c.phase === 'pauseLongue' ? 'Grande pause' : 'Petite pause'} de ${Math.round(c.dureeMs / 60000)} min`);
-  } else {
-    afficherToast(blocsEnregistres ? '✓ Bloc enregistré · la pause est finie aussi' : 'Pause terminée ! On reprend ?');
+  } else if (blocsEnregistres) {
+    afficherToast('✓ Bloc enregistré · la pause est finie aussi');
+  } else if (!silencieux) {
+    afficherToast('Pause terminée ! On reprend ?');  // (pas à l'ouverture de l'appli : la pause peut dater d'hier)
   }
   majVerrouEcran();
   rafraichir();
@@ -2142,8 +2737,8 @@ const ACTIONS = {
   'lancer': id => lancerDepuisPlan(id),
   'aller-chrono': () => afficherVue('chrono'),
   'demarrer': () => {
-    const select = document.getElementById('choix-echeance');
-    demarrerBloc(select && select.value ? select.value : null);
+    const coche = document.querySelector('input[name="sujet-chrono"]:checked');
+    demarrerBloc(coche && coche.value ? coche.value : null);
   },
   'pause': () => mettreEnPause(),
   'reprendre': () => reprendre(),
@@ -2151,9 +2746,13 @@ const ACTIONS = {
   'passer-pause': () => passerPause(),
   'bloc-suivant': () => demarrerBloc(donnees.chrono ? donnees.chrono.echeanceId : null, donnees.chrono ? donnees.chrono.blocsSerie : 0),
   'terminer': () => terminerSerie(),
+  'ressenti': (id, bouton) => noterBloc(bouton.dataset.valeur, bouton),
   'ajouter-echeance': () => ouvrirFormEcheance(null),
+  'detail-echeance': id => ouvrirDetailEcheance(id),
   'modifier-echeance': id => ouvrirFormEcheance(id),
   'supprimer-echeance': id => supprimerEcheance(id),
+  'test-passe': id => marquerPassee(id),
+  'remettre': id => remettreDansPlan(id),
   'ajouter-matiere': () => ouvrirFormMatiere(null),
   'modifier-matiere': id => ouvrirFormMatiere(id),
   'supprimer-matiere': id => supprimerMatiere(id),
@@ -2163,6 +2762,8 @@ const ACTIONS = {
   'chapitres-plus': () => changerChapitres(1),
   'installer': () => installerAppli(),
   'tester-alerte': () => { preparerSon(); alerter('travail'); },
+  'exporter': () => exporterDonnees(),
+  'importer': () => document.getElementById('fichier-import').click(),
   'exemple': () => chargerExemple(),
   'reglages-defaut': () => reglagesParDefaut(),
   'tout-effacer': () => toutEffacer(),
@@ -2180,7 +2781,7 @@ document.addEventListener('click', ev => {
     changerReglage(cible, action === 'plus' ? 1 : -1);
     return;
   }
-  if (ACTIONS[action]) ACTIONS[action](cible.dataset.id);
+  if (ACTIONS[action]) ACTIONS[action](cible.dataset.id, cible);
 });
 
 // Les cartes d'échéance se comportent comme des boutons au clavier (Entrée / Espace).
@@ -2204,11 +2805,16 @@ document.addEventListener('submit', ev => {
 // Changements dans les formulaires et les réglages.
 document.addEventListener('input', ev => {
   if (ev.target.closest('#form-echeance')) majEstimation();
+  if (ev.target.classList.contains('note-bloc')) brouillonNote = ev.target.value;
 });
 document.addEventListener('change', ev => {
   const t = ev.target;
   if (t.closest('#form-echeance')) majEstimation();
-  if (t.id === 'choix-echeance') choixChrono = t.value;
+  if (t.name === 'sujet-chrono') choixChrono = t.value;
+  if (t.id === 'fichier-import' && t.files && t.files[0]) {
+    importerFichier(t.files[0]);
+    t.value = '';
+  }
   if (t.dataset.reglage) {
     donnees.reglages[t.dataset.reglage] = t.checked;
     sauvegarder();
