@@ -109,7 +109,7 @@ h3 { margin: 18px 0 2px; font-size: 13px; color: var(--texte-2); text-transform:
 /* ---------- Barre d'onglets en bas ---------- */
 .onglets {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(5, 1fr);
   padding: 0 max(8px, env(safe-area-inset-left)) var(--bas);
   background: rgba(13, 15, 19, 0.94);
   -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
@@ -124,6 +124,7 @@ h3 { margin: 18px 0 2px; font-size: 13px; color: var(--texte-2); text-transform:
 .onglet svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .onglet[aria-current="page"] { color: var(--accent); }
 .onglet.chrono-actif { color: var(--phase, var(--travail)); }
+.onglet span { font-size: clamp(10px, 3.1vw, 12px); white-space: nowrap; }
 .onglet.chrono-actif span { font-variant-numeric: tabular-nums; font-size: 13px; }
 
 /* ---------- Écran "Aujourd'hui" ---------- */
@@ -267,6 +268,94 @@ label.ligne-reglage { cursor: pointer; }
 .installer li { margin-bottom: 6px; }
 .installer .attention { margin-top: 10px; color: var(--alerte); font-size: 14px; }
 
+/* ---------- Résumé de la semaine (tuiles) ---------- */
+.tuiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tuile { min-width: 0; padding: 12px; border-radius: 14px; background: var(--carte-2); }
+.tuile-valeur { display: block; font-size: 21px; font-weight: 750; line-height: 1.2; overflow-wrap: anywhere; }
+.tuile-label { display: block; margin-top: 2px; color: var(--texte-2); font-size: 13px; }
+.tuile-delta { display: block; margin-top: 4px; color: var(--texte-3); font-size: 12px; }
+.fermer-x { flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--carte-2); color: var(--texte-2); font-size: 20px; line-height: 1; }
+
+/* ---------- Bascule (Liste / Calendrier, Semaine / Mois) ---------- */
+.bascule { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin-bottom: 14px; padding: 4px; border-radius: 14px; background: var(--carte-2); }
+.bascule button { min-height: 42px; border: 0; border-radius: 11px; background: none; color: var(--texte-2); font-weight: 750; }
+.bascule button[aria-pressed="true"] { background: var(--accent); color: var(--sur-accent); }
+
+/* ---------- Calendrier (onglet Échéances) ---------- */
+.cal-entete { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.cal-entete h2 { text-transform: capitalize; }
+.cal-nav { width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--carte-2); font-size: 24px; line-height: 1; }
+.cal-grille { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-jsem { padding-bottom: 2px; color: var(--texte-3); font-size: 12px; font-weight: 700; text-align: center; }
+.cal-jour { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; min-height: 54px; padding: 4px 2px 5px; border: 2px solid transparent; border-radius: 10px; background: var(--carte-2); }
+.cal-jour.hors { opacity: 0.35; }
+.cal-jour.choisi { border-color: var(--texte-2); }
+.cal-num { min-width: 24px; padding: 1px 4px; border-radius: 999px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cal-jour.auj .cal-num { background: var(--accent); color: var(--sur-accent); }
+.cal-marques { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; min-height: 9px; }
+.cal-ech { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--couleur); }
+.cal-ech.examen { width: 15px; border-radius: 3px; }
+.cal-barre { display: flex; gap: 2px; width: 80%; height: 4px; margin-top: auto; }
+.cal-barre i { min-width: 2px; height: 100%; border-radius: 2px; background: var(--couleur); }
+.cal-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 10px; color: var(--texte-2); font-size: 13px; }
+.cal-legende span { display: inline-flex; align-items: center; gap: 6px; }
+.cal-legende .cal-barre { width: 22px; margin: 0; }
+.ligne-cal { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 8px 4px; border: 0; border-top: 1px solid var(--bord); background: none; text-align: left; font-weight: 650; }
+.ligne-cal .texte { flex: 1; min-width: 0; }
+
+/* ---------- Veille d'examen et résultat ---------- */
+.veille { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(139, 147, 255, 0.1); border: 1px solid rgba(139, 147, 255, 0.35); }
+.checklist { list-style: none; margin: 8px 0 0; padding: 0; }
+.checklist li { padding: 6px 0; }
+.checklist label { display: flex; align-items: flex-start; gap: 10px; font-weight: 600; cursor: pointer; }
+.checklist input { flex: none; width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--accent); }
+.checklist input:checked + span { color: var(--texte-3); text-decoration: line-through; }
+.checklist .sous { display: block; margin: 4px 0 0 32px; color: var(--texte-2); font-size: 14px; font-style: italic; overflow-wrap: anywhere; }
+.ech-veille { color: #c7cbff; }
+.resultat { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: var(--carte-2); }
+.deux-champs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ---------- Écran "Stats" (graphiques dessinés en SVG) ---------- */
+.graphique { display: block; width: 100%; height: auto; overflow: visible; }
+.graphique text { font-family: inherit; }
+.graphique .g-nom { fill: var(--texte); font-size: 14px; font-weight: 600; }
+.graphique .g-valeur { fill: var(--texte-2); font-size: 13px; font-variant-numeric: tabular-nums; }
+.graphique .g-axe { fill: var(--texte-3); font-size: 11px; font-variant-numeric: tabular-nums; }
+.graphique .g-grille { stroke: var(--bord); stroke-width: 1; }
+.graphique .g-choisi { fill: var(--texte); opacity: 0.08; }
+.graphique .g-point { stroke: var(--carte); stroke-width: 2; }
+.graphique [data-action] { cursor: pointer; }
+.legende { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; color: var(--texte-2); font-size: 13px; }
+.legende span { display: inline-flex; align-items: center; gap: 6px; }
+.legende i { width: 10px; height: 10px; border-radius: 3px; background: var(--couleur); }
+.legende i.point { border-radius: 50%; }
+.detail-graphique { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--carte-2); font-size: 14px; }
+.chiffres summary { margin-top: 10px; color: var(--texte-2); font-size: 14px; cursor: pointer; }
+.chiffres table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.chiffres th, .chiffres td { padding: 5px 4px; border-top: 1px solid var(--bord); text-align: left; vertical-align: top; }
+.chiffres th:last-child, .chiffres td:last-child { text-align: right; white-space: nowrap; }
+.chiffres th { color: var(--texte-2); font-weight: 650; }
+.serie { display: flex; align-items: flex-end; gap: 28px; }
+.serie-valeur { display: block; font-size: 52px; font-weight: 750; line-height: 1; }
+.liens-etude { list-style: none; margin: 10px 0 0; padding: 0; }
+.liens-etude li { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 14px; }
+.liens-etude .rond { margin-top: 5px; }
+.badges-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.badge-tuile { padding: 10px 6px; border-radius: 14px; background: var(--carte-2); text-align: center; }
+.badge-tuile .emoji { display: block; font-size: 26px; line-height: 1.3; }
+.badge-tuile strong { display: block; font-size: 13px; line-height: 1.25; }
+.badge-tuile small { display: block; margin-top: 3px; color: var(--texte-3); font-size: 12px; line-height: 1.25; }
+.badge-tuile.verrouille .emoji { filter: grayscale(1); opacity: 0.3; }
+.badge-tuile.verrouille strong { color: var(--texte-3); }
+
+/* ---------- Mode concentration (plein écran noir) ---------- */
+.concentration { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: calc(24px + var(--haut)) 24px calc(90px + var(--bas)); background: #000; color: #d4d6dc; text-align: center; touch-action: none; overscroll-behavior: contain; }
+.conc-phase { color: var(--phase, var(--travail)); font-size: 14px; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.85; }
+.conc-temps { font-size: min(26vw, 150px); font-weight: 700; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.conc-sujet { color: #9a9fa9; font-size: 20px; font-weight: 650; }
+.conc-note { max-width: 32ch; color: #6c717c; font-size: 16px; font-style: italic; overflow-wrap: anywhere; }
+.conc-quitter { position: absolute; left: 50%; bottom: calc(24px + var(--bas)); transform: translateX(-50%); padding: 12px 20px; border: 1px solid #2a2d33; border-radius: 999px; background: none; color: #7d828c; font-weight: 600; white-space: nowrap; }
+
 /* ---------- Formulaires (dans la feuille qui monte du bas) ---------- */
 .champ { display: block; margin: 0 0 18px; font-weight: 650; font-size: 15px; }
 .champ input, .champ select {
@@ -340,7 +429,7 @@ legend { margin-bottom: 8px; padding: 0; font-weight: 650; font-size: 15px; }
 
 <body>
 <!-- =====================================================================
-     STRUCTURE (HTML) : 4 écrans + la barre d'onglets.
+     STRUCTURE (HTML) : 5 écrans + la barre d'onglets.
      Le contenu de chaque écran est fabriqué par le JavaScript plus bas.
      ===================================================================== -->
 <noscript><p style="padding:20px">Active JavaScript pour utiliser cette appli.</p></noscript>
@@ -349,6 +438,7 @@ legend { margin-bottom: 8px; padding: 0; font-weight: 650; font-size: 15px; }
   <section id="vue-aujourdhui" class="vue" aria-label="Aujourd'hui"></section>
   <section id="vue-echeances" class="vue" aria-label="Échéances" hidden></section>
   <section id="vue-chrono" class="vue" aria-label="Chrono" hidden></section>
+  <section id="vue-stats" class="vue" aria-label="Stats" hidden></section>
   <section id="vue-reglages" class="vue" aria-label="Réglages" hidden></section>
 </main>
 
@@ -365,6 +455,10 @@ legend { margin-bottom: 8px; padding: 0; font-weight: 650; font-size: 15px; }
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="8"/><path d="M12 9.5v4l2.6 2.4M9.5 2.5h5"/></svg>
     <span id="onglet-chrono-texte">Chrono</span>
   </button>
+  <button class="onglet" data-onglet="stats" type="button">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 20v-6M12 20V5.5M18.5 20v-9.5M3 20h18"/></svg>
+    <span>Stats</span>
+  </button>
   <button class="onglet" data-onglet="reglages" type="button">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M18 7h2M4 17h3M12 17h8"/><circle cx="15.5" cy="7" r="2.4"/><circle cx="9.5" cy="17" r="2.4"/></svg>
     <span>Réglages</span>
@@ -378,22 +472,30 @@ legend { margin-bottom: 8px; padding: 0; font-weight: 650; font-size: 15px; }
 <div id="fond-dialogue" class="fond-dialogue" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="flash" class="flash"></div>
+<!-- Mode concentration : écran noir avec juste le chrono, la matière et la note du bloc précédent -->
+<div id="concentration" class="concentration" hidden role="dialog" aria-label="Mode concentration">
+  <div class="conc-phase" id="conc-phase"></div>
+  <div class="conc-temps" id="conc-temps" role="timer"></div>
+  <div class="conc-sujet" id="conc-sujet"></div>
+  <div class="conc-note" id="conc-note"></div>
+  <button class="conc-quitter" data-action="quitter-concentration" type="button">Quitter le mode concentration</button>
+</div>
 <!-- Sélecteur de fichier (invisible) pour importer une sauvegarde -->
 <input type="file" id="fichier-import" hidden>
 
 <script>
 'use strict';
 /* =====================================================================
-   COMPORTEMENT (JavaScript) — V2
+   COMPORTEMENT (JavaScript) — V3
 
    Organisation :
      1. Réglages par défaut et données
-     2. Sauvegarde dans le navigateur (localStorage) + migration V1 → V2
+     2. Sauvegarde dans le navigateur (localStorage) + migration vers la V3
      3. Petits outils (dates, durées, textes, couleurs)
-     4. Calculs : temps d'étude, difficulté perso, temps dispo et LE PLAN
-     5. Affichage des 4 écrans
-     6. Formulaires, détail d'une échéance, export / import
-     7. Chrono Pomodoro (+ ressenti après chaque bloc)
+     4. Calculs : temps d'étude, difficulté perso, LE PLAN, stats et badges
+     5. Affichage des 5 écrans (dont Stats et le calendrier)
+     6. Formulaires, détail d'une échéance, résultats, export / import
+     7. Chrono Pomodoro (+ ressenti après chaque bloc, mode concentration)
      8. Clics, événements et démarrage
    ===================================================================== */
 
@@ -405,11 +507,12 @@ legend { margin-bottom: 8px; padding: 0; font-weight: 650; font-size: 15px; }
 // Nom du "tiroir" du localStorage où toutes les données sont rangées.
 // (on garde le nom de la V1 pour retrouver tes données)
 const CLE_STOCKAGE = 'plan-etude-v1';
-// Copie de secours des données d'avant la mise à jour V2 (faite une seule fois).
-const CLE_SECOURS = 'plan-etude-copie-avant-v2';
-// Version du format des données. La V1 = 1 ; la V2 ajoute le type de travail,
-// le ressenti des blocs, l'historique et le suivi du rythme.
-const VERSION_DONNEES = 2;
+// Version du format des données. V1 = 1 ; V2 = 2 (type de travail, ressentis, historique, rythme) ;
+// V3 = 3 (notes et objectifs, checklist de la veille, badges, blocs prévus jour par jour).
+const VERSION_DONNEES = 3;
+// Copie de secours des données d'avant la mise à jour (faite une seule fois).
+// La copie d'avant la V2 ("plan-etude-copie-avant-v2") reste aussi en place.
+const CLE_SECOURS = 'plan-etude-copie-avant-v' + VERSION_DONNEES;
 
 // Couleurs proposées pour les matières.
 const PALETTE = [
@@ -442,6 +545,26 @@ const RESSENTIS = {
   dur: { nom: 'Dur', emoji: '😓', score: 1 },
 };
 const NB_RESSENTIS = 8;  // le coefficient regarde tes 8 derniers ressentis dans la matière
+const NB_RESULTATS = 3;  // … et tes 3 dernières notes (avec un objectif) dans la matière
+
+// Les échelles possibles pour une note.
+const ECHELLES = [
+  { sur: 10, nom: 'sur 10' },
+  { sur: 20, nom: 'sur 20' },
+  { sur: 100, nom: 'en %' },
+];
+
+// Les badges (pour la motivation). "heures-10" se gagne une fois par matière.
+const BADGES = [
+  { id: 'premier-bloc', emoji: '🌱', nom: 'Premier bloc' },
+  { id: 'serie-3', emoji: '🔥', nom: "3 jours d'affilée" },
+  { id: 'serie-7', emoji: '🔥', nom: "7 jours d'affilée" },
+  { id: 'serie-30', emoji: '🏆', nom: "30 jours d'affilée" },
+  { id: 'blocs-50', emoji: '💪', nom: '50 blocs' },
+  { id: 'heures-10', emoji: '📚', nom: '10 h sur une matière' },
+  { id: 'objectif', emoji: '🎯', nom: 'Objectif de note atteint' },
+  { id: 'semaine-parfaite', emoji: '⭐', nom: 'Semaine parfaite' },
+];
 
 // Les réglages de départ. Toutes les durées sont en minutes.
 const REGLAGES_DEFAUT = {
@@ -461,6 +584,7 @@ const REGLAGES_DEFAUT = {
   progression: 3,            // la veille, on étudie 3 fois plus que le premier jour
   joursEnPlusParCoeur: 7,    // "par cœur" : on peut commencer 7 jours plus tôt
   blocsParSession: 2,        // "exercices" : au moins 2 blocs d'affilée
+  echelleNote: 20,           // échelle proposée pour tes notes : 10, 20 ou 100 (pour les %)
   son: true,
   vibration: true,
   ecranAllume: true,
@@ -474,11 +598,15 @@ function donneesVides() {
     version: VERSION_DONNEES,
     matieres: [],   // { id, nom, couleur }
     echeances: [],  // { id, matiereId, type: 'test' | 'examen', date: 'AAAA-MM-JJ', niveau: 1 à 4, chapitres, note,
-                    //   travail: 'parcoeur' | 'exercices' | 'mixte', terminee, termineeLe, rythme }
+                    //   travail: 'parcoeur' | 'exercices' | 'mixte', terminee, termineeLe, rythme,
+                    //   resultat: { note, sur, objectif } ou null, checklist: { idCase: true } }
     blocs: [],      // blocs de travail faits : { id, echeanceId, matiereId, date, debut, minutes, ressenti, note }
     reglages: copie(REGLAGES_DEFAUT),
     chrono: null,   // le chrono en cours (ou null s'il n'y en a pas)
     aEvaluer: null, // le bloc dont on attend le ressenti (Facile / Ok / Dur)
+    badges: {},     // badges gagnés et leur date : { "serie-7": "2026-11-30" }
+    planJours: {},  // blocs prévus chaque jour (pour comparer prévu / fait) : { "2026-11-23": 3 }
+    resumeFerme: null,  // lundi de la semaine dont tu as fermé le résumé
   };
 }
 
@@ -501,6 +629,8 @@ function sauvegarder() {
   }
 }
 
+let migrationFaite = false;  // true si on vient de convertir des données d'une version plus ancienne
+
 function charger() {
   let texte = null;
   let lu = null;
@@ -512,12 +642,13 @@ function charger() {
   }
   donnees = normaliser(lu);
 
-  // MIGRATION : si les données viennent d'une version plus ancienne (V1),
-  // on garde d'abord une copie de secours, puis on les réenregistre au format V2.
+  // MIGRATION : si les données viennent d'une version plus ancienne (V1 ou V2),
+  // on garde d'abord une copie de secours, puis on les réenregistre au format V3.
   if (lu && typeof lu === 'object' && !(lu.version >= VERSION_DONNEES)) {
     try {
       if (!localStorage.getItem(CLE_SECOURS)) localStorage.setItem(CLE_SECOURS, texte);
     } catch (erreur) { /* pas grave */ }
+    migrationFaite = true;
     sauvegarder();
   }
 }
@@ -554,6 +685,8 @@ function normaliser(lu) {
         terminee: e.terminee === true,                                           // nouveau en V2
         termineeLe: estCleDate(e.termineeLe) ? e.termineeLe : null,              // nouveau en V2
         rythme: normaliserRythme(e.rythme),                                      // nouveau en V2
+        resultat: normaliserResultat(e.resultat),                                // nouveau en V3
+        checklist: normaliserChecklist(e.checklist),                             // nouveau en V3
       }));
   }
   if (Array.isArray(lu.blocs)) {
@@ -577,6 +710,18 @@ function normaliser(lu) {
   }
   const aEvaluer = idPropre(lu.aEvaluer);
   if (aEvaluer && d.blocs.some(b => b.id === aEvaluer)) d.aEvaluer = aEvaluer;
+  // Nouveau en V3 : badges gagnés, blocs prévus jour par jour, résumé de la semaine déjà fermé.
+  if (lu.badges && typeof lu.badges === 'object') {
+    for (const [id, date] of Object.entries(lu.badges)) {
+      if (/^[a-z0-9-]+(:[a-zA-Z0-9_-]+)?$/.test(id) && estCleDate(date)) d.badges[id] = date;
+    }
+  }
+  if (lu.planJours && typeof lu.planJours === 'object') {
+    for (const [jour, n] of Object.entries(lu.planJours)) {
+      if (estCleDate(jour) && Number.isInteger(n) && n >= 0) d.planJours[jour] = n;
+    }
+  }
+  if (estCleDate(lu.resumeFerme)) d.resumeFerme = lu.resumeFerme;
   return d;
 }
 
@@ -588,6 +733,25 @@ function normaliserRythme(r) {
     if (estCleDate(jour) && Number.isFinite(minutes) && minutes > 0) prevu[jour] = minutes;
   }
   return { depuis: r.depuis, prevu };
+}
+
+// Le résultat d'une échéance passée : { note, sur: 10 | 20 | 100, objectif (ou null) }
+function normaliserResultat(r) {
+  if (!r || typeof r !== 'object' || ![10, 20, 100].includes(r.sur)) return null;
+  const note = Number(r.note);
+  if (r.note === null || !Number.isFinite(note) || note < 0 || note > r.sur) return null;
+  const objectif = r.objectif === null || r.objectif === undefined ? null : Number(r.objectif);
+  const objectifValide = objectif !== null && Number.isFinite(objectif) && objectif >= 0 && objectif <= r.sur;
+  return { note, sur: r.sur, objectif: objectifValide ? objectif : null };
+}
+
+// Les cases cochées de la checklist de la veille : { "notes": true, "dormir": true }
+function normaliserChecklist(c) {
+  const cases = {};
+  if (c && typeof c === 'object') {
+    for (const [cle, coche] of Object.entries(c)) if (coche === true && /^[a-z0-9-]{1,30}$/.test(cle)) cases[cle] = true;
+  }
+  return cases;
 }
 
 // Part des réglages par défaut et remplace par ceux enregistrés (s'ils sont valides).
@@ -607,6 +771,7 @@ function completerReglages(lus) {
       r[cle] = valeur;
     }
   }
+  if (![10, 20, 100].includes(r.echelleNote)) r.echelleNote = 20;
   return r;
 }
 
@@ -713,6 +878,53 @@ function heure(moment) {
 
 function capitaliser(texte) {
   return texte.charAt(0).toUpperCase() + texte.slice(1);
+}
+
+// Le lundi de la semaine d'une date (une semaine va du lundi au dimanche).
+function lundiDe(cle) {
+  return ajouterJours(cle, -((dateDepuisCle(cle).getDay() + 6) % 7));
+}
+
+// "du 16 au 22 nov." ou "du 30 nov. au 6 déc."
+function texteSemaine(lundi) {
+  const a = dateDepuisCle(lundi);
+  const b = dateDepuisCle(ajouterJours(lundi, 6));
+  const num = d => (d.getDate() === 1 ? '1er' : d.getDate());
+  return a.getMonth() === b.getMonth()
+    ? `du ${num(a)} au ${num(b)} ${MOIS_COURTS[b.getMonth()]}`
+    : `du ${num(a)} ${MOIS_COURTS[a.getMonth()]} au ${num(b)} ${MOIS_COURTS[b.getMonth()]}`;
+}
+
+// "23 nov." (et l'année si ce n'est pas l'année en cours)
+function dateCourteSansJour(cle) {
+  const d = dateDepuisCle(cle);
+  const annee = d.getFullYear() !== new Date().getFullYear() ? ` ${d.getFullYear()}` : '';
+  return `${d.getDate() === 1 ? '1er' : d.getDate()} ${MOIS_COURTS[d.getMonth()]}${annee}`;
+}
+
+// "13,5/20" ou "65 %"
+function formaterNote(note, sur) {
+  return sur === 100 ? `${formaterDecimal(note)} %` : `${formaterDecimal(note)}/${sur}`;
+}
+
+// Lit un nombre tapé à la française ("13,5", "14/20" ou "65 %" marchent aussi). Case vide → null ; pas un nombre → NaN.
+function lireNombre(texte) {
+  const t = String(texte == null ? '' : texte).trim().replace(',', '.').replace(/\s*(%|\/\s*(10|20|100))$/, '');
+  if (!t) return null;
+  return /^\d+(\.\d+)?$/.test(t) ? Number(t) : NaN;
+}
+
+// 0.15 → "+0,15" ; -0.1 → "−0,1" ; 0 → "0"
+function signe(x) {
+  const v = Math.round(x * 100) / 100;
+  if (v > 0) return '+' + formaterDecimal(v);
+  if (v < 0) return '−' + formaterDecimal(-v);
+  return '0';
+}
+
+// Coupe un texte trop long : "Histoire-Géographie" → "Histoire-Géo…"
+function raccourcir(texte, max) {
+  return texte.length > max ? texte.slice(0, max - 1) + '…' : texte;
 }
 
 // 45 → "45 min" ; 90 → "1 h 30" ; 120 → "2 h"
@@ -853,35 +1065,59 @@ function blocsPour(minutes, dureeBloc) {
 }
 
 /* ---------- Coefficient de difficulté perso ----------
-   Chaque matière part de 1,0. On regarde tes 8 derniers ressentis dans la matière :
-   "Dur" compte +1, "Ok" 0, "Facile" −0,6. Coefficient = 1 + 0,5 × moyenne.
-   → 8 fois "Dur" = 1,5 (le maximum) ; 8 fois "Facile" = 0,7 (le minimum) ;
-     un seul "Dur" ne fait monter que d'un peu (1,05).                       */
-function coefsDifficulte(blocs) {
-  const listes = {};
-  const notes = blocs.filter(b => b.matiereId && b.ressenti).sort((x, y) => (x.debut || 0) - (y.debut || 0));
-  for (const b of notes) (listes[b.matiereId] = listes[b.matiereId] || []).push(b.ressenti);
+   Chaque matière part de 1,0. Deux choses le font bouger :
+   1) tes 8 derniers ressentis dans la matière (V2) : "Dur" compte +1, "Ok" 0,
+      "Facile" −0,6 → part "ressentis" = 0,5 × moyenne (de −0,3 à +0,5) ;
+   2) tes 3 dernières notes avec un objectif (V3) : sous l'objectif, ça monte
+      (au moins +0,05, jusqu'à +0,3 par note) ; largement au-dessus (10 points
+      de plus), ça baisse un peu (−0,05, ou −0,1 à 20 points de plus)
+      → part "notes" (de −0,2 à +0,4).
+   Coefficient = 1 + part ressentis + part notes, arrondi à 0,05 près,
+   et toujours entre × 0,7 et × 1,5.                                          */
+
+// Effet d'une note sur la difficulté (en "points" de coefficient). Sans objectif : aucun effet.
+function effetResultat(res) {
+  if (!res || res.objectif === null || res.objectif === undefined) return 0;
+  const ecart = (res.note - res.objectif) / res.sur * 100;   // écart en points de pourcentage
+  if (ecart < 0) return Math.min(0.3, Math.max(0.05, -ecart / 100));  // ex : 11/20 pour 14/20 visé → +0,15
+  if (ecart >= 20) return -0.1;
+  if (ecart >= 10) return -0.05;
+  return 0;   // objectif atteint, sans plus : on ne touche à rien
+}
+
+// Les deux parts de la difficulté d'une matière (pour la calculer et pour l'expliquer à l'écran).
+function partsDifficulte(matiereId, blocs, echeances) {
+  const ressentis = blocs
+    .filter(b => b.matiereId === matiereId && b.ressenti)
+    .sort((x, y) => (x.debut || 0) - (y.debut || 0))
+    .slice(-NB_RESSENTIS)
+    .map(b => b.ressenti);
+  const notes = echeances
+    .filter(e => e.matiereId === matiereId && e.terminee && e.resultat && e.resultat.objectif !== null)
+    .sort((x, y) => (x.date < y.date ? -1 : x.date > y.date ? 1 : 0))
+    .slice(-NB_RESULTATS);
+  return {
+    ressentis,
+    notes,
+    partRessentis: 0.5 * ressentis.reduce((total, r) => total + RESSENTIS[r].score, 0) / NB_RESSENTIS,
+    partNotes: borner(notes.reduce((total, e) => total + effetResultat(e.resultat), 0), -0.2, 0.4),
+  };
+}
+
+function coefsDifficulte(blocs, echeances = []) {
+  const ids = new Set();
+  for (const b of blocs) if (b.matiereId && b.ressenti) ids.add(b.matiereId);
+  for (const e of echeances) if (e.terminee && e.resultat && e.resultat.objectif !== null) ids.add(e.matiereId);
   const coefs = {};
-  for (const id of Object.keys(listes)) {
-    const derniers = listes[id].slice(-NB_RESSENTIS);
-    const somme = derniers.reduce((total, r) => total + RESSENTIS[r].score, 0);
-    const coef = 1 + 0.5 * somme / NB_RESSENTIS;
-    coefs[id] = borner(Math.round(coef * 20) / 20, 0.7, 1.5);  // arrondi à 0,05 près
+  for (const id of ids) {
+    const p = partsDifficulte(id, blocs, echeances);
+    coefs[id] = borner(Math.round((1 + p.partRessentis + p.partNotes) * 20) / 20, 0.7, 1.5);  // arrondi à 0,05 près
   }
   return coefs;
 }
 
 function coefMatiere(matiereId) {
-  return coefsDifficulte(donnees.blocs)[matiereId] || 1;
-}
-
-// Les derniers ressentis d'une matière (pour l'expliquer à l'écran).
-function derniersRessentis(matiereId) {
-  return donnees.blocs
-    .filter(b => b.matiereId === matiereId && b.ressenti)
-    .sort((x, y) => (x.debut || 0) - (y.debut || 0))
-    .slice(-NB_RESSENTIS)
-    .map(b => b.ressenti);
+  return coefsDifficulte(donnees.blocs, donnees.echeances)[matiereId] || 1;
 }
 
 // Durée (en minutes) de "nb" blocs enchaînés, avec les pauses entre les blocs.
@@ -956,7 +1192,7 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
   const r = d.reglages;
   const W = r.travail;                  // durée d'un bloc (25 min)
   const demain = ajouterJours(jour, 1);
-  const coefs = coefsDifficulte(d.blocs);
+  const coefs = coefsDifficulte(d.blocs, d.echeances);
 
   // a) Minutes déjà travaillées pour chaque échéance : avant aujourd'hui, et aujourd'hui.
   const faitAvant = {};
@@ -1117,11 +1353,31 @@ function memoriserRythme(plan) {
   return change;
 }
 
-// Le plan d'aujourd'hui pour tes vraies données (et on retient le rythme prévu).
+// Le plan d'aujourd'hui pour tes vraies données (et on retient le rythme prévu,
+// ainsi que le nombre de blocs prévus chaque jour).
 function planActuel() {
   const plan = calculerPlan(aujourdhui(), donnees);
-  if (memoriserRythme(plan)) sauvegarder();
+  const rythmeChange = memoriserRythme(plan);
+  const joursChange = memoriserPlanJours(plan);
+  if (rythmeChange || joursChange) sauvegarder();
   return plan;
+}
+
+// Retient combien de blocs sont prévus chaque jour (aujourd'hui et les jours à venir).
+// Les jours passés gardent le dernier plan connu : ça sert à comparer "prévu / fait".
+function memoriserPlanJours(plan, d = donnees) {
+  const parJour = {};
+  const limite = ajouterJours(plan.jour, -400);   // on garde un peu plus d'un an
+  for (const [j, n] of Object.entries(d.planJours)) if (j < plan.jour && j >= limite) parJour[j] = n;
+  parJour[plan.jour] = plan.infos.reduce((somme, i) => somme + i.prevuAujourdhui, 0);
+  for (const i of plan.infos) {
+    for (const [j, n] of Object.entries(i.futur)) if (n > 0) parJour[j] = (parJour[j] || 0) + n;
+  }
+  const trie = {};
+  for (const j of Object.keys(parJour).sort()) trie[j] = parJour[j];
+  if (JSON.stringify(trie) === JSON.stringify(d.planJours)) return false;
+  d.planJours = trie;
+  return true;
 }
 
 // Répartit des blocs sur des jours.
@@ -1246,6 +1502,190 @@ function cibleDeplacement(autre, a, libre, depuis) {
 }
 
 
+/* ---------------------------------------------------------------------
+   STATS, BADGES ET VEILLE D'EXAMEN (calculés à partir de tes blocs et notes)
+   --------------------------------------------------------------------- */
+
+// Minutes étudiées par jour, au total et par matière ("libre" = étude libre).
+function etudeParJour(blocs) {
+  const jours = {};
+  for (const b of blocs) {
+    const j = jours[b.date] || (jours[b.date] = { total: 0, parMatiere: {} });
+    const cle = b.matiereId || 'libre';
+    j.total += b.minutes;
+    j.parMatiere[cle] = (j.parMatiere[cle] || 0) + b.minutes;
+  }
+  return jours;
+}
+
+// Minutes par matière entre deux dates (incluses), de la plus travaillée à la moins travaillée.
+function etudeParMatiere(blocs, debut, fin) {
+  const total = {};
+  for (const b of blocs) {
+    if (b.date < debut || b.date > fin) continue;
+    const cle = b.matiereId || 'libre';
+    total[cle] = (total[cle] || 0) + b.minutes;
+  }
+  return Object.entries(total).map(([id, minutes]) => ({ id, minutes })).sort((a, b) => b.minutes - a.minutes);
+}
+
+// Série de jours d'affilée avec de l'étude ("streak") et record.
+// Un jour où ton temps dispo est réglé à 0 ne casse pas la série (et ne la fait pas monter).
+// Aujourd'hui ne casse pas la série tant que la journée n'est pas finie.
+// "atteint" donne la date où la série a atteint 3, 7 et 30 jours pour la première fois.
+function series(d, jour = aujourdhui()) {
+  const etudie = new Set(d.blocs.filter(b => b.minutes > 0 && b.date <= jour).map(b => b.date));
+  const res = { actuelle: 0, record: 0, aujourdhuiFait: etudie.has(jour), atteint: {} };
+  if (!etudie.size) return res;
+  let courant = 0;
+  for (let j = [...etudie].sort()[0]; j <= jour; j = ajouterJours(j, 1)) {
+    if (etudie.has(j)) {
+      courant++;
+      res.record = Math.max(res.record, courant);
+      for (const n of [3, 7, 30]) if (courant >= n && !res.atteint[n]) res.atteint[n] = j;
+    } else if (j !== jour && capaciteDuJour(j, d.reglages) > 0) {
+      courant = 0;
+    }
+  }
+  res.actuelle = courant;
+  return res;
+}
+
+// Résumé d'une semaine (du lundi au dimanche) : temps, matière la plus travaillée, blocs prévus / faits.
+function resumeSemaine(d, lundi) {
+  const dimanche = ajouterJours(lundi, 6);
+  const minutes = (debut, fin) => d.blocs.filter(b => b.date >= debut && b.date <= fin).reduce((s, b) => s + b.minutes, 0);
+  const total = minutes(lundi, dimanche);
+  const joursSuivis = Object.keys(d.planJours).filter(j => j >= lundi && j <= dimanche);
+  return {
+    lundi,
+    dimanche,
+    total,
+    totalAvant: minutes(ajouterJours(lundi, -7), ajouterJours(lundi, -1)),
+    top: etudeParMatiere(d.blocs, lundi, dimanche).find(x => x.id !== 'libre') || null,
+    faits: Math.round(total / d.reglages.travail),   // en blocs (blocs partiels compris)
+    prevus: joursSuivis.length ? joursSuivis.reduce((s, j) => s + d.planJours[j], 0) : null,
+  };
+}
+
+// Tes notes, avec le temps étudié pour chaque échéance (de la plus ancienne à la plus récente).
+function resultatsAvecEtude(d) {
+  return d.echeances
+    .filter(e => e.terminee && e.resultat)
+    .map(e => ({
+      echeance: e,
+      pourcent: e.resultat.note / e.resultat.sur * 100,
+      minutes: d.blocs.filter(b => b.echeanceId === e.id).reduce((s, b) => s + b.minutes, 0),
+      atteint: e.resultat.objectif !== null ? e.resultat.note >= e.resultat.objectif : null,
+    }))
+    .sort((a, b) => (a.echeance.date < b.echeance.date ? -1 : a.echeance.date > b.echeance.date ? 1 : 0));
+}
+
+// Est-ce que deux choses vont ensemble ? De −1 (quand l'une monte, l'autre baisse)
+// à +1 (elles montent ensemble). null si on ne peut pas le dire.
+function correlation(points) {
+  const n = points.length;
+  if (n < 2) return null;
+  const mx = points.reduce((s, p) => s + p.x, 0) / n;
+  const my = points.reduce((s, p) => s + p.y, 0) / n;
+  let sxy = 0;
+  let sxx = 0;
+  let syy = 0;
+  for (const p of points) {
+    sxy += (p.x - mx) * (p.y - my);
+    sxx += (p.x - mx) ** 2;
+    syy += (p.y - my) ** 2;
+  }
+  return sxx && syy ? sxy / Math.sqrt(sxx * syy) : null;
+}
+
+// Les badges que tes données méritent, avec la date où ils ont été gagnés.
+function badgesMerites(d, jour = aujourdhui()) {
+  const gagnes = {};
+  const blocs = d.blocs
+    .filter(b => b.date <= jour)
+    .sort((x, y) => (x.date < y.date ? -1 : x.date > y.date ? 1 : (x.debut || 0) - (y.debut || 0)));
+  if (blocs.length) gagnes['premier-bloc'] = blocs[0].date;
+  if (blocs.length >= 50) gagnes['blocs-50'] = blocs[49].date;
+  const s = series(d, jour);
+  for (const n of [3, 7, 30]) if (s.atteint[n]) gagnes['serie-' + n] = s.atteint[n];
+  const cumul = {};
+  for (const b of blocs) {
+    if (!b.matiereId) continue;
+    cumul[b.matiereId] = (cumul[b.matiereId] || 0) + b.minutes;
+    if (cumul[b.matiereId] >= 600 && !gagnes['heures-10:' + b.matiereId]) gagnes['heures-10:' + b.matiereId] = b.date;
+  }
+  const reussis = resultatsAvecEtude(d).filter(x => x.atteint).map(x => x.echeance.termineeLe || x.echeance.date).sort();
+  if (reussis.length) gagnes.objectif = reussis[0];
+  // Semaine parfaite : une semaine finie, avec au moins 3 blocs prévus, et tous faits.
+  for (const lundi of [...new Set(Object.keys(d.planJours).map(lundiDe))].sort()) {
+    if (ajouterJours(lundi, 6) >= jour) continue;   // semaine pas encore finie
+    const r = resumeSemaine(d, lundi);
+    if (r.prevus >= 3 && r.faits >= r.prevus) {
+      gagnes['semaine-parfaite'] = r.dimanche;
+      break;
+    }
+  }
+  return gagnes;
+}
+
+// Nom et emoji d'un badge (ex : "heures-10:abc" → "10 h en Maths").
+function infoBadge(id) {
+  const [base, matiereId] = id.split(':');
+  const modele = BADGES.find(b => b.id === base) || { emoji: '🏅', nom: base };
+  return matiereId ? { emoji: modele.emoji, nom: `10 h en ${nomMatiere(matiereId)}` } : modele;
+}
+
+// Ajoute les badges nouvellement gagnés (on n'en retire jamais) et te prévient discrètement.
+// Renvoie la liste des nouveaux badges.
+function verifierBadges(silencieux = false) {
+  const nouveaux = [];
+  for (const [id, date] of Object.entries(badgesMerites(donnees))) {
+    if (!donnees.badges[id]) {
+      donnees.badges[id] = date;
+      nouveaux.push(id);
+    }
+  }
+  if (!nouveaux.length) return nouveaux;
+  sauvegarder();
+  if (!silencieux) {
+    const noms = nouveaux.map(id => { const b = infoBadge(id); return `${b.emoji} ${b.nom}`; }).join(', ');
+    setTimeout(() => afficherToast(`🏅 Nouveau badge : ${noms}`), 3000);   // après le message "Bloc enregistré"
+  }
+  return nouveaux;
+}
+
+// La veille d'un test ou d'un examen (pas encore passé) ?
+function estVeille(e, jour = aujourdhui()) {
+  return !e.terminee && ecartJours(jour, e.date) === 1;
+}
+
+// La checklist de révision rapide de la veille, faite à partir de tes blocs et de tes notes.
+function checklistVeille(e) {
+  const blocs = blocsDe(e.id);
+  const notes = blocs.filter(b => b.note);
+  const durs = blocs.filter(b => b.ressenti === 'dur');
+  const methodes = {
+    parcoeur: 'Me faire interroger, ou réciter à voix haute sans regarder',
+    exercices: 'Refaire 1 ou 2 exercices types sans regarder la correction',
+    mixte: "Faire une fiche résumé d'une page avec l'essentiel",
+  };
+  const liste = [];
+  if (notes.length) liste.push({ id: 'notes', texte: `Relire mes notes de blocs (${notes.length})`, details: notes.slice(0, 5).map(b => `« ${b.note} »`) });
+  if (durs.length) liste.push({ id: 'durs', texte: `Revoir les points marqués « Dur » (${durs.length})`, details: durs.slice(0, 5).map(b => (b.note ? `« ${b.note} »` : `bloc du ${dateCourte(b.date)}`)) });
+  if (e.note) liste.push({ id: 'programme', texte: `Vérifier le programme : « ${e.note} »` });
+  liste.push({ id: 'methode', texte: methodes[e.travail] || methodes.mixte });
+  liste.push({ id: 'affaires', texte: 'Préparer mes affaires (stylos, calculatrice, carte…)' });
+  liste.push({ id: 'dormir', texte: 'Me coucher tôt 😴' });
+  return liste;
+}
+
+function avancementChecklist(e) {
+  const liste = checklistVeille(e);
+  return { liste, coches: liste.filter(item => e.checklist[item.id]).length };
+}
+
+
 /* =====================================================================
    5. AFFICHAGE DES ÉCRANS
    Chaque écran est "dessiné" par une fonction qui fabrique du HTML.
@@ -1256,6 +1696,14 @@ let vueActive = 'aujourdhui';
 let choixChrono = null;          // échéance choisie dans l'écran Chrono
 let passeesOuvertes = false;     // section "Historique" ouverte ?
 let brouillonNote = '';          // note en cours d'écriture après un bloc (gardée si l'écran se redessine)
+let vueEcheances = 'liste';      // onglet Échéances : "liste" ou "calendrier"
+let moisCalendrier = null;       // mois affiché dans le calendrier ("AAAA-MM-01")
+let jourCalendrier = null;       // jour touché dans le calendrier
+let periodeStats = 'semaine';    // graphique par matière : "semaine" ou "mois"
+let jourStats = null;            // jour touché dans le graphique des 30 jours
+let pointStats = null;           // note touchée dans le graphique "étude et notes"
+const chiffresOuverts = new Set();  // tableaux "Voir les chiffres" ouverts
+let concentration = false;       // mode concentration affiché ?
 
 // Petites icônes dessinées en SVG (elles s'affichent pareil sur tous les téléphones).
 const ICONES = {
@@ -1267,7 +1715,7 @@ const ICONES = {
 
 function afficherVue(nom) {
   vueActive = nom;
-  for (const v of ['aujourdhui', 'echeances', 'chrono', 'reglages']) {
+  for (const v of ['aujourdhui', 'echeances', 'chrono', 'stats', 'reglages']) {
     document.getElementById('vue-' + v).hidden = v !== nom;
   }
   document.querySelectorAll('.onglet').forEach(b => {
@@ -1282,6 +1730,7 @@ function rafraichir() {
   if (vueActive === 'aujourdhui') afficherAujourdhui();
   else if (vueActive === 'echeances') afficherEcheances();
   else if (vueActive === 'chrono') afficherChrono();
+  else if (vueActive === 'stats') afficherStats();
   else afficherReglages();
   majOngletChrono();
 }
@@ -1314,17 +1763,26 @@ function afficherAujourdhui() {
   h += carteRessenti();
 
   if (!donnees.echeances.length) {
-    document.getElementById('vue-aujourdhui').innerHTML = h + carteBienvenue();
+    document.getElementById('vue-aujourdhui').innerHTML = h + carteResumeSemaine(jour) + carteBienvenue();
     return;
   }
 
   const plan = planActuel();
   h += bandeauChrono();
+  h += carteResumeSemaine(jour);
 
   for (const e of donnees.echeances.filter(x => x.date === jour && !x.terminee)) {
     h += `<div class="info-jour" style="${styleMatiere(e.matiereId)}">
         <span class="texte">📌 C'est aujourd'hui : <strong>${echapper(nomEcheanceLong(e))}</strong>. Bonne chance !</span>
         <button class="btn btn-petit" data-action="test-passe" data-id="${e.id}" type="button">✓ Passé</button>
+      </div>`;
+  }
+  // Veille d'un test ou d'un examen : la checklist de révision rapide.
+  for (const e of donnees.echeances.filter(x => estVeille(x, jour))) {
+    const { liste, coches } = avancementChecklist(e);
+    h += `<div class="info-jour" style="${styleMatiere(e.matiereId)}">
+        <span class="texte">🌙 Demain : <strong>${echapper(nomEcheanceLong(e))}</strong>. Ta checklist de la veille : ${coches}/${liste.length}.</span>
+        <button class="btn btn-petit" data-action="detail-echeance" data-id="${e.id}" type="button">Voir</button>
       </div>`;
   }
   h += carteAlertes(plan);
@@ -1497,6 +1955,15 @@ function afficherEcheances() {
     return;
   }
 
+  h += `<div class="bascule" role="group" aria-label="Affichage des échéances">
+      <button type="button" data-action="vue-echeances" data-vue="liste" aria-pressed="${vueEcheances === 'liste'}">Liste</button>
+      <button type="button" data-action="vue-echeances" data-vue="calendrier" aria-pressed="${vueEcheances === 'calendrier'}">Calendrier</button>
+    </div>`;
+  if (vueEcheances === 'calendrier') {
+    document.getElementById('vue-echeances').innerHTML = h + carteCalendrier(plan);
+    return;
+  }
+
   if (!aVenir.length) {
     h += `<div class="carte"><p class="vide">Aucun test ni examen à venir.</p><p class="aide centre">Appuie sur « + Ajouter » pour en créer un.</p></div>`;
   }
@@ -1536,8 +2003,22 @@ function carteEcheance(e, plan) {
       <div class="ech-progres">${formaterDuree(fait)} faites sur ${formaterDuree(total)}${total > 0 && fait >= total ? ' ✓' : ''}</div>
       ${e.note ? `<div class="ech-note">📝 ${echapper(e.note)}</div>` : ''}
       ${derniere ? `<div class="ech-note">🔖 Dernière fois : « ${echapper(derniere.note)} »</div>` : ''}
+      ${e.resultat ? `<div class="ech-note">🎓 ${texteResultat(e.resultat)}</div>` : ''}
       ${statutEcheance(e, plan)}
+      ${estVeille(e, plan.jour) ? ligneVeille(e) : ''}
     </article>`;
+}
+
+// "Note : 14/20 (objectif 12/20 🎯)"
+function texteResultat(r) {
+  let texte = `Note : ${formaterNote(r.note, r.sur)}`;
+  if (r.objectif !== null) texte += ` (objectif ${formaterNote(r.objectif, r.sur)}${r.note >= r.objectif ? ' 🎯' : ''})`;
+  return texte;
+}
+
+function ligneVeille(e) {
+  const { liste, coches } = avancementChecklist(e);
+  return `<div class="ech-statut ech-veille">🌙 C'est la veille : ta checklist de révision (${coches}/${liste.length}) ›</div>`;
 }
 
 function statutEcheance(e, plan) {
@@ -1561,7 +2042,7 @@ function statutEcheance(e, plan) {
 
 function sectionMatieres() {
   const jour = aujourdhui();
-  const coefs = coefsDifficulte(donnees.blocs);
+  const coefs = coefsDifficulte(donnees.blocs, donnees.echeances);
   const triees = [...donnees.matieres].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
   let h = `<section class="carte" id="matieres">
       <div class="carte-titre"><h2>Mes matières</h2><button class="btn btn-petit" data-action="ajouter-matiere" type="button">+ Ajouter</button></div>
@@ -1664,7 +2145,8 @@ function chronoActif(c) {
           : `<button class="btn btn-geant" data-action="pause" type="button">${ICONES.pause} Pause</button>`}
         <button class="btn btn-geant btn-danger" data-action="arreter" type="button">${ICONES.stop} Arrêter</button>
       </div>
-      ${c.phase !== 'travail' ? `<button class="btn btn-plein" data-action="passer-pause" type="button">${ICONES.suivant} Passer la pause</button>` : ''}`;
+      ${c.phase !== 'travail' ? `<button class="btn btn-plein" data-action="passer-pause" type="button">${ICONES.suivant} Passer la pause</button>` : ''}
+      <div class="pile"><button class="btn btn-plein" data-action="concentration" type="button">🌙 Mode concentration (écran noir)</button></div>`;
   }
 
   return `<section class="chrono" style="--phase:${p.couleur}">
@@ -1745,6 +2227,470 @@ function majOngletChrono() {
   }
 }
 
+/* ---------- Résumé de la semaine (le lundi, en haut de "Aujourd'hui") ---------- */
+
+// Visible à partir du lundi, jusqu'à ce que tu le fermes (×).
+function carteResumeSemaine(jour) {
+  const lundiActuel = lundiDe(jour);
+  if (donnees.resumeFerme === lundiActuel) return '';
+  const r = resumeSemaine(donnees, ajouterJours(lundiActuel, -7));
+  if (!r.total && !r.prevus) return '';   // rien à résumer
+  const s = series(donnees, jour);
+  const ecart = r.total - r.totalAvant;
+  const compare = ecart === 0
+    ? "autant que la semaine d'avant"
+    : `${ecart > 0 ? '+' : '−'}${formaterDuree(Math.abs(ecart))} par rapport à la semaine d'avant`;
+  const blocs = r.prevus !== null
+    ? `<span class="tuile-valeur">${r.faits} / ${r.prevus}</span><span class="tuile-label">blocs faits / prévus</span>`
+    : `<span class="tuile-valeur">${r.faits}</span><span class="tuile-label">blocs faits</span><span class="tuile-delta">(les blocs prévus sont suivis depuis la V3)</span>`;
+  return `<section class="carte resume" aria-label="Résumé de la semaine">
+      <div class="carte-titre"><h2>📊 Ta semaine ${texteSemaine(r.lundi)}</h2><button class="fermer-x" data-action="fermer-resume" type="button" aria-label="Fermer le résumé">×</button></div>
+      <div class="tuiles">
+        <div class="tuile"><span class="tuile-valeur">${formaterDuree(r.total)}</span><span class="tuile-label">d'étude</span><span class="tuile-delta">${compare}</span></div>
+        <div class="tuile"><span class="tuile-valeur">${r.top ? echapper(nomMatiere(r.top.id)) : '—'}</span><span class="tuile-label">${r.top ? `la plus travaillée (${formaterDuree(r.top.minutes)})` : 'matière la plus travaillée'}</span></div>
+        <div class="tuile">${blocs}</div>
+        <div class="tuile"><span class="tuile-valeur">🔥 ${pluriel(s.actuelle, 'jour')}</span><span class="tuile-label">d'affilée (record : ${pluriel(s.record, 'jour')})</span></div>
+      </div>
+      <button class="lien" data-action="aller-stats" type="button">Voir toutes mes stats</button>
+    </section>`;
+}
+
+/* ---------- Calendrier (dans l'onglet Échéances) ---------- */
+
+function carteCalendrier(plan) {
+  const jour = plan.jour;
+  const premier = moisCalendrier || jour.slice(0, 8) + '01';
+  const d0 = dateDepuisCle(premier);
+  const moisSuivant = cleDate(new Date(d0.getFullYear(), d0.getMonth() + 1, 1, 12));
+  const debut = lundiDe(premier);
+  const fin = ajouterJours(lundiDe(ajouterJours(moisSuivant, -1)), 6);
+  const etude = etudeParJour(donnees.blocs);
+  const choisi = jourCalendrier || (jour >= premier && jour < moisSuivant ? jour : null);
+
+  let cases = ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(x => `<span class="cal-jsem" aria-hidden="true">${x}</span>`).join('');
+  for (let j = debut; j <= fin; j = ajouterJours(j, 1)) {
+    const echs = donnees.echeances.filter(e => e.date === j).sort(comparerPriorite);
+    // La petite barre : les blocs prévus (aujourd'hui et après) ou faits (avant), aux couleurs des matières.
+    const parts = j >= jour
+      ? partsPrevues(plan, j)
+      : Object.entries((etude[j] || { parMatiere: {} }).parMatiere).map(([id, minutes]) => ({ id, valeur: minutes }));
+    const barre = parts.map(p => `<i style="flex:${p.valeur};--couleur:${couleurId(p.id)}"></i>`).join('');
+    const marques = echs.map(e => `<i class="cal-ech ${e.type}" style="--couleur:${couleurMatiere(e.matiereId)}"></i>`).join('');
+    const etiquette = capitaliser(dateLongue(j)) + (echs.length ? ' : ' + echs.map(e => nomEcheanceLong(e)).join(', ') : '');
+    cases += `<button class="cal-jour${j >= premier && j < moisSuivant ? '' : ' hors'}${j === jour ? ' auj' : ''}${j === choisi ? ' choisi' : ''}" data-action="cal-jour" data-jour="${j}" type="button" aria-label="${echapper(etiquette)}">
+        <span class="cal-num">${dateDepuisCle(j).getDate()}</span>
+        <span class="cal-marques">${marques}</span>
+        <span class="cal-barre">${barre}</span>
+      </button>`;
+  }
+  return `<section class="carte calendrier">
+      <div class="cal-entete">
+        <button class="cal-nav" data-action="cal-mois" data-sens="-1" type="button" aria-label="Mois précédent">‹</button>
+        <h2>${MOIS[d0.getMonth()]} ${d0.getFullYear()}</h2>
+        <button class="cal-nav" data-action="cal-mois" data-sens="1" type="button" aria-label="Mois suivant">›</button>
+      </div>
+      <div class="cal-grille">${cases}</div>
+      <div class="cal-legende">
+        <span><i class="cal-ech" style="--couleur:var(--texte-2)"></i>test</span>
+        <span><i class="cal-ech examen" style="--couleur:var(--texte-2)"></i>examen</span>
+        <span><span class="cal-barre"><i style="flex:1;--couleur:var(--texte-2)"></i></span>blocs prévus (ou faits)</span>
+      </div>
+    </section>
+    ${choisi ? detailJourCalendrier(choisi, plan) : '<p class="aide centre">Touche un jour pour voir ce qui est prévu.</p>'}`;
+}
+
+// Les blocs prévus un jour donné, par matière.
+function partsPrevues(plan, j) {
+  return plan.infos
+    .map(i => ({ id: i.echeance.matiereId, valeur: j === plan.jour ? i.prevuAujourdhui : (i.futur[j] || 0) }))
+    .filter(p => p.valeur > 0);
+}
+
+// Ce qui se passe le jour touché dans le calendrier.
+function detailJourCalendrier(j, plan) {
+  const echs = donnees.echeances.filter(e => e.date === j).sort(comparerPriorite);
+  let h = `<section class="carte"><h2>${capitaliser(dateLongue(j))}</h2>`;
+  for (const e of echs) {
+    h += `<button class="ligne-cal" data-action="detail-echeance" data-id="${e.id}" type="button" style="${styleMatiere(e.matiereId)}">
+        <span class="rond"></span>
+        <span class="texte">📌 ${e.type === 'examen' ? 'Examen' : 'Test'} ${echapper(de(nomMatiere(e.matiereId)))}${e.terminee ? ' (passé)' : ''}</span>
+        <span class="chevron" aria-hidden="true">›</span>
+      </button>`;
+  }
+  if (j >= plan.jour) {
+    const prevus = plan.infos
+      .map(i => ({ i, n: j === plan.jour ? i.prevuAujourdhui : (i.futur[j] || 0) }))
+      .filter(x => x.n > 0);
+    h += prevus.length
+      ? `<p class="aide">Prévu :</p><div class="puces" style="margin-top:6px">${prevus.map(x => `<span class="puce" style="${styleMatiere(x.i.echeance.matiereId)}">${echapper(nomMatiere(x.i.echeance.matiereId))} (${x.i.echeance.type}) · ${pluriel(x.n, 'bloc')}</span>`).join('')}</div>`
+      : `<p class="aide">Rien de prévu ce jour-là.</p>`;
+  }
+  if (j <= plan.jour) {
+    const faits = etudeParMatiere(donnees.blocs, j, j);
+    if (faits.length) h += `<p class="aide">Fait : ${faits.map(x => `${echapper(nomCourtId(x.id))} ${formaterDuree(x.minutes)}`).join(' · ')}</p>`;
+    else if (j < plan.jour) h += `<p class="aide">Aucun bloc fait ce jour-là.</p>`;
+  }
+  return h + `</section>`;
+}
+
+function changerMois(sens) {
+  const base = dateDepuisCle(moisCalendrier || aujourdhui().slice(0, 8) + '01');
+  moisCalendrier = cleDate(new Date(base.getFullYear(), base.getMonth() + sens, 1, 12));
+  jourCalendrier = null;
+  rafraichir();
+}
+
+/* ---------- Écran "Stats" (graphiques dessinés en SVG, sans bibliothèque) ---------- */
+
+// Couleur et nom d'une "matière" de stats ("libre" = étude libre, sans matière).
+function couleurId(id) {
+  return id === 'libre' ? '#8b93ff' : couleurMatiere(id);
+}
+function nomCourtId(id) {
+  return id === 'libre' ? 'Étude libre' : nomMatiere(id);
+}
+
+// Largeur disponible pour un graphique (en pixels), pour que le texte garde sa vraie taille.
+function largeurGraphique() {
+  const vue = document.getElementById('vue-stats');
+  const base = vue && vue.clientWidth ? vue.clientWidth : Math.min(window.innerWidth, 560) - 32;
+  return Math.max(240, Math.round(base - 34));   // moins les marges et la bordure de la carte
+}
+
+const n1 = v => Math.round(v * 10) / 10;   // arrondi à 0,1 px (pour alléger le dessin)
+
+// Une barre horizontale : bout arrondi à droite, base carrée à gauche.
+function barreH(x, y, l, h, r = 4) {
+  const rr = Math.min(r, l, h / 2);
+  return `M${n1(x)},${n1(y)}H${n1(x + l - rr)}Q${n1(x + l)},${n1(y)} ${n1(x + l)},${n1(y + rr)}V${n1(y + h - rr)}Q${n1(x + l)},${n1(y + h)} ${n1(x + l - rr)},${n1(y + h)}H${n1(x)}Z`;
+}
+// Une colonne : haut arrondi, base carrée.
+function barreV(x, y, l, h, r = 4) {
+  const rr = Math.min(r, h, l / 2);
+  return `M${n1(x)},${n1(y + h)}V${n1(y + rr)}Q${n1(x)},${n1(y)} ${n1(x + rr)},${n1(y)}H${n1(x + l - rr)}Q${n1(x + l)},${n1(y)} ${n1(x + l)},${n1(y + rr)}V${n1(y + h)}Z`;
+}
+
+// Légende (seulement s'il y a au moins 2 matières : sinon le titre suffit).
+function legende(ids, forme = 'carre') {
+  if (ids.length < 2) return '';
+  return `<div class="legende">${ids.map(id => `<span><i${forme === 'point' ? ' class="point"' : ''} style="--couleur:${couleurId(id)}"></i>${echapper(nomCourtId(id))}</span>`).join('')}</div>`;
+}
+
+// Un tableau "Voir les chiffres" (pour lire les valeurs sans toucher le graphique).
+function tableauChiffres(cle, titre, entetes, lignes) {
+  return `<details class="chiffres" data-cle="${cle}"${chiffresOuverts.has(cle) ? ' open' : ''}><summary>${titre}</summary>
+      <table><thead><tr>${entetes.map(t => `<th>${t}</th>`).join('')}</tr></thead>
+      <tbody>${lignes.length ? lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${entetes.length}">Rien pour l'instant</td></tr>`}</tbody></table>
+    </details>`;
+}
+
+function afficherStats() {
+  const vue = document.getElementById('vue-stats');
+  const jour = aujourdhui();
+  verifierBadges();
+  let h = `<header class="entete"><h1>Stats</h1></header>`;
+  if (!donnees.blocs.length && !resultatsAvecEtude(donnees).length) {
+    h += `<section class="carte"><p class="vide">Pas encore de stats 📊</p>
+        <p class="aide centre">Fais ton premier bloc avec le chrono : ta série, tes graphiques et tes badges apparaîtront ici.</p></section>`;
+    vue.innerHTML = h + carteBadges(jour);
+    return;
+  }
+  const L = largeurGraphique();
+  h += carteSerie(jour);
+  h += carteParMatiere(jour, L);
+  h += carte30Jours(jour, L);
+  h += carteNotes(L);
+  h += carteEtudeEtNotes(L);
+  h += carteBadges(jour);
+  vue.innerHTML = h;
+}
+
+// Série de jours d'affilée (streak) + record.
+function carteSerie(jour) {
+  const s = series(donnees, jour);
+  const message = s.aujourdhuiFait
+    ? "Tu as étudié aujourd'hui ✓"
+    : (s.actuelle ? "Fais un bloc aujourd'hui pour continuer ta série !" : "Un bloc aujourd'hui, et c'est reparti !");
+  return `<section class="carte"><h2>🔥 Ma série</h2>
+      <div class="serie">
+        <div><span class="serie-valeur">${s.actuelle}</span><span class="tuile-label">jour${s.actuelle > 1 ? 's' : ''} d'affilée</span></div>
+        <div><span class="tuile-valeur">${s.record}</span><span class="tuile-label">record</span></div>
+      </div>
+      <p class="aide">${message} Les jours où ton temps dispo est à 0 ne cassent pas la série.</p>
+    </section>`;
+}
+
+// Temps par matière, cette semaine ou ce mois-ci.
+function carteParMatiere(jour, L) {
+  const debut = periodeStats === 'mois' ? jour.slice(0, 8) + '01' : lundiDe(jour);
+  const lignes = etudeParMatiere(donnees.blocs, debut, jour);
+  const total = lignes.reduce((s, x) => s + x.minutes, 0);
+  const quand = periodeStats === 'mois' ? 'ce mois-ci' : 'cette semaine';
+  let h = `<section class="carte"><div class="carte-titre"><h2>⏱ Temps par matière</h2><span class="etiquette">${formaterDuree(total)}</span></div>
+      <div class="bascule" role="group" aria-label="Période">
+        <button type="button" data-action="periode-stats" data-periode="semaine" aria-pressed="${periodeStats === 'semaine'}">Cette semaine</button>
+        <button type="button" data-action="periode-stats" data-periode="mois" aria-pressed="${periodeStats === 'mois'}">Ce mois-ci</button>
+      </div>`;
+  if (!lignes.length) {
+    let aide = `Pas encore de bloc ${quand}.`;
+    if (periodeStats === 'semaine') {
+      const avant = etudeParMatiere(donnees.blocs, ajouterJours(debut, -7), ajouterJours(debut, -1)).reduce((s, x) => s + x.minutes, 0);
+      if (avant) aide += ` La semaine dernière : ${formaterDuree(avant)}.`;
+    }
+    return h + `<p class="aide centre">${aide}</p></section>`;
+  }
+  h += graphiqueBarres(
+    lignes.map(x => ({ nom: nomCourtId(x.id), couleur: couleurId(x.id), valeur: x.minutes, texte: formaterDuree(x.minutes) })),
+    L, `Temps d'étude par matière ${quand}`);
+  return h + `</section>`;
+}
+
+// Barres horizontales : une ligne par matière (nom à gauche, valeur au bout de la barre).
+function graphiqueBarres(lignes, L, titre, max = null) {
+  const hLigne = 34;
+  const epaisseur = 14;
+  const xBarre = Math.min(118, Math.round(L * 0.34));
+  const placeTexte = Math.min(150, 12 + 7.2 * Math.max(...lignes.map(l => l.texte.length)));
+  const largeurMax = Math.max(24, L - xBarre - placeTexte);
+  const plafond = max || Math.max(1, ...lignes.map(l => l.valeur));
+  const H = lignes.length * hLigne;
+  let svg = '';
+  lignes.forEach((l, k) => {
+    const y = k * hLigne + (hLigne - epaisseur) / 2;
+    const w = Math.max(3, l.valeur / plafond * largeurMax);
+    svg += `<text class="g-nom" x="0" y="${n1(y + epaisseur / 2)}" dominant-baseline="central">${echapper(raccourcir(l.nom, Math.max(6, Math.floor((xBarre - 8) / 8))))}</text>`;
+    svg += `<path d="${barreH(xBarre, y, w, epaisseur)}" fill="${l.couleur}"><title>${echapper(l.nom)} : ${echapper(l.texte)}</title></path>`;
+    svg += `<text class="g-valeur" x="${n1(xBarre + w + 6)}" y="${n1(y + epaisseur / 2)}" dominant-baseline="central">${echapper(l.texte)}</text>`;
+  });
+  return `<svg class="graphique" viewBox="0 0 ${L} ${H}" width="${L}" height="${H}" role="img" aria-label="${echapper(titre)}">${svg}</svg>`;
+}
+
+// Temps d'étude chaque jour sur les 30 derniers jours (colonnes empilées par matière).
+function carte30Jours(jour, L) {
+  const debut = ajouterJours(jour, -29);
+  const etude = etudeParJour(donnees.blocs);
+  const jours = [];
+  for (let j = debut; j <= jour; j = ajouterJours(j, 1)) jours.push({ jour: j, ...(etude[j] || { total: 0, parMatiere: {} }) });
+  // Ordre fixe des matières : chacune garde toujours sa place et sa couleur.
+  const presentes = new Set(jours.flatMap(x => Object.keys(x.parMatiere)));
+  const ordre = [
+    ...donnees.matieres.map(m => m.id).filter(id => presentes.has(id)),
+    ...[...presentes].filter(id => id !== 'libre' && !trouverMatiere(id)),
+    ...(presentes.has('libre') ? ['libre'] : []),
+  ];
+  const total = jours.reduce((s, x) => s + x.total, 0);
+  const nbJours = jours.filter(x => x.total > 0).length;
+
+  // Échelle : 3 lignes (0, la moitié, le haut) sur des valeurs rondes.
+  const maxMin = Math.max(1, ...jours.map(x => x.total));
+  const pas = maxMin <= 60 ? 30 : 60 * Math.ceil(maxMin / 120);
+  const plafond = 2 * pas;
+  const gauche = 44;
+  const haut = 8;
+  const hPlot = 140;
+  const H = haut + hPlot + 24;
+  const largeurPlot = L - gauche;
+  const slot = largeurPlot / jours.length;
+  const epaisseur = Math.min(24, Math.max(2, slot - 2));   // 2 px d'air entre deux colonnes
+
+  let svg = '';
+  const kChoisi = jours.findIndex(x => x.jour === jourStats);
+  if (kChoisi >= 0) svg += `<rect class="g-choisi" x="${n1(gauche + kChoisi * slot)}" y="${haut}" width="${n1(slot)}" height="${hPlot}" rx="3"/>`;
+  for (const v of [0, pas, plafond]) {
+    const y = n1(haut + hPlot - v / plafond * hPlot);
+    svg += `<line class="g-grille" x1="${gauche}" x2="${L}" y1="${y}" y2="${y}"/>`;
+    svg += `<text class="g-axe" x="${gauche - 6}" y="${y}" text-anchor="end" dominant-baseline="central">${v ? formaterDuree(v) : '0'}</text>`;
+  }
+  jours.forEach((x, k) => {
+    if (!x.total) return;
+    const xb = gauche + k * slot + (slot - epaisseur) / 2;
+    const parts = ordre.filter(id => x.parMatiere[id] > 0);
+    const hTotal = Math.max(1.5, x.total / plafond * hPlot);
+    const place = Math.max(parts.length, hTotal - 2 * (parts.length - 1));   // 2 px d'air entre les morceaux
+    let yBas = haut + hPlot;
+    parts.forEach((id, i) => {
+      const hp = Math.max(1, x.parMatiere[id] / x.total * place);
+      const y = yBas - hp;
+      const forme = i === parts.length - 1 ? barreV(xb, y, epaisseur, hp) : `M${n1(xb)},${n1(y)}h${n1(epaisseur)}v${n1(hp)}h${n1(-epaisseur)}Z`;
+      svg += `<path d="${forme}" fill="${couleurId(id)}"/>`;
+      yBas = y - 2;
+    });
+  });
+  // Une date par semaine sous l'axe (la dernière = aujourd'hui).
+  for (let k = jours.length - 1; k >= 0; k -= 7) {
+    const d = dateDepuisCle(jours[k].jour);
+    const dernier = k === jours.length - 1;
+    svg += `<text class="g-axe" x="${n1(dernier ? L : gauche + k * slot + slot / 2)}" y="${haut + hPlot + 16}" text-anchor="${dernier ? 'end' : 'middle'}">${dernier ? "auj." : `${d.getDate()} ${MOIS_COURTS[d.getMonth()]}`}</text>`;
+  }
+  // Zone tactile sur toute la largeur : le jour le plus proche du doigt est choisi.
+  svg += `<rect x="${gauche}" y="0" width="${n1(largeurPlot)}" height="${haut + hPlot}" fill="transparent" data-action="stat-jour" data-debut="${debut}" data-gauche="${gauche}" data-slot="${slot}"/>`;
+
+  let detail = "Touche une colonne pour voir le détail d'un jour.";
+  if (kChoisi >= 0) {
+    const x = jours[kChoisi];
+    const parts = ordre.filter(id => x.parMatiere[id] > 0).map(id => `${echapper(nomCourtId(id))} ${formaterDuree(x.parMatiere[id])}`);
+    detail = `<strong>${capitaliser(dateCourte(x.jour))} : ${x.total ? formaterDuree(x.total) : "pas d'étude"}</strong>${parts.length ? ' — ' + parts.join(' · ') : ''}`;
+  }
+  const lignesTable = jours.filter(x => x.total).reverse().map(x => [
+    capitaliser(dateCourte(x.jour)),
+    ordre.filter(id => x.parMatiere[id] > 0).map(id => `${echapper(nomCourtId(id))} ${formaterDuree(x.parMatiere[id])}`).join(', '),
+    formaterDuree(x.total),
+  ]);
+  return `<section class="carte"><div class="carte-titre"><h2>📅 Les 30 derniers jours</h2><span class="etiquette">${formaterDuree(total)}</span></div>
+      <p class="aide" style="margin:0 0 10px">${pluriel(nbJours, 'jour')} d'étude sur 30 · en moyenne ${formaterDuree(total / 30)} par jour</p>
+      <svg class="graphique" viewBox="0 0 ${L} ${H}" width="${L}" height="${H}" role="img" aria-label="Temps d'étude par jour sur les 30 derniers jours : ${formaterDuree(total)} en tout">${svg}</svg>
+      ${legende(ordre)}
+      <div class="detail-graphique" aria-live="polite">${detail}</div>
+      ${tableauChiffres('jours', 'Voir les chiffres jour par jour', ['Jour', 'Matières', 'Total'], lignesTable)}
+    </section>`;
+}
+
+// Moyenne des notes par matière.
+function carteNotes(L) {
+  const res = resultatsAvecEtude(donnees);
+  let h = `<section class="carte"><h2>🎓 Mes notes</h2>`;
+  if (!res.length) return h + `<p class="aide">Quand tu marques un test comme passé, entre ta note : tes moyennes par matière apparaîtront ici.</p></section>`;
+  const echelle = donnees.reglages.echelleNote || 20;
+  const enEchelle = pourcent => Math.round(pourcent / 100 * echelle * 10) / 10;
+  const parMatiere = {};
+  for (const x of res) (parMatiere[x.echeance.matiereId] = parMatiere[x.echeance.matiereId] || []).push(x);
+  const lignes = Object.entries(parMatiere).map(([id, liste]) => {
+    const moyenne = liste.reduce((s, x) => s + x.pourcent, 0) / liste.length;
+    return { nom: nomMatiere(id), couleur: couleurMatiere(id), valeur: moyenne, texte: `${formaterNote(enEchelle(moyenne), echelle)} (${pluriel(liste.length, 'note')})` };
+  }).sort((a, b) => b.valeur - a.valeur);
+  const generale = res.reduce((s, x) => s + x.pourcent, 0) / res.length;
+  const avecObjectif = res.filter(x => x.atteint !== null);
+  h += `<p class="aide" style="margin:0 0 10px">Moyenne générale : <strong>${formaterNote(enEchelle(generale), echelle)}</strong> sur ${pluriel(res.length, 'note')}${avecObjectif.length ? ` · 🎯 objectif atteint ${avecObjectif.filter(x => x.atteint).length} fois sur ${avecObjectif.length}` : ''}</p>`;
+  h += graphiqueBarres(lignes, L, 'Moyenne des notes par matière', 100);
+  return h + `</section>`;
+}
+
+// Temps d'étude d'une échéance ↔ note obtenue : est-ce que plus d'étude = meilleure note ?
+function carteEtudeEtNotes(L) {
+  const res = resultatsAvecEtude(donnees);
+  let h = `<section class="carte"><h2>📈 Étude et notes</h2>`;
+  if (!res.length) return h + `<p class="aide">Ici tu verras si plus d'étude donne une meilleure note, dès que tu auras entré tes premières notes.</p></section>`;
+  const echelle = donnees.reglages.echelleNote || 20;
+  const gauche = 34;
+  const droite = 12;
+  const haut = 22;
+  const hPlot = 170;
+  const H = haut + hPlot + 40;
+  const maxH = Math.max(1, Math.ceil(Math.max(...res.map(x => x.minutes)) / 60));
+  const plafondH = maxH % 2 ? maxH + 1 : maxH;   // pair : une graduation tombe pile au milieu
+  const largeurPlot = L - gauche - droite;
+  const X = minutes => gauche + minutes / 60 / plafondH * largeurPlot;
+  const Y = pourcent => haut + hPlot - pourcent / 100 * hPlot;
+
+  let svg = `<text class="g-axe" x="0" y="10">Note</text>`;
+  for (const p of [0, 50, 100]) {
+    const y = n1(Y(p));
+    svg += `<line class="g-grille" x1="${gauche}" x2="${L - droite}" y1="${y}" y2="${y}"/>`;
+    svg += `<text class="g-axe" x="${gauche - 6}" y="${y}" text-anchor="end" dominant-baseline="central">${formaterDecimal(p / 100 * echelle)}</text>`;
+  }
+  for (const hh of [0, plafondH / 2, plafondH]) {
+    svg += `<text class="g-axe" x="${n1(X(hh * 60))}" y="${haut + hPlot + 16}" text-anchor="${hh === 0 ? 'start' : hh === plafondH ? 'end' : 'middle'}">${hh} h</text>`;
+  }
+  svg += `<text class="g-axe" x="${n1(gauche + largeurPlot / 2)}" y="${haut + hPlot + 33}" text-anchor="middle">Temps d'étude pour l'échéance</text>`;
+  for (const x of res) {
+    const choisi = pointStats === x.echeance.id;
+    svg += `<circle class="g-point" cx="${n1(X(x.minutes))}" cy="${n1(Y(x.pourcent))}" r="${choisi ? 7 : 5}" fill="${couleurMatiere(x.echeance.matiereId)}"/>`;
+  }
+  // Zones tactiles plus grandes que les points (dessinées au-dessus).
+  for (const x of res) {
+    svg += `<circle cx="${n1(X(x.minutes))}" cy="${n1(Y(x.pourcent))}" r="14" fill="transparent" data-action="stat-point" data-id="${x.echeance.id}"><title>${echapper(nomMatiere(x.echeance.matiereId))} : ${formaterDuree(x.minutes)} → ${formaterNote(x.echeance.resultat.note, x.echeance.resultat.sur)}</title></circle>`;
+  }
+
+  const choisi = res.find(x => x.echeance.id === pointStats);
+  const detail = choisi
+    ? `<strong>${echapper(capitaliser(nomEcheanceLong(choisi.echeance)))}</strong> du ${dateCourte(choisi.echeance.date)} : ${formaterDuree(choisi.minutes)} d'étude → ${formaterNote(choisi.echeance.resultat.note, choisi.echeance.resultat.sur)}${choisi.atteint ? ' 🎯' : ''}`
+    : "Touche un point pour voir de quelle note il s'agit.";
+
+  // Pour chaque matière : est-ce que plus d'étude va avec une meilleure note ?
+  const parMatiere = {};
+  for (const x of res) (parMatiere[x.echeance.matiereId] = parMatiere[x.echeance.matiereId] || []).push(x);
+  const avis = Object.entries(parMatiere).map(([id, liste]) => {
+    const r = correlation(liste.map(x => ({ x: x.minutes, y: x.pourcent })));
+    const confirmer = liste.length < 3 ? ' (à confirmer avec plus de notes)' : '';
+    let texte = "une seule note pour l'instant";
+    if (liste.length >= 2) {
+      if (r !== null && r >= 0.3) texte = `📈 plus tu étudies, meilleure est ta note${confirmer}`;
+      else if (r !== null && r <= -0.3) texte = `🤔 plus d'étude n'a pas donné de meilleures notes : essaie une autre méthode${confirmer}`;
+      else texte = "pas de lien net pour l'instant";
+    }
+    return `<li style="${styleMatiere(id)}"><span class="rond"></span><span><strong>${echapper(nomMatiere(id))}</strong> : ${texte}</span></li>`;
+  }).join('');
+
+  const lignesTable = res.slice().reverse().map(x => [
+    `${echapper(nomMatiere(x.echeance.matiereId))} (${x.echeance.type})`,
+    dateCourte(x.echeance.date),
+    formaterDuree(x.minutes),
+    formaterNote(x.echeance.resultat.note, x.echeance.resultat.sur) + (x.atteint ? ' 🎯' : ''),
+  ]);
+  return h + `<svg class="graphique" viewBox="0 0 ${L} ${H}" width="${L}" height="${H}" role="img" aria-label="Temps d'étude et note obtenue, pour chaque test ou examen">${svg}</svg>
+      ${legende(Object.keys(parMatiere), 'point')}
+      <div class="detail-graphique" aria-live="polite">${detail}</div>
+      <ul class="liens-etude">${avis}</ul>
+      ${tableauChiffres('notes', 'Voir toutes mes notes', ['Échéance', 'Date', 'Étude', 'Note'], lignesTable)}
+    </section>`;
+}
+
+// Les badges : gagnés (avec la date) et à gagner (avec où tu en es).
+function carteBadges(jour) {
+  const s = series(donnees, jour);
+  const tuiles = [];
+  for (const b of BADGES) {
+    if (b.id === 'heures-10') {
+      // Celui-ci se gagne une fois par matière.
+      for (const id of Object.keys(donnees.badges).filter(x => x.startsWith('heures-10:'))) {
+        tuiles.push(tuileBadge(infoBadge(id), donnees.badges[id], ''));
+      }
+      const minutes = {};
+      for (const bl of donnees.blocs) if (bl.matiereId) minutes[bl.matiereId] = (minutes[bl.matiereId] || 0) + bl.minutes;
+      const prochaine = donnees.matieres
+        .filter(m => !donnees.badges['heures-10:' + m.id])
+        .map(m => ({ m, minutes: minutes[m.id] || 0 }))
+        .sort((x, y) => y.minutes - x.minutes)[0];
+      if (prochaine) tuiles.push(tuileBadge(b, null, `${prochaine.m.nom} : ${formaterDuree(prochaine.minutes)} / 10 h`));
+      continue;
+    }
+    const date = donnees.badges[b.id];
+    tuiles.push(tuileBadge(b, date, date ? '' : progressionBadge(b.id, s)));
+  }
+  const nb = Object.keys(donnees.badges).length;
+  return `<section class="carte"><div class="carte-titre"><h2>🏅 Badges</h2><span class="etiquette">${nb} gagné${nb > 1 ? 's' : ''}</span></div>
+      <div class="badges-grille">${tuiles.join('')}</div>
+    </section>`;
+}
+
+function tuileBadge(b, date, aide) {
+  return `<div class="badge-tuile${date ? '' : ' verrouille'}">
+      <span class="emoji" aria-hidden="true">${b.emoji}</span>
+      <strong>${echapper(b.nom)}</strong>
+      <small>${date ? `le ${dateCourteSansJour(date)}` : echapper(aide)}</small>
+    </div>`;
+}
+
+function progressionBadge(id, s) {
+  if (id === 'premier-bloc') return 'Termine un bloc';
+  if (id.startsWith('serie-')) return `Série : ${Math.min(s.actuelle, Number(id.slice(6)))} / ${id.slice(6)} jours`;
+  if (id === 'blocs-50') return `${Math.min(donnees.blocs.length, 50)} / 50 blocs`;
+  if (id === 'objectif') return 'Une note ≥ ton objectif';
+  if (id === 'semaine-parfaite') return "Tous les blocs prévus d'une semaine";
+  return '';
+}
+
+// Touché dans le graphique des 30 jours : on choisit le jour le plus proche du doigt.
+function choisirJourStats(zone, ev) {
+  const svg = zone.ownerSVGElement;
+  const boite = svg.getBoundingClientRect();
+  if (!ev || !Number.isFinite(ev.clientX) || !boite.width) return;
+  const x = (ev.clientX - boite.left) * (svg.viewBox.baseVal.width / boite.width);
+  const k = borner(Math.floor((x - Number(zone.dataset.gauche)) / Number(zone.dataset.slot)), 0, 29);
+  jourStats = ajouterJours(zone.dataset.debut, k);
+  afficherStats();
+}
+
 /* ---------- Écran "Réglages" ---------- */
 
 function afficherReglages() {
@@ -1784,7 +2730,7 @@ function afficherReglages() {
       ${ligneReglage('coefChapitre', 'Par chapitre', '', 0.05, 0, 2, 'decimal')}
       <p class="aide">${[1, 2, 4, 6].map(n => `<span class="insecable">${pluriel(n, 'chapitre')} → × ${facteur(n)}</span>`).join(' · ')}<br>
         Ex : test niveau 3 de 4 chapitres = ${formaterDuree(exemple)}.<br>
-        Ce temps est ensuite multiplié par ta difficulté perso dans la matière (entre × 0,7 et × 1,5, selon tes ressentis).</p>
+        Ce temps est ensuite multiplié par ta difficulté perso dans la matière (entre × 0,7 et × 1,5, selon tes ressentis et tes notes).</p>
     </section>`;
 
   h += `<section class="carte"><h2>📅 Planification</h2>
@@ -1813,7 +2759,7 @@ function afficherReglages() {
         <button class="btn btn-plein btn-danger" data-action="tout-effacer" type="button">Tout effacer</button>
       </div>
     </section>
-    <p class="aide centre">Plan d'étude · V2</p>`;
+    <p class="aide centre">Plan d'étude · V3</p>`;
 
   document.getElementById('vue-reglages').innerHTML = h;
 }
@@ -2043,6 +2989,8 @@ function ouvrirDetailEcheance(id) {
       <div class="ech-progres">${formaterDuree(fait)} faites sur ${formaterDuree(total)}</div>
       ${e.note ? `<div class="ech-note">📝 ${echapper(e.note)}</div>` : ''}
       ${statutEcheance(e, plan)}
+      ${estVeille(e, plan.jour) ? blocChecklist(e) : ''}
+      ${e.terminee ? blocResultat(e) : ''}
       ${active ? `<div class="pile" style="margin-top:14px"><button class="btn btn-lancer btn-plein" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer un bloc</button></div>` : ''}
       <h3>Mes blocs et mes notes</h3>
       ${notes}
@@ -2057,17 +3005,207 @@ function ouvrirDetailEcheance(id) {
     </div>`);
 }
 
-// "Test passé" : l'échéance sort du plan et va dans l'historique.
+// La checklist de la veille (dans le détail de l'échéance).
+function blocChecklist(e) {
+  const { liste, coches } = avancementChecklist(e);
+  return `<div class="veille">
+      <strong>🌙 C'est la veille : révision rapide</strong> <span class="aide" id="compte-checklist">(${coches}/${liste.length})</span>
+      <ul class="checklist">${liste.map(item => `<li>
+          <label><input type="checkbox" data-checklist="${item.id}" data-id="${e.id}"${e.checklist[item.id] ? ' checked' : ''}><span>${echapper(item.texte)}</span></label>
+          ${(item.details || []).map(t => `<span class="sous">${echapper(t)}</span>`).join('')}
+        </li>`).join('')}</ul>
+    </div>`;
+}
+
+function cocherChecklist(id, cle, coche) {
+  const e = trouverEcheance(id);
+  if (!e) return;
+  if (coche) e.checklist[cle] = true;
+  else delete e.checklist[cle];
+  sauvegarder();
+  const { liste, coches } = avancementChecklist(e);
+  const compte = document.getElementById('compte-checklist');
+  if (compte) compte.textContent = `(${coches}/${liste.length})`;
+  rafraichir();   // met à jour "x/y" sur l'écran derrière la feuille
+  if (coches === liste.length) afficherToast('Checklist terminée ✓ Bonne chance demain !');
+}
+
+// La note obtenue (dans le détail d'une échéance passée).
+function blocResultat(e) {
+  const r = e.resultat;
+  if (!r) {
+    return `<div class="resultat"><strong>🎓 Ta note</strong>
+        <p class="aide" style="margin:4px 0 10px">Entre ta note quand tu l'as : elle compte dans tes stats et, avec un objectif, elle ajuste ta difficulté perso.</p>
+        <button class="btn btn-plein" data-action="note-resultat" data-id="${e.id}" type="button">Entrer ma note</button>
+      </div>`;
+  }
+  const effet = effetResultat(r);
+  const compte = partsDifficulte(e.matiereId, donnees.blocs, donnees.echeances).notes.includes(e);
+  let texte = "Sans objectif, ta note est gardée dans tes stats mais ne change pas ta difficulté.";
+  if (r.objectif !== null) {
+    if (!compte) texte = `Cette note est plus ancienne que tes ${NB_RESULTATS} dernières en ${nomMatiere(e.matiereId)} : elle ne compte plus dans la difficulté.`;
+    else if (effet > 0) texte = `Sous ton objectif : ta difficulté en ${nomMatiere(e.matiereId)} monte (${signe(effet)}), tu auras un peu plus de temps la prochaine fois.`;
+    else if (effet < 0) texte = `Largement au-dessus de ton objectif : ta difficulté en ${nomMatiere(e.matiereId)} baisse un peu (${signe(effet)}).`;
+    else texte = 'Objectif atteint : ta difficulté ne change pas.';
+  }
+  return `<div class="resultat"><strong>🎓 ${texteResultat(r)}</strong>
+      <p class="aide" style="margin:4px 0 10px">${echapper(texte)}</p>
+      <button class="btn btn-plein" data-action="note-resultat" data-id="${e.id}" type="button">Modifier ma note</button>
+    </div>`;
+}
+
+// "Test passé" : l'échéance sort du plan et va dans l'historique, puis on demande la note.
 function marquerPassee(id) {
   const e = trouverEcheance(id);
   if (!e) return;
   e.terminee = true;
   e.termineeLe = aujourdhui();
   e.rythme = null;
+  e.checklist = {};
+  sauvegarder();
+  rafraichir();
+  ouvrirFormResultat(id, true);   // (la feuille dit déjà "✓ Rangé dans l'historique")
+}
+
+/* ---------- Ta note à un test ou un examen ---------- */
+
+// L'objectif proposé : celui de ta dernière note dans la même matière (converti dans la bonne échelle).
+function objectifPropose(matiereId, sur, saufId) {
+  const precedent = donnees.echeances
+    .filter(x => x.id !== saufId && x.matiereId === matiereId && x.terminee && x.resultat && x.resultat.objectif !== null)
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))[0];
+  if (!precedent) return null;
+  const pas = sur === 100 ? 1 : 0.5;
+  return Math.round(precedent.resultat.objectif / precedent.resultat.sur * sur / pas) * pas;
+}
+
+function nombrePourChamp(x) {
+  return x === null || x === undefined ? '' : formaterDecimal(x);
+}
+
+function ouvrirFormResultat(id, justePasse = false) {
+  const e = trouverEcheance(id);
+  if (!e || !e.terminee) return;
+  const r = e.resultat;
+  const sur = r ? r.sur : donnees.reglages.echelleNote;
+  const propose = r ? null : objectifPropose(e.matiereId, sur, e.id);
+  const objectif = r ? r.objectif : propose;
+  ouvrirFeuille(`<form id="form-resultat" data-id="${e.id}" data-propose="${propose === null ? '' : propose}" novalidate style="${styleMatiere(e.matiereId)}">
+      <h2>🎓 Ta note ${echapper(e.type === 'examen' ? "à l'examen" : 'au test')} ${echapper(de(nomMatiere(e.matiereId)))}</h2>
+      <p class="aide" style="margin:-6px 0 16px">${justePasse ? `✓ Rangé dans l'historique. ` : ''}${capitaliser(dateLongue(e.date))}.
+        Pas encore ta note ? Touche « Plus tard » : tu pourras l'entrer depuis l'historique.</p>
+      <fieldset>
+        <legend>Noté</legend>
+        <div class="segments">
+          ${ECHELLES.map(x => `<label><input type="radio" name="sur" value="${x.sur}"${x.sur === sur ? ' checked' : ''}><span>${x.nom}</span></label>`).join('')}
+        </div>
+      </fieldset>
+      <div class="deux-champs">
+        <label class="champ">Ma note<input type="text" name="note" inputmode="decimal" value="${nombrePourChamp(r ? r.note : null)}" placeholder="ex : 13,5" autocomplete="off"></label>
+        <label class="champ">Mon objectif <span class="facultatif">(facultatif)</span><input type="text" name="objectif" inputmode="decimal" value="${nombrePourChamp(objectif)}" placeholder="ex : 14" autocomplete="off"></label>
+      </div>
+      <div class="estimation" id="apercu-resultat"></div>
+      <p class="erreur" id="erreur-form" hidden></p>
+      <div class="pile">
+        <button type="submit" class="btn btn-principal btn-geant">Enregistrer ma note</button>
+        <button type="button" class="btn btn-plein" data-action="fermer">${r ? 'Annuler' : 'Plus tard'}</button>
+        ${r ? `<button type="button" class="btn btn-plein btn-danger" data-action="effacer-note" data-id="${e.id}">Effacer ma note</button>` : ''}
+      </div>
+    </form>`);
+  majApercuResultat();
+}
+
+// Lit le formulaire de note. Renvoie { sur, note, objectif, erreur }.
+function lireFormResultat(form) {
+  const f = new FormData(form);
+  const sur = [10, 20, 100].includes(Number(f.get('sur'))) ? Number(f.get('sur')) : 20;
+  const note = lireNombre(f.get('note'));
+  const objectif = lireNombre(f.get('objectif'));
+  const valide = x => Number.isFinite(x) && x >= 0 && x <= sur;
+  // "14/20" tapé alors que l'échelle choisie est "en %" : on te le signale plutôt que de se tromper.
+  const echelleTapee = texte => {
+    const m = String(texte || '').trim().match(/(%|\/\s*(10|20|100))$/);
+    return m ? (m[1] === '%' ? 100 : Number(m[2])) : null;
+  };
+  const conflit = [f.get('note'), f.get('objectif')].find(t => echelleTapee(t) !== null && echelleTapee(t) !== sur);
+  let erreur = null;
+  if (conflit) erreur = `Tu as écrit « ${String(conflit).trim()} » mais l'échelle choisie est « ${ECHELLES.find(x => x.sur === sur).nom} » : choisis la bonne en haut.`;
+  else if (note === null) erreur = 'Entre ta note.';
+  else if (!valide(note)) erreur = `Ta note doit être un nombre entre 0 et ${sur}.`;
+  else if (objectif !== null && !valide(objectif)) erreur = `Ton objectif doit être un nombre entre 0 et ${sur} (ou laisse la case vide).`;
+  const arrondi = x => (Number.isFinite(x) ? Math.round(x * 100) / 100 : x);
+  return { sur, note: arrondi(note), objectif: arrondi(objectif), erreur };
+}
+
+// Quand tu changes d'échelle (sur 10 / sur 20 / en %), l'objectif proposé suit, s'il n'a pas été touché.
+function changerEchelleResultat(form) {
+  const champ = form.elements.objectif;
+  const propose = form.dataset.propose === '' ? null : Number(form.dataset.propose);
+  if (propose === null || lireNombre(champ.value) !== propose) return;
+  const sur = Number(new FormData(form).get('sur'));
+  const nouveau = objectifPropose(trouverEcheance(form.dataset.id).matiereId, sur, form.dataset.id);
+  champ.value = nombrePourChamp(nouveau);
+  form.dataset.propose = nouveau === null ? '' : nouveau;
+}
+
+// Aperçu en direct : la note en %, l'objectif, et l'effet sur ta difficulté perso.
+function majApercuResultat() {
+  const form = document.getElementById('form-resultat');
+  if (!form) return;
+  const e = trouverEcheance(form.dataset.id);
+  const zone = document.getElementById('apercu-resultat');
+  const v = lireFormResultat(form);
+  if (!e || v.erreur) {
+    zone.innerHTML = v.erreur && v.note !== null
+      ? `<div class="aide">⚠️ ${echapper(v.erreur)}</div>`
+      : `<div class="aide">Avec un objectif, ta note ajuste ta difficulté perso en ${echapper(nomMatiere(e ? e.matiereId : null))} : en dessous, plus de temps de révision la prochaine fois ; largement au-dessus, un peu moins.</div>`;
+    return;
+  }
+  let texte = `Ta note : <strong>${formaterNote(v.note, v.sur)}</strong>${v.sur !== 100 ? ` (${Math.round(v.note / v.sur * 100)} %)` : ''}`;
+  if (v.objectif !== null) {
+    const ecart = v.note - v.objectif;
+    texte += ecart >= 0
+      ? `<div>🎯 Objectif atteint${ecart > 0 ? ` (+${formaterDecimal(Math.round(ecart * 100) / 100)})` : ''}</div>`
+      : `<div>Objectif ${formaterNote(v.objectif, v.sur)} : il manque ${formaterDecimal(Math.round(-ecart * 100) / 100)} point${-ecart > 1 ? 's' : ''}</div>`;
+    const avant = coefMatiere(e.matiereId);
+    const echeances = donnees.echeances.map(x => (x.id === e.id ? { ...x, resultat: { note: v.note, sur: v.sur, objectif: v.objectif } } : x));
+    const apres = coefsDifficulte(donnees.blocs, echeances)[e.matiereId] || 1;
+    texte += apres === avant
+      ? `<div class="aide">Difficulté perso en ${echapper(nomMatiere(e.matiereId))} : × ${formaterDecimal(avant)} (pas de changement)</div>`
+      : `<div class="aide">Difficulté perso en ${echapper(nomMatiere(e.matiereId))} : × ${formaterDecimal(avant)} → <strong>× ${formaterDecimal(apres)}</strong></div>`;
+  } else {
+    texte += `<div class="aide">Sans objectif, ta note compte dans tes stats mais ne change pas ta difficulté.</div>`;
+  }
+  zone.innerHTML = texte;
+}
+
+function enregistrerResultat(form) {
+  const e = trouverEcheance(form.dataset.id);
+  if (!e) return fermerFeuille();
+  const v = lireFormResultat(form);
+  if (v.erreur) return erreurForm(v.erreur);
+  const avant = coefMatiere(e.matiereId);
+  e.resultat = { note: v.note, sur: v.sur, objectif: v.objectif };
+  donnees.reglages.echelleNote = v.sur;   // la prochaine fois, on te propose la même échelle
   sauvegarder();
   fermerFeuille();
   rafraichir();
-  afficherToast(`${e.type === 'examen' ? 'Examen' : 'Test'} rangé dans l'historique ✓`);
+  const apres = coefMatiere(e.matiereId);
+  let message = v.objectif !== null && v.note >= v.objectif ? 'Note enregistrée 🎯 Objectif atteint !' : 'Note enregistrée ✓';
+  if (apres !== avant) message += ` · ${nomMatiere(e.matiereId)} : difficulté × ${formaterDecimal(apres)}`;
+  afficherToast(message);
+  verifierBadges();
+}
+
+async function effacerNote(id) {
+  const e = trouverEcheance(id);
+  if (!e || !e.resultat) return;
+  if (!(await confirmer(`Effacer ta note (${formaterNote(e.resultat.note, e.resultat.sur)}) ?`, 'Effacer', true))) return;
+  e.resultat = null;
+  sauvegarder();
+  fermerFeuille();
+  rafraichir();
+  afficherToast('Note effacée');
 }
 
 function remettreDansPlan(id) {
@@ -2210,10 +3348,11 @@ function enregistrerEcheance(form) {
     const e = trouverEcheance(id);
     // Si ce qui compte pour le plan change, on repart d'un rythme neuf (pas de faux retard).
     const change = ['matiereId', 'type', 'date', 'niveau', 'chapitres', 'travail'].some(cle => e[cle] !== valeurs[cle]);
+    if (e.date !== valeurs.date) e.checklist = {};   // nouvelle date : nouvelle veille
     Object.assign(e, valeurs);
     if (change) e.rythme = null;
   } else {
-    donnees.echeances.push({ id: nouvelId(), ...valeurs, terminee: false, termineeLe: null, rythme: null });
+    donnees.echeances.push({ id: nouvelId(), ...valeurs, terminee: false, termineeLe: null, rythme: null, resultat: null, checklist: {} });
   }
   sauvegarder();
   fermerFeuille();
@@ -2242,17 +3381,23 @@ function ouvrirFormMatiere(id, options = {}) {
   const couleur = m ? m.couleur : (libre ? libre.code : PALETTE[donnees.matieres.length % PALETTE.length].code);
   const couleurs = PALETTE.some(c => c.code === couleur) ? PALETTE : [...PALETTE, { nom: 'Actuelle', code: couleur }];
 
-  // Difficulté perso de la matière (expliquée à partir des derniers ressentis).
+  // Difficulté perso de la matière (expliquée : part des ressentis + part des notes).
   let difficulte = '';
   if (m) {
-    const derniers = derniersRessentis(m.id);
+    const p = partsDifficulte(m.id, donnees.blocs, donnees.echeances);
     const compte = Object.keys(RESSENTIS)
-      .map(cle => [cle, derniers.filter(x => x === cle).length])
+      .map(cle => [cle, p.ressentis.filter(x => x === cle).length])
       .filter(([, n]) => n > 0)
       .map(([cle, n]) => `${n} ${RESSENTIS[cle].emoji} ${RESSENTIS[cle].nom}`)
       .join(' · ');
+    const ressentis = p.ressentis.length
+      ? `tes ressentis (${p.ressentis.length > 1 ? `les ${p.ressentis.length} derniers` : 'le dernier'} : ${compte}) : ${signe(p.partRessentis)}`
+      : "tes ressentis : aucun pour l'instant (Facile / Ok / Dur après chaque bloc)";
+    const notes = p.notes.length
+      ? `tes notes (${p.notes.map(e => `${formaterNote(e.resultat.note, e.resultat.sur)}, objectif ${formaterNote(e.resultat.objectif, e.resultat.sur)}`).join(' ; ')}) : ${signe(p.partNotes)}`
+      : 'tes notes : entre ta note et ton objectif quand tu marques un test comme passé';
     difficulte = `<div class="estimation">Difficulté perso : <strong>× ${formaterDecimal(coefMatiere(m.id))}</strong>
-        <div class="aide">${derniers.length ? `D'après tes ${derniers.length} derniers ressentis : ${compte}.` : 'Elle bougera selon tes ressentis après chaque bloc (Facile / Ok / Dur).'}</div></div>`;
+        <div class="aide">On part de × 1, puis :<br>• ${ressentis}<br>• ${notes}<br>Le total est arrondi à 0,05 près, et reste toujours entre × 0,7 et × 1,5.</div></div>`;
   }
 
   ouvrirFeuille(`<form id="form-matiere" data-id="${m ? m.id : ''}" data-puis-echeance="${options.puisEcheance ? 'oui' : ''}" novalidate>
@@ -2336,7 +3481,7 @@ async function chargerExemple() {
   const ajouter = (m, type, dansNJours, niveau, chapitres, travail, note) => {
     donnees.echeances.push({
       id: nouvelId(), matiereId: m.id, type, date: ajouterJours(jour, dansNJours), niveau, chapitres, note,
-      travail, terminee: false, termineeLe: null, rythme: null,
+      travail, terminee: false, termineeLe: null, rythme: null, resultat: null, checklist: {},
     });
   };
   ajouter(chimie, 'test', 3, 2, 3, 'exercices', 'chapitres 3 à 5');
@@ -2387,6 +3532,8 @@ function contenuExport() {
     echeances: donnees.echeances,
     blocs: donnees.blocs,
     reglages: donnees.reglages,
+    badges: donnees.badges,         // V3
+    planJours: donnees.planJours,   // V3 : blocs prévus chaque jour (pour "prévu / fait")
   };
 }
 
@@ -2433,6 +3580,7 @@ async function importerFichier(fichier) {
   donnees = normaliser(lu);   // mêmes vérifications que pour le localStorage (+ migration si c'est un vieux fichier)
   if (chrono && (!chrono.echeanceId || trouverEcheance(chrono.echeanceId))) donnees.chrono = chrono;
   sauvegarder();
+  verifierBadges(true);   // un vieux fichier (V1, V2) n'a pas de badges : on les retrouve sans bruit
   majVerrouEcran();
   afficherVue('aujourdhui');
   afficherToast('Données importées ✓');
@@ -2544,9 +3692,11 @@ async function arreter() {
     }
   }
   donnees.chrono = null;
+  quitterConcentration();
   sauvegarder();
   majVerrouEcran();
   rafraichir();
+  verifierBadges();
 }
 
 function passerPause() {
@@ -2558,6 +3708,7 @@ function passerPause() {
 
 function terminerSerie() {
   donnees.chrono = null;
+  quitterConcentration();
   sauvegarder();
   majVerrouEcran();
   rafraichir();
@@ -2641,6 +3792,7 @@ function verifierChrono(silencieux = false) {
   }
   if (!fin) return;
   sauvegarder();
+  if (fin === 'travail') quitterConcentration();   // pour répondre "Facile / Ok / Dur"
   if (!silencieux) alerter(fin);
   if (fin === 'travail') {
     afficherToast(`✓ Bloc enregistré ! ${c.phase === 'pauseLongue' ? 'Grande pause' : 'Petite pause'} de ${Math.round(c.dureeMs / 60000)} min`);
@@ -2651,6 +3803,7 @@ function verifierChrono(silencieux = false) {
   }
   majVerrouEcran();
   rafraichir();
+  if (blocsEnregistres) verifierBadges(silencieux);
 }
 
 // Son + vibration + flash de l'écran.
@@ -2698,6 +3851,50 @@ function jouerSon(fin) {
     oscillateur.start(t);
     oscillateur.stop(t + 0.22);
   });
+}
+
+/* ---------- Mode concentration : écran noir, juste le temps, la matière et ta dernière note ---------- */
+
+function entrerConcentration() {
+  const c = donnees.chrono;
+  if (!c || c.phase === 'attente') return;
+  concentration = true;
+  document.getElementById('concentration').hidden = false;
+  document.body.classList.add('bloque');
+  majConcentration();
+  // Vrai plein écran si le téléphone le permet (Android). Sur iPhone, l'écran noir suffit.
+  try {
+    const page = document.documentElement;
+    if (page.requestFullscreen && !document.fullscreenElement) page.requestFullscreen().catch(() => {});
+  } catch (erreur) { /* pas grave */ }
+}
+
+function quitterConcentration() {
+  if (!concentration) return;
+  concentration = false;
+  document.getElementById('concentration').hidden = true;
+  if (document.getElementById('fond-feuille').hidden) document.body.classList.remove('bloque');
+  try {
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  } catch (erreur) { /* pas grave */ }
+}
+
+// Mis à jour 2 fois par seconde (par tic). Se ferme tout seul quand il n'y a plus de bloc ni de pause.
+function majConcentration() {
+  if (!concentration) return;
+  const c = donnees.chrono;
+  if (!c || c.phase === 'attente') {
+    quitterConcentration();
+    return;
+  }
+  const p = infosPhase(c);
+  const phase = document.getElementById('conc-phase');
+  phase.textContent = p.libelle;
+  phase.style.setProperty('--phase', p.couleur);
+  document.getElementById('conc-temps').textContent = formaterChrono(restantMs(c));
+  document.getElementById('conc-sujet').textContent = sujetChrono(c);
+  const derniere = c.echeanceId ? derniereNote(c.echeanceId) : null;
+  document.getElementById('conc-note').textContent = derniere ? `🔖 « ${derniere.note} »` : '';
 }
 
 /* ---------- Garder l'écran allumé pendant un bloc (si le téléphone le permet) ---------- */
@@ -2767,6 +3964,35 @@ const ACTIONS = {
   'exemple': () => chargerExemple(),
   'reglages-defaut': () => reglagesParDefaut(),
   'tout-effacer': () => toutEffacer(),
+  // V3
+  'aller-stats': () => afficherVue('stats'),
+  'fermer-resume': () => {
+    donnees.resumeFerme = lundiDe(aujourdhui());
+    sauvegarder();
+    rafraichir();
+  },
+  'vue-echeances': (id, bouton) => {
+    vueEcheances = bouton.dataset.vue === 'calendrier' ? 'calendrier' : 'liste';
+    rafraichir();
+  },
+  'cal-mois': (id, bouton) => changerMois(Number(bouton.dataset.sens) || 0),
+  'cal-jour': (id, bouton) => {
+    jourCalendrier = bouton.dataset.jour;
+    rafraichir();
+  },
+  'periode-stats': (id, bouton) => {
+    periodeStats = bouton.dataset.periode === 'mois' ? 'mois' : 'semaine';
+    afficherStats();
+  },
+  'stat-jour': (id, zone, ev) => choisirJourStats(zone, ev),
+  'stat-point': id => {
+    pointStats = pointStats === id ? null : id;
+    afficherStats();
+  },
+  'concentration': () => entrerConcentration(),
+  'quitter-concentration': () => quitterConcentration(),
+  'note-resultat': id => ouvrirFormResultat(id),
+  'effacer-note': id => effacerNote(id),
 };
 
 document.addEventListener('click', ev => {
@@ -2781,7 +4007,7 @@ document.addEventListener('click', ev => {
     changerReglage(cible, action === 'plus' ? 1 : -1);
     return;
   }
-  if (ACTIONS[action]) ACTIONS[action](cible.dataset.id, cible);
+  if (ACTIONS[action]) ACTIONS[action](cible.dataset.id, cible, ev);
 });
 
 // Les cartes d'échéance se comportent comme des boutons au clavier (Entrée / Espace).
@@ -2789,6 +4015,10 @@ document.addEventListener('keydown', ev => {
   if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches('[role="button"][data-action]')) {
     ev.preventDefault();
     ev.target.click();
+  }
+  if (ev.key === 'Escape' && concentration) {
+    quitterConcentration();
+    return;
   }
   if (ev.key === 'Escape' && document.getElementById('fond-dialogue').hidden && !document.getElementById('fond-feuille').hidden) {
     fermerFeuille();
@@ -2800,16 +4030,23 @@ document.addEventListener('submit', ev => {
   ev.preventDefault();
   if (ev.target.id === 'form-echeance') enregistrerEcheance(ev.target);
   if (ev.target.id === 'form-matiere') enregistrerMatiere(ev.target);
+  if (ev.target.id === 'form-resultat') enregistrerResultat(ev.target);
 });
 
 // Changements dans les formulaires et les réglages.
 document.addEventListener('input', ev => {
   if (ev.target.closest('#form-echeance')) majEstimation();
+  if (ev.target.closest('#form-resultat')) majApercuResultat();
   if (ev.target.classList.contains('note-bloc')) brouillonNote = ev.target.value;
 });
 document.addEventListener('change', ev => {
   const t = ev.target;
   if (t.closest('#form-echeance')) majEstimation();
+  if (t.closest('#form-resultat')) {
+    if (t.name === 'sur') changerEchelleResultat(t.form);
+    majApercuResultat();
+  }
+  if (t.dataset.checklist) cocherChecklist(t.dataset.id, t.dataset.checklist, t.checked);
   if (t.name === 'sujet-chrono') choixChrono = t.value;
   if (t.id === 'fichier-import' && t.files && t.files[0]) {
     importerFichier(t.files[0]);
@@ -2823,7 +4060,18 @@ document.addEventListener('change', ev => {
 });
 document.addEventListener('toggle', ev => {
   if (ev.target.matches && ev.target.matches('details.passees')) passeesOuvertes = ev.target.open;
+  if (ev.target.matches && ev.target.matches('details.chiffres')) {
+    if (ev.target.open) chiffresOuverts.add(ev.target.dataset.cle);
+    else chiffresOuverts.delete(ev.target.dataset.cle);
+  }
 }, true);
+
+// Les graphiques sont dessinés à la largeur de l'écran : on les redessine si elle change.
+let minuteurTaille = null;
+window.addEventListener('resize', () => {
+  clearTimeout(minuteurTaille);
+  minuteurTaille = setTimeout(() => { if (vueActive === 'stats') afficherStats(); }, 200);
+});
 
 // Toucher le fond sombre ferme la feuille.
 document.getElementById('fond-feuille').addEventListener('click', ev => {
@@ -2839,6 +4087,7 @@ function tic() {
   verifierChrono();
   majAffichageChrono();
   majOngletChrono();
+  majConcentration();
   const jour = aujourdhui();
   if (jour !== dernierJour) {  // on a passé minuit : on recalcule le plan
     dernierJour = jour;
@@ -2869,6 +4118,12 @@ const ancien = donnees.chrono;
 if (ancien && ancien.phase === 'attente' && cleDate(new Date(ancien.finPause || 0)) !== aujourdhui()) {
   donnees.chrono = null;
   sauvegarder();
+}
+// Badges : ceux que ton travail a déjà mérités (avec la V3, on les retrouve pour tes anciens blocs).
+const nouveauxBadges = verifierBadges(migrationFaite);
+if (migrationFaite) {
+  const n = nouveauxBadges.length;
+  setTimeout(() => afficherToast(`✨ Nouvelle version ! Tes données sont gardées${n ? ` · 🏅 ${pluriel(n, 'badge')} débloqué${n > 1 ? 's' : ''} grâce à ton travail` : ''}`), 400);
 }
 // On ouvre sur le chrono seulement si un bloc ou une pause est en cours.
 afficherVue(donnees.chrono && donnees.chrono.phase !== 'attente' ? 'chrono' : 'aujourdhui');
