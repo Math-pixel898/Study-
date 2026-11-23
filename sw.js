@@ -1,7 +1,7 @@
 /* Service worker : un petit "gardien" qui garde une copie de l'appli sur le téléphone.
    Résultat : l'appli peut s'installer, et elle s'ouvre même sans internet.
    Quand il y a internet, on prend toujours la dernière version (utile pour la V2, V3, V4…). */
-const CACHE = 'plan-etude-v3';
+const CACHE = 'plan-etude-v3b';  // (nouveau look)
 const FICHIERS = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', event => {

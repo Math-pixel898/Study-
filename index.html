@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Plan d'étude</title>
 <meta name="description" content="Planifie tes révisions : plan du jour, échéances et chrono Pomodoro.">
-<meta name="theme-color" content="#0d0f13">
+<meta name="theme-color" content="#121628">
 <meta name="color-scheme" content="dark">
 <!-- Pour que l'appli s'ouvre en plein écran quand elle est ajoutée à l'écran d'accueil -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,277 +19,583 @@
 <style>
 /* =====================================================================
    STYLE (CSS) : les couleurs, les tailles et la mise en page
+   Mode sombre travaillé : fond dégradé, cartes en léger relief, coins
+   bien arrondis, UNE couleur d'accent (violet) pour les boutons
+   importants, et la couleur de chaque matière pour tout ce qui la concerne.
    ===================================================================== */
+
+/* La lueur du fond peut changer de couleur en douceur (chrono, pause…) */
+@property --ambiance { syntax: '<color>'; inherits: true; initial-value: rgba(108, 92, 255, 0.16); }
 
 /* Les couleurs de l'appli, rangées dans des "variables" réutilisables */
 :root {
-  --fond: #0d0f13;
-  --carte: #171a21;
-  --carte-2: #222631;
-  --carte-3: #2f3442;
-  --bord: #262b36;
-  --texte: #eef0f5;
-  --texte-2: #a9afbc;
-  --texte-3: #757c8c;
-  --accent: #8b93ff;
-  --sur-accent: #0d0f13;
+  --fond: #0a0c13;
+  --carte: #141927;
+  --carte-haut: #1a2031;
+  --carte-2: #222a3b;
+  --carte-3: #2e3649;
+  --bord: rgba(255, 255, 255, 0.07);
+  --bord-fort: rgba(255, 255, 255, 0.13);
+  --texte: #f3f5fb;
+  --texte-2: #abb2c5;
+  --texte-3: #7b8499;
+  --accent: #6c5cff;                 /* LA couleur des boutons importants */
+  --accent-clair: #b0abff;           /* la même en clair, pour un texte ou une icône */
+  --accent-fond: rgba(108, 92, 255, 0.18);
+  --degrade-accent: linear-gradient(135deg, #6c5cff 0%, #5468f0 100%);
+  --sur-accent: #ffffff;
   --travail: #ff6b5b;
-  --pause: #34d399;
+  --pause: #2dd4bf;
   --pause-longue: #60a5fa;
   --alerte: #fbbf24;
+  --alerte-fond: rgba(251, 191, 36, 0.12);
   --danger: #f87171;
   --ok: #34d399;
-  --rayon: 18px;
+  --rayon: 22px;
+  --rayon-petit: 16px;
+  --ombre: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 16px 36px -22px rgba(0, 0, 0, 0.9);
+  --anim: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ambiance: rgba(108, 92, 255, 0.16);
   --haut: env(safe-area-inset-top, 0px);    /* encoche de l'iPhone */
-  --bas: env(safe-area-inset-bottom, 0px);  /* barre du bas de l'iPhone */
+  --bas: env(safe-area-inset-bottom, 0px);  /* barre du bas du téléphone */
 }
 
 * { box-sizing: border-box; }
-html { color-scheme: dark; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html { color-scheme: dark; background: var(--fond); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
   margin: 0;
   min-height: 100vh;
   background: var(--fond);
   color: var(--texte);
-  font: 16px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font: 16px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+}
+/* Le fond : un dégradé sombre avec une lueur en haut (elle prend la couleur du chrono) */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(120% 55% at 10% -8%, var(--ambiance), transparent 64%),
+    radial-gradient(80% 42% at 105% 0%, rgba(56, 189, 248, 0.07), transparent 62%),
+    linear-gradient(180deg, #121628 0%, #0b0d16 48%, #090a10 100%);
+  transition: --ambiance 0.9s ease;
 }
 body.bloque { overflow: hidden; }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
 [hidden] { display: none !important; }
 :focus { outline: none; }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--accent-clair); outline-offset: 2px; }
 
 /* ---------- Mise en page générale ---------- */
 main {
   max-width: 560px;
   margin: 0 auto;
-  padding: calc(12px + var(--haut)) 16px calc(104px + var(--bas));
+  padding: calc(14px + var(--haut)) 16px calc(118px + var(--bas));
 }
-.entete { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 10px 0 18px; }
-.entete h1 { margin: 0; font-size: 30px; line-height: 1.1; letter-spacing: -0.02em; }
-.surtitre { margin: 0 0 4px; color: var(--texte-2); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-h2 { margin: 0; font-size: 18px; letter-spacing: -0.01em; }
-h3 { margin: 18px 0 2px; font-size: 13px; color: var(--texte-2); text-transform: uppercase; letter-spacing: 0.06em; }
+.vue.entree { animation: entree 0.3s var(--anim); }
+@keyframes entree { from { opacity: 0; transform: translateY(10px); } }
+.entete { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 14px 2px 20px; }
+.entete h1, .salut { margin: 0; font-size: 32px; line-height: 1.1; font-weight: 800; letter-spacing: -0.03em; }
+.surtitre { margin: 0 0 6px; color: var(--texte-3); font-size: 13px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em; }
+h2 { margin: 0; font-size: 18px; font-weight: 750; letter-spacing: -0.01em; line-height: 1.25; }
+h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte-3); text-transform: uppercase; letter-spacing: 0.08em; }
+.titre-section {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin: 28px 4px 10px; color: var(--texte-3);
+  font-size: 13px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em;
+}
+.titre-section .btn, .titre-section .etiquette { text-transform: none; letter-spacing: 0; }
 
-.carte { background: var(--carte); border: 1px solid var(--bord); border-radius: var(--rayon); padding: 16px; margin-bottom: 14px; }
-.carte > h2 { margin-bottom: 6px; }
-.carte-titre { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-.aide { margin: 8px 0 0; color: var(--texte-2); font-size: 14px; }
-.aide-mini { color: var(--texte-3); font-size: 12px; text-align: right; }
+.carte {
+  position: relative; margin-bottom: 16px; padding: 18px;
+  border: 1px solid var(--bord); border-radius: var(--rayon);
+  background: linear-gradient(180deg, var(--carte-haut), var(--carte));
+  box-shadow: var(--ombre);
+}
+.carte > h2 { margin-bottom: 8px; }
+.carte-titre { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.carte-titre h2 { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.carte-titre h2 .ic { color: var(--accent-clair); }
+.carte-liste { padding-top: 10px; padding-bottom: 10px; }
+.aide { margin: 8px 0 0; color: var(--texte-2); font-size: 14px; line-height: 1.45; }
+.aide-mini { color: var(--texte-3); font-size: 12px; font-weight: 600; text-transform: none; letter-spacing: 0; }
 .centre { text-align: center; }
-.etiquette { flex: none; padding: 5px 10px; border-radius: 999px; background: var(--carte-2); color: var(--texte-2); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.etiquette { flex: none; padding: 5px 11px; border-radius: 999px; background: var(--carte-2); color: var(--texte-2); font-size: 13px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .vide { margin: 8px 0 4px; text-align: center; font-size: 17px; color: var(--texte-2); }
-.pile { display: grid; gap: 10px; margin-top: 8px; }
-.rond { display: inline-block; flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--couleur, var(--accent)); }
-.icone { width: 1.15em; height: 1.15em; flex: none; fill: currentColor; }
+.pile { display: grid; gap: 10px; margin-top: 10px; }
+.rond { display: inline-block; flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--couleur, var(--accent-clair)); box-shadow: 0 0 0 3px var(--couleur-fond, rgba(176, 171, 255, 0.18)); }
 .insecable { white-space: nowrap; }
 
-/* ---------- Boutons (grands et faciles à toucher) ---------- */
+/* Les icônes : "icone" = pleines (lecture, pause…), "ic" = au trait (toutes les autres) */
+.icone { width: 1.15em; height: 1.15em; flex: none; fill: currentColor; }
+.ic { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Boutons (grands, faciles à toucher, qui réagissent au doigt) ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   min-height: 50px; padding: 12px 18px;
-  border: 0; border-radius: 14px;
+  border: 1px solid transparent; border-radius: var(--rayon-petit);
   background: var(--carte-2); color: var(--texte);
-  font-size: 16px; font-weight: 650; text-align: center;
-  transition: transform 0.08s, filter 0.15s;
+  font-size: 16px; font-weight: 700; line-height: 1.2; text-align: center;
+  transition: transform 0.14s var(--anim), filter 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
-.btn:active { transform: scale(0.97); filter: brightness(1.15); }
-.btn-principal { background: var(--accent); color: var(--sur-accent); }
-.btn-danger { background: rgba(248, 113, 113, 0.14); color: var(--danger); }
-.btn-danger-plein { background: var(--danger); color: #1b0a0a; }
+.btn:active { transform: scale(0.96); filter: brightness(1.12); }
+.btn-principal {
+  background: var(--degrade-accent); color: var(--sur-accent);
+  box-shadow: 0 12px 26px -14px rgba(108, 92, 255, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.btn-danger { background: rgba(248, 113, 113, 0.12); color: #fca5a5; }
+.btn-danger-plein { background: #ef4444; color: #fff; }
 .btn-plein { width: 100%; }
-.btn-geant { width: 100%; min-height: 64px; font-size: 19px; border-radius: 18px; }
-.btn-petit { min-height: 42px; padding: 8px 14px; font-size: 15px; border-radius: 12px; }
-.btn-lancer { flex: none; min-width: 108px; background: var(--couleur, var(--accent)); color: var(--couleur-texte, var(--sur-accent)); }
-.lien { display: block; margin: 10px auto 0; padding: 8px 14px; border: 0; background: none; color: var(--texte-2); font-weight: 600; text-decoration: underline; }
+.btn-geant { width: 100%; min-height: 62px; font-size: 18px; border-radius: 20px; }
+.btn-petit { min-height: 44px; padding: 8px 14px; font-size: 15px; border-radius: 14px; }
+.btn-discret { background: var(--accent-fond); color: var(--accent-clair); }
+.btn-rond {
+  display: inline-grid; place-items: center; flex: none;
+  width: 48px; height: 48px; padding: 0; border: 1px solid var(--bord); border-radius: 50%;
+  background: var(--carte-2); color: var(--texte);
+  transition: transform 0.14s var(--anim), filter 0.2s;
+}
+.btn-rond:active { transform: scale(0.9); filter: brightness(1.15); }
+.btn-rond.accent { border: 0; background: var(--degrade-accent); color: #fff; box-shadow: 0 10px 22px -12px rgba(108, 92, 255, 0.95); }
+.btn-rond .icone, .btn-rond .ic { width: 22px; height: 22px; }
+.lien { display: block; margin: 10px auto 0; padding: 10px 14px; border: 0; background: none; color: var(--texte-2); font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
 
-/* ---------- Barre d'onglets en bas ---------- */
+/* ---------- Barre d'onglets en bas (flottante) ---------- */
 .onglets {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-  display: grid; grid-template-columns: repeat(5, 1fr);
-  padding: 0 max(8px, env(safe-area-inset-left)) var(--bas);
-  background: rgba(13, 15, 19, 0.94);
-  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-  border-top: 1px solid var(--bord);
+  position: fixed; z-index: 20;
+  left: max(8px, env(safe-area-inset-left)); right: max(8px, env(safe-area-inset-right)); bottom: calc(8px + var(--bas));
+  max-width: 544px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px;
+  padding: 5px; border-radius: 26px;
+  background: rgba(17, 20, 31, 0.88);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
+  border: 1px solid var(--bord-fort);
+  box-shadow: 0 18px 40px -14px rgba(0, 0, 0, 0.85);
 }
 .onglet {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-  min-height: 64px; padding: 6px 2px;
-  background: none; border: 0; color: var(--texte-3);
-  font-size: 12px; font-weight: 650;
+  min-width: 0; min-height: 58px; padding: 6px 1px;
+  border: 0; border-radius: 21px; background: none; color: var(--texte-3); font-weight: 700;
+  transition: color 0.2s, background-color 0.25s var(--anim), transform 0.14s var(--anim);
 }
-.onglet svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.onglet[aria-current="page"] { color: var(--accent); }
-.onglet.chrono-actif { color: var(--phase, var(--travail)); }
-.onglet span { font-size: clamp(10px, 3.1vw, 12px); white-space: nowrap; }
-.onglet.chrono-actif span { font-variant-numeric: tabular-nums; font-size: 13px; }
+.onglet:active { transform: scale(0.94); }
+.onglet svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.25s var(--anim); }
+.onglet span { max-width: 100%; font-size: clamp(10px, 2.85vw, 11.5px); white-space: nowrap; }
+.onglet[aria-current="page"] { color: var(--texte); background: var(--accent-fond); }
+.onglet[aria-current="page"] svg { color: var(--accent-clair); transform: translateY(-1px); }
+.onglet.chrono-actif, .onglet.chrono-actif svg { color: var(--phase, var(--accent-clair)); }
+.onglet.chrono-actif span { font-variant-numeric: tabular-nums; font-size: 12.5px; }
 
 /* ---------- Écran "Aujourd'hui" ---------- */
-.liste-plan, .semaine, .liste-matieres, .liste-faits, .liste-notes { list-style: none; margin: 0; padding: 0; }
-.ligne-plan { display: flex; align-items: center; gap: 12px; padding: 14px 0 14px 14px; border-top: 1px solid var(--bord); position: relative; }
-.ligne-plan:first-child { border-top: 0; padding-top: 4px; }
-.ligne-plan::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 5px; border-radius: 5px; background: var(--couleur); }
-.ligne-plan:first-child::before { top: 4px; }
-.ligne-texte { flex: 1; min-width: 0; }
-.ligne-titre { font-weight: 700; font-size: 16px; }
-.ligne-sous { color: var(--texte-2); font-size: 14px; margin-top: 4px; }
-.points { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.point { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--couleur); }
-.point.fait { background: var(--couleur); }
+.accueil { margin: 14px 2px 18px; }
+.salut { display: flex; align-items: center; gap: 10px; }
+.salut .ic { width: 30px; height: 30px; color: #ffd27a; }
+.salut .ic.ic-lune { color: #c9c5ff; }
 
-.alerte { margin-bottom: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.35); color: #fde68a; }
-.alerte .aide { color: #e5d3a1; margin-top: 2px; }
-.alerte-ligne { display: flex; gap: 8px; margin: 0 0 8px; }
-.info-jour { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 12px 14px; border-radius: 14px; background: var(--couleur-fond); border: 1px solid var(--couleur); }
-.info-jour .texte { flex: 1; min-width: 0; }
-.bandeau-chrono {
-  display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px;
-  margin-bottom: 12px; padding: 14px 16px; border-radius: 14px;
-  border: 1px solid var(--phase); background: var(--carte); text-align: left; font-weight: 600;
+.tuiles-jour { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.tuile-jour {
+  display: flex; align-items: center; gap: 12px; min-width: 0; padding: 14px;
+  border: 1px solid var(--bord); border-radius: 20px;
+  background: linear-gradient(180deg, var(--carte-haut), var(--carte)); box-shadow: var(--ombre);
 }
-.bandeau-chrono strong { color: var(--phase); font-size: 20px; font-variant-numeric: tabular-nums; }
+.tuile-jour .chiffre { display: block; font-size: 26px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.tuile-jour .chiffre small { color: var(--texte-3); font-size: 16px; font-weight: 750; }
+.tuile-jour .sous { display: block; margin-top: 5px; color: var(--texte-2); font-size: 12.5px; line-height: 1.25; }
+.flamme {
+  display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 15px;
+  background: rgba(255, 138, 61, 0.12); color: #a77a5c;
+}
+.flamme .ic { width: 24px; height: 24px; }
+.flamme.allumee { background: linear-gradient(160deg, #ffb347, #ff5f45); color: #fff; box-shadow: 0 10px 22px -10px rgba(255, 95, 69, 0.95); }
+.flamme.allumee .ic { fill: rgba(255, 255, 255, 0.28); }
 
-.jour { display: grid; grid-template-columns: 58px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--bord); }
-.jour:first-child { border-top: 0; padding-top: 0; }
-.jour-nom { font-weight: 700; font-size: 15px; text-transform: capitalize; }
-.jour-nom small { display: block; color: var(--texte-3); font-size: 12px; font-weight: 600; text-transform: none; }
-.jour-contenu { min-width: 0; display: grid; gap: 6px; }
-.jour-echeance { font-size: 14px; font-weight: 700; color: var(--couleur); }
-.jour-charge { font-size: 13px; font-weight: 700; color: var(--texte-3); font-variant-numeric: tabular-nums; }
-.jour-charge.plein { color: var(--alerte); }
+/* Anneau de progression (petit) */
+.anneau-mini { position: relative; display: inline-block; flex: none; }
+.anneau-mini svg { display: block; width: 100%; height: 100%; }
+.anneau-mini circle { fill: none; }
+.anneau-mini-fond { stroke: rgba(255, 255, 255, 0.09); }
+.anneau-mini-plein { stroke: var(--couleur, var(--accent-clair)); stroke-linecap: round; transition: stroke-dashoffset 0.7s var(--anim); }
+.anneau-mini.complet .anneau-mini-plein { stroke: var(--ok); }
+.anneau-mini-centre { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 1px; font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.anneau-mini-centre small { font-size: 0.75em; color: var(--texte-2); }
+.anneau-mini-centre .ic { width: 22px; height: 22px; color: var(--ok); stroke-width: 2.6; }
+
+/* La carte principale : la prochaine chose à faire */
+.heros {
+  overflow: hidden; padding: 20px 20px 18px;
+  border-color: var(--couleur-bord, var(--bord-fort));
+  background:
+    radial-gradient(130% 95% at 100% 0%, var(--couleur-fond-fort, rgba(108, 92, 255, 0.24)), transparent 62%),
+    linear-gradient(180deg, var(--carte-haut), var(--carte));
+  animation: arrivee 0.45s var(--anim);
+}
+@keyframes arrivee { from { opacity: 0; transform: translateY(8px) scale(0.985); } }
+.heros-etiquette {
+  display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 5px 11px;
+  border-radius: 999px; background: var(--couleur-fond, var(--accent-fond)); color: var(--couleur, var(--accent-clair));
+  font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em;
+}
+.heros-etiquette .ic { width: 15px; height: 15px; }
+.heros-tete { display: flex; align-items: center; gap: 12px; width: 100%; padding: 0; border: 0; background: none; text-align: left; }
+.heros-tete > span:first-child { flex: 1; min-width: 0; }
+.heros-tete .ic { color: var(--texte-3); }
+.heros-titre { display: block; margin: 0; font-size: 30px; font-weight: 800; line-height: 1.1; letter-spacing: -0.025em; overflow-wrap: anywhere; }
+.heros-sous { display: block; margin: 6px 0 0; color: var(--texte-2); font-size: 15px; }
+.heros-infos { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 18px; }
+.puce-info {
+  display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px;
+  border-radius: 999px; background: rgba(255, 255, 255, 0.06); color: var(--texte-2);
+  font-size: 13.5px; font-weight: 650;
+}
+.puce-info .ic { width: 16px; height: 16px; color: var(--couleur, var(--accent-clair)); }
+.blocs-points { display: inline-flex; flex-wrap: wrap; gap: 5px; }
+.blocs-points i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--couleur, var(--accent-clair)); }
+.blocs-points i.fait { background: var(--couleur, var(--accent-clair)); }
+.heros-chrono-ligne { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.heros-chrono-ligne > div { flex: 1; min-width: 0; }
+.heros-chrono-ligne .heros-titre { font-size: 22px; }
+.heros-temps { color: var(--couleur); font-size: 40px; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+
+/* Journée terminée */
+.heros-fini { text-align: center; --couleur: var(--ok); --couleur-fond: rgba(52, 211, 153, 0.16); --couleur-fond-fort: rgba(52, 211, 153, 0.22); --couleur-bord: rgba(52, 211, 153, 0.35); }
+.medaille-fini {
+  position: relative; display: grid; place-items: center; width: 92px; height: 92px; margin: 8px auto 16px;
+  border-radius: 50%; color: #052e21;
+  background: radial-gradient(circle at 32% 26%, #8ff5cf, #10b981 72%);
+  box-shadow: 0 18px 40px -16px rgba(16, 185, 129, 0.95), inset 0 2px 0 rgba(255, 255, 255, 0.45);
+  animation: rebond 0.8s var(--anim);
+}
+.medaille-fini .ic { width: 46px; height: 46px; stroke-width: 3; }
+.medaille-fini i { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #ffd43b; }
+.medaille-fini i:nth-of-type(1) { top: -4px; right: 2px; }
+.medaille-fini i:nth-of-type(2) { bottom: 6px; left: -10px; width: 6px; height: 6px; background: #b0abff; }
+.medaille-fini i:nth-of-type(3) { top: 18px; left: -14px; width: 5px; height: 5px; background: #f783ac; }
+@keyframes rebond { 0% { transform: scale(0.6); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
+.heros-fini .heros-sous, .heros-repos .heros-sous { margin-bottom: 4px; }
+.heros-fini .btn, .heros-repos .btn { margin-top: 16px; }
+
+/* Écrans vides soignés */
+.etat-vide { padding: 30px 22px 24px; text-align: center; }
+.illu {
+  display: grid; place-items: center; width: 92px; height: 92px; margin: 0 auto 18px; border-radius: 30px;
+  background: linear-gradient(150deg, rgba(108, 92, 255, 0.38), rgba(84, 104, 240, 0.08));
+  color: var(--accent-clair); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 18px 36px -20px rgba(108, 92, 255, 0.9);
+}
+.illu .ic { width: 44px; height: 44px; stroke-width: 1.8; }
+.etat-vide h2 { font-size: 22px; }
+.etat-vide p { margin: 8px auto 20px; max-width: 32ch; color: var(--texte-2); }
+.etapes { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: -4px 0 20px; }
+.etapes span { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px 6px 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.05); color: var(--texte-2); font-size: 13.5px; font-weight: 650; }
+.etapes b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-fond); color: var(--accent-clair); font-size: 12px; }
+.illu-petite { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 15px; background: var(--degrade-accent); color: #fff; box-shadow: 0 10px 22px -12px rgba(108, 92, 255, 0.95); }
+.illu-petite .ic { width: 22px; height: 22px; }
+
+/* Bandeaux courts (aujourd'hui, demain, retard…) */
+.bandeaux { display: grid; gap: 8px; margin: 0 0 16px; }
+.bandeau {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 54px; padding: 8px 10px 8px 14px;
+  border: 1px solid var(--couleur-bord, var(--bord)); border-radius: 18px;
+  background: linear-gradient(90deg, var(--couleur-fond, transparent), transparent 85%), var(--carte);
+  color: var(--texte); font-size: 14.5px; line-height: 1.35; text-align: left;
+  transition: transform 0.14s var(--anim);
+}
+button.bandeau:active, details.bandeau summary:active { transform: scale(0.985); }
+.bandeau > .ic, .bandeau summary > .ic:first-child { color: var(--couleur, var(--alerte)); }
+.bandeau .texte { flex: 1; min-width: 0; }
+.bandeau .texte small { display: block; color: var(--texte-2); font-size: 13px; }
+.bandeau .compte { flex: none; padding: 3px 10px; border-radius: 999px; background: var(--couleur-fond); color: var(--couleur); font-weight: 800; font-variant-numeric: tabular-nums; }
+.bandeau .chevron, .bandeau .chevron-bas { color: var(--texte-3); }
+details.bandeau { display: block; padding: 0; }
+details.bandeau summary { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 12px 8px 14px; list-style: none; cursor: pointer; transition: transform 0.14s var(--anim); }
+details.bandeau summary::-webkit-details-marker { display: none; }
+.alerte-bandeau { --couleur: var(--alerte); --couleur-fond: var(--alerte-fond); --couleur-bord: rgba(251, 191, 36, 0.3); }
+.alerte-bandeau .texte strong { color: #fcd34d; }
+.chevron-bas { transition: transform 0.25s var(--anim); }
+details[open] > summary .chevron-bas { transform: rotate(180deg); }
+.bandeau-detail { margin: 0; padding: 0 14px 14px 46px; color: var(--texte-2); font-size: 14px; animation: deplie 0.28s var(--anim); }
+@keyframes deplie { from { opacity: 0; transform: translateY(-6px); } }
+
+/* Liste "Ensuite aujourd'hui" */
+.liste-plan, .liste-matieres, .liste-faits, .liste-notes { list-style: none; margin: 0; padding: 0; }
+.ligne-plan { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--bord); }
+.ligne-plan:first-child { border-top: 0; }
+.ligne-corps { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; min-height: 52px; padding: 2px 0; border: 0; background: none; text-align: left; transition: transform 0.14s var(--anim); }
+.ligne-corps:active { transform: scale(0.98); }
+.barre-v { align-self: stretch; flex: none; width: 5px; border-radius: 5px; background: var(--couleur); }
+.ligne-texte { flex: 1; min-width: 0; }
+.ligne-titre { display: block; font-size: 16px; font-weight: 750; overflow-wrap: anywhere; }
+.ligne-sous { display: block; margin-top: 3px; color: var(--texte-2); font-size: 13.5px; }
+.ligne-plan.finie .ligne-titre { color: var(--texte-2); }
+.ligne-plan.finie .barre-v { opacity: 0.45; }
+.note-capacite { margin: 10px 4px 0; color: var(--texte-3); font-size: 13px; }
+
+/* Les 7 prochains jours (une colonne par jour) */
+.semaine-carte, .calendrier { padding-left: 12px; padding-right: 12px; }
+.semaine-bande { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.jour-col {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; padding: 10px 1px 8px;
+  border: 1px solid transparent; border-radius: 16px; background: rgba(255, 255, 255, 0.03);
+  transition: background-color 0.2s, border-color 0.2s, transform 0.14s var(--anim);
+}
+.jour-col:active { transform: scale(0.94); }
+.jour-col.choisi { border-color: var(--bord-fort); background: var(--carte-2); }
+.jc-nom { color: var(--texte-3); font-size: 11px; font-weight: 750; text-transform: uppercase; }
+.jc-num { font-size: 16px; font-weight: 800; line-height: 1; }
+.jc-barre { display: flex; flex-direction: column-reverse; gap: 2px; width: 12px; height: 48px; border-radius: 6px; background: var(--carte-3); overflow: hidden; }
+.jc-barre i { flex: none; width: 100%; border-radius: 3px; background: var(--couleur); }
+.jc-ech { display: flex; justify-content: center; gap: 2px; min-height: 8px; }
+.jc-ech i { width: 8px; height: 8px; border-radius: 50%; background: var(--couleur); }
+.jc-charge { color: var(--texte-3); font-size: 11px; font-weight: 750; font-variant-numeric: tabular-nums; }
+.jc-charge.plein { color: var(--texte-2); }
+.jour-detail { margin-top: 12px; padding: 12px 14px; border-radius: 16px; background: var(--carte-2); animation: deplie 0.25s var(--anim); }
+.jour-detail-titre { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; font-weight: 750; }
+.jour-detail-titre span { color: var(--texte-3); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .puces { display: flex; flex-wrap: wrap; gap: 6px; }
-.puce { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--couleur-fond); font-size: 14px; font-weight: 600; }
+.puce { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--couleur-fond); font-size: 14px; font-weight: 650; }
 .puce::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--couleur); }
+.puce.puce-ech::before { display: none; }
+.puce.puce-ech .ic { width: 15px; height: 15px; color: var(--couleur); }
 .repos { color: var(--texte-3); font-size: 14px; }
 
-.bienvenue ol { margin: 12px 0 16px; padding-left: 22px; color: var(--texte-2); }
-.bienvenue li { margin-bottom: 6px; }
-
 /* ---------- Ressenti après un bloc ---------- */
-.ressenti { border-color: var(--accent); }
-.ressentis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.ressentis .btn { flex-direction: column; gap: 4px; min-height: 70px; padding: 8px 4px; }
-.ressentis .emoji { font-size: 24px; line-height: 1; }
+.ressenti {
+  border-color: rgba(108, 92, 255, 0.45);
+  background: radial-gradient(110% 80% at 0% 0%, rgba(108, 92, 255, 0.24), transparent 60%), linear-gradient(180deg, var(--carte-haut), var(--carte));
+  animation: arrivee 0.45s var(--anim);
+}
+.ressenti-tete { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.ressenti-tete h2 { font-size: 18px; }
+.ressenti-tete .aide { margin-top: 2px; }
+.ressentis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ressentis .btn { flex-direction: column; gap: 6px; min-height: 84px; padding: 10px 4px; border-radius: 18px; font-size: 15px; }
+.ressentis .emoji { font-size: 30px; line-height: 1; }
+.ressentis [data-valeur="facile"] { background: rgba(52, 211, 153, 0.12); border-color: rgba(52, 211, 153, 0.26); }
+.ressentis [data-valeur="ok"] { background: rgba(96, 165, 250, 0.12); border-color: rgba(96, 165, 250, 0.26); }
+.ressentis [data-valeur="dur"] { background: rgba(251, 146, 60, 0.13); border-color: rgba(251, 146, 60, 0.3); }
 
 /* ---------- Écran "Échéances" ---------- */
-.echeance { position: relative; overflow: hidden; padding-left: 22px; cursor: pointer; }
-.echeance::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: var(--couleur); }
-.echeance:active { filter: brightness(1.12); }
+.echeance {
+  display: flex; align-items: center; gap: 14px; padding: 16px 16px 16px 22px; overflow: hidden; cursor: pointer;
+  transition: transform 0.14s var(--anim), border-color 0.2s;
+}
+.echeance::before { content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 5px; border-radius: 0 5px 5px 0; background: var(--couleur); }
+.echeance:active { transform: scale(0.985); }
 .echeance.passee { opacity: 0.6; }
-.ech-haut { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.ech-matiere { font-size: 18px; font-weight: 750; overflow-wrap: anywhere; }
+.ech-corps { flex: 1; min-width: 0; }
+.ech-haut { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ech-matiere { font-size: 18px; font-weight: 800; overflow-wrap: anywhere; }
+.ech-date { margin-top: 3px; color: var(--texte-2); font-size: 14px; font-weight: 600; }
+.ech-puces { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ech-puces:empty { display: none; }
+.puce-statut {
+  display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px;
+  border-radius: 999px; background: var(--carte-2); color: var(--texte-2);
+  font-size: 12.5px; font-weight: 750;
+}
+.puce-statut .ic { width: 14px; height: 14px; }
+.puce-statut.alerte { background: var(--alerte-fond); color: #fcd34d; }
+.puce-statut.ok { background: rgba(52, 211, 153, 0.14); color: #6ee7b7; }
+.puce-statut.veille-puce { background: var(--accent-fond); color: var(--accent-clair); }
+.puce-statut.auj { background: var(--couleur-fond); color: var(--couleur); }
 .badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
-.badge { flex: none; padding: 3px 9px; border-radius: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
-.badge-test { background: rgba(96, 165, 250, 0.16); color: #93c5fd; }
-.badge-examen { background: rgba(248, 113, 113, 0.16); color: #fca5a5; }
+.badge { flex: none; padding: 3px 8px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.badge-test { background: rgba(96, 165, 250, 0.15); color: #93c5fd; }
+.badge-examen { background: rgba(248, 113, 113, 0.15); color: #fca5a5; }
 .badge-travail { background: var(--carte-3); color: var(--texte-2); }
 .badge-passe { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
-.ech-date { margin-top: 2px; font-weight: 600; }
-.ech-details, .ech-progres { color: var(--texte-2); font-size: 14px; margin-top: 4px; }
-.ech-note { margin-top: 8px; font-size: 14px; font-style: italic; color: var(--texte-2); overflow-wrap: anywhere; }
-.ech-statut { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bord); font-size: 14px; font-weight: 650; }
-.ech-alerte { color: var(--alerte); }
-.ech-ok { color: var(--ok); }
-.barre { height: 8px; margin-top: 10px; border-radius: 99px; background: var(--carte-2); overflow: hidden; }
-.barre > div { height: 100%; border-radius: inherit; background: var(--couleur); }
-details.passees { margin: 18px 0; }
-details.passees summary { padding: 12px 4px; color: var(--texte-2); font-weight: 650; cursor: pointer; }
+.ech-note { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0 0; color: var(--texte-2); font-size: 14px; font-style: italic; overflow-wrap: anywhere; }
+.ech-note .ic { margin-top: 1px; color: var(--couleur, var(--texte-3)); }
+.ech-statut { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: var(--carte-2); font-size: 14px; font-weight: 650; }
+.ech-alerte { background: var(--alerte-fond); color: #fcd34d; }
+.ech-ok { color: #6ee7b7; }
+details.passees { margin: 22px 0; }
+details.passees > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  min-height: 48px; padding: 8px 6px; list-style: none; cursor: pointer;
+  color: var(--texte-3); font-size: 13px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em;
+}
+details.passees > summary::-webkit-details-marker { display: none; }
+details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
 
-.ligne-matiere { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 8px 4px; border: 0; border-top: 1px solid var(--bord); background: none; text-align: left; }
+.ligne-matiere {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 8px 2px;
+  border: 0; border-top: 1px solid var(--bord); background: none; text-align: left; transition: transform 0.14s var(--anim);
+}
+.ligne-matiere:active { transform: scale(0.98); }
 .liste-matieres li:first-child .ligne-matiere { border-top: 0; }
-.ligne-matiere .nom { flex: 1; font-weight: 650; overflow-wrap: anywhere; }
-.ligne-matiere .rond { width: 16px; height: 16px; }
-.chevron { color: var(--texte-3); font-size: 22px; line-height: 1; }
+.ligne-matiere .nom { flex: 1; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+.ligne-matiere .rond { width: 14px; height: 14px; }
+.compteur { flex: none; min-width: 26px; padding: 2px 8px; border-radius: 999px; background: var(--couleur-fond); color: var(--couleur); font-size: 13px; font-weight: 800; text-align: center; }
+.chevron { flex: none; color: var(--texte-3); }
 
 /* Détail d'une échéance (dans la feuille) */
-.detail .ech-haut { align-items: flex-start; }
-.feuille .detail-titre { margin: 2px 0 4px; overflow-wrap: anywhere; }
+.detail-tete { display: flex; align-items: flex-start; gap: 12px; }
+.detail-tete-texte { flex: 1; min-width: 0; }
+.pastille-matiere { flex: none; width: 14px; height: 14px; margin-top: 10px; border-radius: 50%; background: var(--couleur); box-shadow: 0 0 0 4px var(--couleur-fond); }
+.feuille .detail-titre { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.detail-date { margin: 2px 0 0; color: var(--texte-2); font-size: 14.5px; }
+.detail-progres {
+  display: flex; align-items: center; gap: 18px; margin: 18px 0 12px; padding: 16px;
+  border-radius: 20px; background: radial-gradient(120% 120% at 0% 50%, var(--couleur-fond), transparent 70%), var(--carte-2);
+}
+.detail-chiffres { display: grid; gap: 10px; min-width: 0; }
+.detail-chiffres strong { display: block; font-size: 20px; font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.detail-chiffres span { color: var(--texte-2); font-size: 13px; }
+.puces-infos { display: flex; flex-wrap: wrap; gap: 8px; }
 .liste-notes li { padding: 10px 0; border-top: 1px solid var(--bord); }
 .liste-notes li:first-child { border-top: 0; }
 .liste-notes .quand { display: block; color: var(--texte-2); font-size: 14px; font-weight: 600; }
 .liste-notes .texte-note { display: block; margin-top: 3px; font-style: italic; overflow-wrap: anywhere; }
 
-/* ---------- Écran "Chrono" ---------- */
+/* ---------- Écran "Chrono" (le moment fort) ---------- */
 .chrono { text-align: center; }
-.chrono-phase { display: inline-block; padding: 7px 16px; border-radius: 999px; background: var(--carte-2); color: var(--phase); font-weight: 800; letter-spacing: 0.02em; }
-.chrono-sujet { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; font-size: 17px; font-weight: 650; }
-.derniere-note { margin: 8px 0 0; color: var(--texte-2); font-size: 15px; overflow-wrap: anywhere; }
-.anneau { position: relative; width: min(76vw, 300px); aspect-ratio: 1; margin: 16px auto 10px; }
-.anneau svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.chrono-sujet {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; max-width: 100%;
+  padding: 9px 16px; border: 1px solid var(--bord); border-radius: 999px; background: rgba(20, 25, 39, 0.75);
+  font-size: 16px; font-weight: 700; overflow-wrap: anywhere;
+}
+.anneau { position: relative; width: min(78vw, 310px); aspect-ratio: 1; margin: 22px auto 16px; }
+.anneau svg { width: 100%; height: 100%; overflow: visible; transform: rotate(-90deg); }
 .anneau circle { fill: none; stroke-width: 8; }
-.anneau-fond { stroke: var(--carte-2); }
-.anneau-progres { stroke: var(--phase); stroke-linecap: round; stroke-dasharray: 339.292; transition: stroke-dashoffset 0.5s linear; }
-.chrono-temps { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: min(19vw, 78px); font-weight: 750; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.anneau-fond { stroke: rgba(255, 255, 255, 0.07); }
+.anneau-progres {
+  stroke: var(--phase); stroke-linecap: round; stroke-dasharray: 339.292;
+  filter: drop-shadow(0 0 5px var(--phase));
+  transition: stroke-dashoffset 0.5s linear, stroke 0.6s;
+}
+.anneau-centre { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.chrono-phase { color: var(--phase); font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.chrono-temps { font-size: min(18vw, 74px); font-weight: 750; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .chrono-temps.petit { font-size: min(10vw, 40px); }
-.chrono-info { color: var(--texte-2); font-size: 15px; margin-bottom: 18px; }
-.chrono-boutons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.liste-faits li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--bord); }
+.anneau-sous { max-width: 70%; color: var(--texte-2); font-size: 14px; font-weight: 700; overflow-wrap: anywhere; }
+.serie-points { display: flex; gap: 6px; min-height: 8px; }
+.serie-points i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); }
+.serie-points i.fait { background: var(--phase); }
+.serie-points i.en-cours { background: var(--phase); animation: clignote 1.6s ease-in-out infinite; }
+@keyframes clignote { 50% { opacity: 0.35; } }
+.derniere-note { display: flex; align-items: flex-start; justify-content: center; gap: 8px; margin: 0 auto 10px; max-width: 34ch; color: var(--texte-2); font-size: 15px; font-style: italic; overflow-wrap: anywhere; }
+.derniere-note .ic { margin-top: 2px; color: var(--phase); }
+.chrono-info { margin: 0 0 18px; color: var(--texte-2); font-size: 14.5px; }
+.commandes { display: flex; align-items: flex-start; justify-content: center; gap: 16px; margin: 4px 0 14px; }
+.commande { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 72px; padding: 0; border: 0; background: none; color: var(--texte-2); font-size: 13px; font-weight: 700; }
+.rond-cmd {
+  display: grid; place-items: center; width: 60px; height: 60px; margin: 10px 0; border: 1px solid var(--bord-fort); border-radius: 50%;
+  background: var(--carte-2); color: var(--texte); transition: transform 0.14s var(--anim), filter 0.2s;
+}
+.commande:active .rond-cmd { transform: scale(0.9); filter: brightness(1.15); }
+.commande .icone, .commande .ic { width: 24px; height: 24px; }
+.commande.principale { color: var(--texte); }
+.commande.principale .rond-cmd { width: 80px; height: 80px; margin: 0; border: 0; background: var(--degrade-accent); color: #fff; box-shadow: 0 16px 32px -14px rgba(108, 92, 255, 0.95); }
+.commande.principale .icone { width: 32px; height: 32px; }
+.commande.danger .rond-cmd { color: #fca5a5; }
+.chrono-actif.en-pause .anneau { animation: respire 4.5s ease-in-out infinite; }
+@keyframes respire { 50% { transform: scale(1.025); } }
+.chrono-actif.arrete .anneau-progres { opacity: 0.55; }
+.anneau.pulse { animation: pulse 0.9s var(--anim); }
+@keyframes pulse { 0% { transform: scale(1); } 35% { transform: scale(1.06); filter: drop-shadow(0 0 18px var(--phase)); } 100% { transform: scale(1); } }
+.anneau-repos .anneau-progres { opacity: 0.9; }
+.liste-faits li { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--bord); }
 .liste-faits li:first-child { border-top: 0; }
-.liste-faits .texte { flex: 1; min-width: 0; font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+.liste-faits .texte { flex: 1; min-width: 0; font-size: 15px; font-weight: 650; overflow-wrap: anywhere; }
 .liste-faits .texte small { display: block; color: var(--texte-3); font-weight: 500; }
-.supprimer-bloc { flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--carte-2); color: var(--texte-3); font-size: 18px; }
+.supprimer-bloc { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--carte-2); color: var(--texte-3); }
+.supprimer-bloc .ic { width: 18px; height: 18px; }
+.fait-vide { margin-top: 22px; }
 
 /* Choix "Je travaille sur…" : une carte par échéance, le texte va à la ligne si besoin */
-.choix-sujet { display: grid; gap: 8px; }
+.choix-sujet { display: grid; gap: 8px; margin: 22px 0 8px; text-align: left; }
+.choix-sujet legend { margin-bottom: 8px; color: var(--texte-3); font-size: 13px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em; }
 .option-sujet { position: relative; display: block; }
 .option-sujet input { position: absolute; opacity: 0; pointer-events: none; }
-.option-corps { position: relative; display: block; padding: 12px 14px 12px 42px; border: 2px solid var(--bord); border-radius: 14px; background: var(--carte-2); cursor: pointer; }
-.option-corps::before { content: ""; position: absolute; left: 15px; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 50%; background: var(--couleur, var(--accent)); }
+.option-corps {
+  position: relative; display: block; padding: 12px 44px 12px 42px;
+  border: 2px solid var(--bord); border-radius: 18px; background: var(--carte);
+  cursor: pointer; transition: border-color 0.2s, background-color 0.2s, transform 0.14s var(--anim);
+}
+.option-corps:active { transform: scale(0.985); }
+.option-corps::before { content: ""; position: absolute; left: 15px; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 50%; background: var(--couleur, var(--accent-clair)); }
+.option-corps::after {
+  content: ""; position: absolute; right: 14px; top: 50%; width: 20px; height: 20px; margin-top: -10px;
+  border: 2px solid var(--carte-3); border-radius: 50%; transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
 .option-corps strong { display: block; font-size: 16px; overflow-wrap: anywhere; }
 .option-corps small { display: block; margin-top: 2px; color: var(--texte-2); font-size: 14px; }
-.option-sujet input:checked + .option-corps { border-color: var(--couleur, var(--accent)); background: var(--couleur-fond, rgba(139, 147, 255, 0.12)); }
-.option-sujet input:focus-visible + .option-corps { outline: 3px solid var(--accent); outline-offset: 2px; }
+.option-sujet input:checked + .option-corps { border-color: var(--couleur, var(--accent-clair)); background: var(--couleur-fond, var(--accent-fond)); }
+.option-sujet input:checked + .option-corps::after { border-color: var(--couleur, var(--accent-clair)); background: var(--couleur, var(--accent-clair)); box-shadow: inset 0 0 0 4px var(--carte); }
+.option-sujet input:focus-visible + .option-corps { outline: 3px solid var(--accent-clair); outline-offset: 2px; }
+
+/* Célébration à la fin d'un bloc : des confettis légers */
+.confettis { position: fixed; inset: 0; z-index: 85; overflow: hidden; pointer-events: none; }
+.confettis i {
+  position: absolute; left: 50%; top: 36%; width: 8px; height: 13px; border-radius: 2px; background: var(--c);
+  opacity: 0; animation: confetti 1.5s cubic-bezier(0.15, 0.7, 0.3, 1) var(--delai, 0s) forwards;
+}
+.confettis i:nth-child(3n) { width: 7px; height: 7px; border-radius: 50%; }
+@keyframes confetti {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+  55% { opacity: 1; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--r)) scale(1); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx) * 1.15), calc(-50% + var(--dy) + 150px)) rotate(calc(var(--r) * 2)) scale(0.9); }
+}
 
 /* ---------- Écran "Réglages" ---------- */
-.ligne-reglage { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--bord); }
-.carte > h2 + .ligne-reglage, h3 + .ligne-reglage { border-top: 0; }
-.libelle { font-weight: 600; }
+.ligne-reglage { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; padding: 8px 0; border-top: 1px solid var(--bord); }
+.carte > .ligne-reglage:first-child, .carte > h2 + .ligne-reglage, h3 + .ligne-reglage, .aide + .ligne-reglage { border-top: 0; }
+.libelle { min-width: 0; font-weight: 650; }
 .libelle small { display: block; color: var(--texte-3); font-size: 13px; font-weight: 500; }
 .stepper { display: flex; align-items: center; gap: 6px; flex: none; }
-.stepper button { width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--carte-2); font-size: 24px; font-weight: 700; line-height: 1; }
-.stepper button:active { background: var(--carte-3); }
-.stepper output { min-width: 78px; text-align: center; font-weight: 750; font-variant-numeric: tabular-nums; }
-.stepper input { width: 70px; min-height: 48px; border: 1px solid var(--bord); border-radius: 12px; background: var(--carte-2); text-align: center; font-size: 18px; font-weight: 750; -moz-appearance: textfield; appearance: textfield; }
+.stepper button { width: 44px; height: 44px; border: 1px solid var(--bord); border-radius: 50%; background: var(--carte-2); font-size: 24px; font-weight: 700; line-height: 1; transition: transform 0.14s var(--anim), background-color 0.2s; }
+.stepper button:active { transform: scale(0.9); background: var(--carte-3); }
+.stepper output { min-width: 76px; text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stepper input { width: 70px; min-height: 48px; border: 1px solid var(--bord); border-radius: 14px; background: var(--carte-2); text-align: center; font-size: 18px; font-weight: 750; -moz-appearance: textfield; appearance: textfield; }
 .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.formule { margin: 6px 0 4px; padding: 10px 12px; border-radius: 12px; background: var(--carte-2); font-weight: 650; text-align: center; }
+.formule { margin: 6px 0 4px; padding: 10px 12px; border-radius: 14px; background: var(--carte-2); font-weight: 700; text-align: center; }
 .interrupteur { position: relative; flex: none; width: 54px; height: 32px; }
 .interrupteur input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
-.interrupteur span { position: absolute; inset: 0; border-radius: 999px; background: var(--carte-3); transition: background 0.2s; pointer-events: none; }
-.interrupteur span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
-.interrupteur input:checked + span { background: var(--ok); }
+.interrupteur span { position: absolute; inset: 0; border-radius: 999px; background: var(--carte-3); transition: background-color 0.2s; pointer-events: none; }
+.interrupteur span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35); transition: transform 0.25s var(--anim); }
+.interrupteur input:checked + span { background: var(--accent); }
 .interrupteur input:checked + span::after { transform: translateX(22px); }
-.interrupteur input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+.interrupteur input:focus-visible + span { outline: 3px solid var(--accent-clair); outline-offset: 2px; }
 label.ligne-reglage { cursor: pointer; }
-
+details.avance { padding: 0; }
+details.avance > summary { display: flex; align-items: center; gap: 14px; min-height: 76px; padding: 14px 18px; list-style: none; cursor: pointer; }
+details.avance > summary::-webkit-details-marker { display: none; }
+.avance-titre { flex: 1; min-width: 0; font-size: 17px; font-weight: 750; }
+.avance-titre small { display: block; color: var(--texte-3); font-size: 13px; font-weight: 600; }
+.avance-corps { padding: 0 18px 18px; border-top: 1px solid var(--bord); animation: deplie 0.3s var(--anim); }
+.avance-corps > h3:first-child { margin-top: 18px; }
+.version { margin: 24px 0 8px; color: var(--texte-3); }
 .installer ol { margin: 8px 0 0; padding-left: 22px; color: var(--texte-2); }
 .installer li { margin-bottom: 6px; }
 .installer .attention { margin-top: 10px; color: var(--alerte); font-size: 14px; }
 
 /* ---------- Résumé de la semaine (tuiles) ---------- */
-.tuiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.tuile { min-width: 0; padding: 12px; border-radius: 14px; background: var(--carte-2); }
-.tuile-valeur { display: block; font-size: 21px; font-weight: 750; line-height: 1.2; overflow-wrap: anywhere; }
+.tuiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.tuile { min-width: 0; padding: 12px; border-radius: 16px; background: var(--carte-2); }
+.tuile-valeur { display: block; font-size: 21px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .tuile-label { display: block; margin-top: 2px; color: var(--texte-2); font-size: 13px; }
 .tuile-delta { display: block; margin-top: 4px; color: var(--texte-3); font-size: 12px; }
-.fermer-x { flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--carte-2); color: var(--texte-2); font-size: 20px; line-height: 1; }
+.fermer-x { display: grid; place-items: center; flex: none; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: var(--carte-2); color: var(--texte-2); }
+.fermer-x .ic { width: 18px; height: 18px; }
 
 /* ---------- Bascule (Liste / Calendrier, Semaine / Mois) ---------- */
-.bascule { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin-bottom: 14px; padding: 4px; border-radius: 14px; background: var(--carte-2); }
-.bascule button { min-height: 42px; border: 0; border-radius: 11px; background: none; color: var(--texte-2); font-weight: 750; }
-.bascule button[aria-pressed="true"] { background: var(--accent); color: var(--sur-accent); }
+.bascule { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin-bottom: 16px; padding: 4px; border: 1px solid var(--bord); border-radius: 16px; background: var(--carte); }
+.bascule button { min-height: 44px; border: 0; border-radius: 12px; background: none; color: var(--texte-2); font-weight: 750; transition: background-color 0.25s var(--anim), color 0.2s; }
+.bascule button[aria-pressed="true"] { background: var(--degrade-accent); color: var(--sur-accent); box-shadow: 0 8px 18px -12px rgba(108, 92, 255, 0.95); }
 
 /* ---------- Calendrier (onglet Échéances) ---------- */
-.cal-entete { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.cal-entete { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
 .cal-entete h2 { text-transform: capitalize; }
-.cal-nav { width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--carte-2); font-size: 24px; line-height: 1; }
-.cal-grille { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-nav { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--bord); border-radius: 50%; background: var(--carte-2); }
+.cal-nav .ic { width: 20px; height: 20px; }
+.cal-grille { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
 .cal-jsem { padding-bottom: 2px; color: var(--texte-3); font-size: 12px; font-weight: 700; text-align: center; }
-.cal-jour { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; min-height: 54px; padding: 4px 2px 5px; border: 2px solid transparent; border-radius: 10px; background: var(--carte-2); }
+.cal-jour { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; min-height: 54px; padding: 4px 2px 5px; border: 2px solid transparent; border-radius: 12px; background: var(--carte-2); transition: transform 0.14s var(--anim); }
+.cal-jour:active { transform: scale(0.93); }
 .cal-jour.hors { opacity: 0.35; }
-.cal-jour.choisi { border-color: var(--texte-2); }
+.cal-jour.choisi { border-color: var(--accent-clair); }
 .cal-num { min-width: 24px; padding: 1px 4px; border-radius: 999px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .cal-jour.auj .cal-num { background: var(--accent); color: var(--sur-accent); }
 .cal-marques { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; min-height: 9px; }
@@ -297,23 +603,27 @@ label.ligne-reglage { cursor: pointer; }
 .cal-ech.examen { width: 15px; border-radius: 3px; }
 .cal-barre { display: flex; gap: 2px; width: 80%; height: 4px; margin-top: auto; }
 .cal-barre i { min-width: 2px; height: 100%; border-radius: 2px; background: var(--couleur); }
-.cal-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 10px; color: var(--texte-2); font-size: 13px; }
+.cal-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 12px; color: var(--texte-2); font-size: 13px; }
 .cal-legende span { display: inline-flex; align-items: center; gap: 6px; }
 .cal-legende .cal-barre { width: 22px; margin: 0; }
 .ligne-cal { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 8px 4px; border: 0; border-top: 1px solid var(--bord); background: none; text-align: left; font-weight: 650; }
 .ligne-cal .texte { flex: 1; min-width: 0; }
+.ligne-cal > .ic { color: var(--couleur); }
 
 /* ---------- Veille d'examen et résultat ---------- */
-.veille { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(139, 147, 255, 0.1); border: 1px solid rgba(139, 147, 255, 0.35); }
+.veille { margin-top: 14px; padding: 14px; border-radius: 18px; background: linear-gradient(180deg, rgba(108, 92, 255, 0.14), rgba(108, 92, 255, 0.06)); border: 1px solid rgba(108, 92, 255, 0.35); }
+.veille-titre { display: flex; align-items: center; gap: 8px; }
+.veille-titre .ic { color: var(--accent-clair); }
 .checklist { list-style: none; margin: 8px 0 0; padding: 0; }
 .checklist li { padding: 6px 0; }
-.checklist label { display: flex; align-items: flex-start; gap: 10px; font-weight: 600; cursor: pointer; }
+.checklist label { display: flex; align-items: flex-start; gap: 10px; min-height: 32px; font-weight: 600; cursor: pointer; }
 .checklist input { flex: none; width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--accent); }
 .checklist input:checked + span { color: var(--texte-3); text-decoration: line-through; }
 .checklist .sous { display: block; margin: 4px 0 0 32px; color: var(--texte-2); font-size: 14px; font-style: italic; overflow-wrap: anywhere; }
-.ech-veille { color: #c7cbff; }
-.resultat { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: var(--carte-2); }
-.deux-champs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.resultat { margin-top: 14px; padding: 14px; border-radius: 18px; background: var(--carte-2); }
+.resultat-titre { display: flex; align-items: center; gap: 8px; }
+.resultat-titre .ic { color: var(--couleur, var(--accent-clair)); }
+.deux-champs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 
 /* ---------- Écran "Stats" (graphiques dessinés en SVG) ---------- */
 .graphique { display: block; width: 100%; height: auto; overflow: visible; }
@@ -321,7 +631,7 @@ label.ligne-reglage { cursor: pointer; }
 .graphique .g-nom { fill: var(--texte); font-size: 14px; font-weight: 600; }
 .graphique .g-valeur { fill: var(--texte-2); font-size: 13px; font-variant-numeric: tabular-nums; }
 .graphique .g-axe { fill: var(--texte-3); font-size: 11px; font-variant-numeric: tabular-nums; }
-.graphique .g-grille { stroke: var(--bord); stroke-width: 1; }
+.graphique .g-grille { stroke: var(--bord-fort); stroke-width: 1; }
 .graphique .g-choisi { fill: var(--texte); opacity: 0.08; }
 .graphique .g-point { stroke: var(--carte); stroke-width: 2; }
 .graphique [data-action] { cursor: pointer; }
@@ -329,24 +639,47 @@ label.ligne-reglage { cursor: pointer; }
 .legende span { display: inline-flex; align-items: center; gap: 6px; }
 .legende i { width: 10px; height: 10px; border-radius: 3px; background: var(--couleur); }
 .legende i.point { border-radius: 50%; }
-.detail-graphique { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--carte-2); font-size: 14px; }
-.chiffres summary { margin-top: 10px; color: var(--texte-2); font-size: 14px; cursor: pointer; }
+.detail-graphique { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: var(--carte-2); font-size: 14px; }
+.chiffres summary { margin-top: 4px; padding: 12px 0; color: var(--texte-2); font-size: 14px; cursor: pointer; }
 .chiffres table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
 .chiffres th, .chiffres td { padding: 5px 4px; border-top: 1px solid var(--bord); text-align: left; vertical-align: top; }
 .chiffres th:last-child, .chiffres td:last-child { text-align: right; white-space: nowrap; }
 .chiffres th { color: var(--texte-2); font-weight: 650; }
-.serie { display: flex; align-items: flex-end; gap: 28px; }
-.serie-valeur { display: block; font-size: 52px; font-weight: 750; line-height: 1; }
+.serie-carte {
+  border-color: rgba(255, 138, 61, 0.28);
+  background: radial-gradient(120% 90% at 0% 0%, rgba(255, 120, 60, 0.18), transparent 60%), linear-gradient(180deg, var(--carte-haut), var(--carte));
+}
+.serie { display: flex; align-items: center; gap: 16px; }
+.flamme.flamme-grande { width: 64px; height: 64px; border-radius: 22px; }
+.flamme.flamme-grande .ic { width: 34px; height: 34px; }
+.serie-num { flex: 1; min-width: 0; }
+.serie-valeur { display: block; font-size: 52px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.serie-record { flex: none; padding: 10px 14px; border-radius: 16px; background: rgba(255, 255, 255, 0.05); text-align: center; }
+.jours-flammes { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-top: 16px; }
+.jours-flammes span { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--texte-3); font-size: 11px; font-weight: 750; }
+.jours-flammes i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); }
+.jours-flammes .fait i { background: linear-gradient(160deg, #ffb347, #ff5f45); color: #fff; }
+.jours-flammes .ic { width: 16px; height: 16px; }
+.jours-flammes .auj small { color: var(--texte); }
 .liens-etude { list-style: none; margin: 10px 0 0; padding: 0; }
 .liens-etude li { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 14px; }
 .liens-etude .rond { margin-top: 5px; }
-.badges-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
-.badge-tuile { padding: 10px 6px; border-radius: 14px; background: var(--carte-2); text-align: center; }
-.badge-tuile .emoji { display: block; font-size: 26px; line-height: 1.3; }
+.badges-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+.badge-tuile { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 6px 12px; border: 1px solid var(--bord); border-radius: 18px; background: rgba(255, 255, 255, 0.03); text-align: center; }
+.medaille { position: relative; display: grid; place-items: center; width: 66px; height: 66px; margin-bottom: 6px; border-radius: 50%; }
+.badge-tuile.gagne { border-color: var(--teinte-bord); background: radial-gradient(100% 70% at 50% 0%, var(--teinte-fond), transparent 75%); }
+.badge-tuile.gagne .medaille {
+  background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.45), transparent 42%), radial-gradient(circle at 50% 55%, var(--teinte), var(--teinte-sombre));
+  box-shadow: 0 0 0 3px var(--teinte-fond), 0 12px 26px -10px var(--teinte-lueur), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+}
+.badge-tuile.verrouille .medaille { background: var(--carte-2); }
+.medaille .anneau-mini { position: absolute; inset: -4px; width: auto !important; height: auto !important; }
+.medaille .anneau-mini-plein { stroke: var(--teinte); }
+.badge-tuile .emoji { position: relative; font-size: 30px; line-height: 1; }
 .badge-tuile strong { display: block; font-size: 13px; line-height: 1.25; }
-.badge-tuile small { display: block; margin-top: 3px; color: var(--texte-3); font-size: 12px; line-height: 1.25; }
-.badge-tuile.verrouille .emoji { filter: grayscale(1); opacity: 0.3; }
-.badge-tuile.verrouille strong { color: var(--texte-3); }
+.badge-tuile small { display: block; margin-top: 2px; color: var(--texte-3); font-size: 12px; line-height: 1.25; }
+.badge-tuile.verrouille .emoji { filter: grayscale(1); opacity: 0.35; }
+.badge-tuile.verrouille strong { color: var(--texte-2); }
 
 /* ---------- Mode concentration (plein écran noir) ---------- */
 .concentration { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: calc(24px + var(--haut)) 24px calc(90px + var(--bas)); background: #000; color: #d4d6dc; text-align: center; touch-action: none; overscroll-behavior: contain; }
@@ -357,73 +690,101 @@ label.ligne-reglage { cursor: pointer; }
 .conc-quitter { position: absolute; left: 50%; bottom: calc(24px + var(--bas)); transform: translateX(-50%); padding: 12px 20px; border: 1px solid #2a2d33; border-radius: 999px; background: none; color: #7d828c; font-weight: 600; white-space: nowrap; }
 
 /* ---------- Formulaires (dans la feuille qui monte du bas) ---------- */
-.champ { display: block; margin: 0 0 18px; font-weight: 650; font-size: 15px; }
+.champ { display: block; margin: 0 0 18px; font-size: 15px; font-weight: 650; }
 .champ input, .champ select {
   display: block; width: 100%; margin-top: 8px; min-height: 52px; padding: 12px 14px;
-  border: 1px solid var(--bord); border-radius: 14px; background: var(--carte-2);
+  border: 1px solid var(--bord-fort); border-radius: 16px; background: var(--carte-2);
   font-size: 17px; font-weight: 500; -webkit-appearance: none; appearance: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.champ input:focus, .champ select:focus { border-color: var(--accent); }
+.champ input:focus, .champ select:focus { border-color: var(--accent-clair); box-shadow: 0 0 0 4px var(--accent-fond); }
 input[type="date"]::-webkit-date-and-time-value { text-align: left; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8); }
 .champ .facultatif { color: var(--texte-3); font-weight: 500; }
-.champ-ligne { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 18px; font-weight: 650; font-size: 15px; }
+.champ-ligne { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 18px; font-size: 15px; font-weight: 650; }
 fieldset { margin: 0 0 18px; padding: 0; border: 0; min-width: 0; }
-legend { margin-bottom: 8px; padding: 0; font-weight: 650; font-size: 15px; }
+legend { margin-bottom: 8px; padding: 0; font-size: 15px; font-weight: 650; }
 
-.segments { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border-radius: 14px; background: var(--carte-2); }
-.segments label { position: relative; }
+.segments { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border: 1px solid var(--bord); border-radius: 16px; background: var(--carte-2); }
+.segments label { position: relative; min-width: 0; }
 .segments input { position: absolute; opacity: 0; pointer-events: none; }
-.segments span { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px; height: 100%; padding: 6px 2px; border-radius: 11px; color: var(--texte-2); font-weight: 750; text-align: center; cursor: pointer; }
+.segments span { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px; height: 100%; padding: 6px 2px; border-radius: 12px; color: var(--texte-2); font-weight: 750; text-align: center; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
 .segments span small { font-size: 12px; font-weight: 600; }
-.segments input:checked + span { background: var(--accent); color: var(--sur-accent); }
-.segments input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+.segments input:checked + span { background: var(--degrade-accent); color: var(--sur-accent); }
+.segments input:focus-visible + span { outline: 3px solid var(--accent-clair); outline-offset: 2px; }
 
 .choix-puces { display: flex; flex-wrap: wrap; gap: 8px; }
 .puce-choix { position: relative; }
 .puce-choix input { position: absolute; opacity: 0; pointer-events: none; }
-.puce-choix span { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 8px 16px; border: 2px solid transparent; border-radius: 999px; background: var(--carte-2); font-weight: 650; cursor: pointer; }
+.puce-choix span { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 8px 16px; border: 2px solid transparent; border-radius: 999px; background: var(--carte-2); font-weight: 650; cursor: pointer; transition: border-color 0.2s, background-color 0.2s; }
 .puce-choix span::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--couleur); }
 .puce-choix input:checked + span { border-color: var(--couleur); background: var(--couleur-fond); }
-.puce-choix input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+.puce-choix input:focus-visible + span { outline: 3px solid var(--accent-clair); outline-offset: 2px; }
 
 .palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
 .pastille-choix { position: relative; }
 .pastille-choix input { position: absolute; opacity: 0; pointer-events: none; }
-.pastille-choix span { display: block; aspect-ratio: 1; border: 3px solid transparent; border-radius: 50%; background: var(--couleur); box-shadow: inset 0 0 0 3px var(--carte); cursor: pointer; }
+.pastille-choix span { display: block; aspect-ratio: 1; border: 3px solid transparent; border-radius: 50%; background: var(--couleur); box-shadow: inset 0 0 0 3px var(--carte); cursor: pointer; transition: transform 0.14s var(--anim); }
+.pastille-choix span:active { transform: scale(0.92); }
 .pastille-choix input:checked + span { border-color: var(--texte); }
-.pastille-choix input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+.pastille-choix input:focus-visible + span { outline: 3px solid var(--accent-clair); outline-offset: 2px; }
 
-.estimation { margin: 4px 0 16px; padding: 12px 14px; border-radius: 14px; background: var(--carte-2); }
+.estimation { margin: 4px 0 16px; padding: 12px 14px; border-radius: 16px; background: var(--carte-2); }
 .erreur { margin: 0 0 12px; color: var(--danger); font-weight: 650; }
 
-.fond-feuille { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgba(0, 0, 0, 0.55); opacity: 0; transition: opacity 0.22s; }
+.fond-feuille { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgba(3, 4, 10, 0.6); opacity: 0; transition: opacity 0.25s; }
 .fond-feuille.ouvert { opacity: 1; }
 .feuille {
   width: 100%; max-width: 560px; max-height: 92vh; max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain;
-  padding: 8px 16px calc(20px + var(--bas)); border-radius: 22px 22px 0 0;
-  background: var(--carte); border-top: 1px solid var(--bord);
-  transform: translateY(100%); transition: transform 0.25s ease;
+  padding: 8px 18px calc(22px + var(--bas)); border-radius: 28px 28px 0 0;
+  background: linear-gradient(180deg, #1c2234, var(--carte) 140px); border-top: 1px solid var(--bord-fort);
+  box-shadow: 0 -20px 50px -20px rgba(0, 0, 0, 0.8);
+  transform: translateY(100%); transition: transform 0.34s var(--anim);
 }
 .fond-feuille.ouvert .feuille { transform: none; }
-.feuille h2 { font-size: 22px; margin: 4px 0 16px; }
-.poignee { width: 42px; height: 5px; margin: 4px auto 12px; border-radius: 3px; background: var(--carte-3); }
+.feuille h2 { margin: 4px 0 16px; font-size: 22px; }
+.feuille .detail h2.detail-titre { margin: 0; }
+.poignee { width: 42px; height: 5px; margin: 4px auto 14px; border-radius: 3px; background: var(--carte-3); }
 
-.fond-dialogue { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(0, 0, 0, 0.65); }
-.dialogue { width: 100%; max-width: 400px; padding: 20px; border-radius: 20px; background: var(--carte); border: 1px solid var(--bord); }
-.dialogue p { margin: 0 0 14px; font-size: 17px; font-weight: 600; }
+.fond-dialogue { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(3, 4, 10, 0.7); animation: fondu 0.2s ease-out; }
+.dialogue { width: 100%; max-width: 400px; padding: 22px; border: 1px solid var(--bord-fort); border-radius: 24px; background: linear-gradient(180deg, #1c2234, var(--carte)); box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.9); animation: arrivee 0.3s var(--anim); }
+.dialogue p { margin: 0 0 16px; font-size: 17px; font-weight: 650; }
+@keyframes fondu { from { opacity: 0; } }
 
 .toast {
-  position: fixed; left: 50%; bottom: calc(84px + var(--bas)); z-index: 80;
-  max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px;
-  background: #2d3240; color: var(--texte); font-weight: 650; text-align: center;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
-  opacity: 0; transform: translate(-50%, 16px); transition: opacity 0.25s, transform 0.25s; pointer-events: none;
+  position: fixed; left: 50%; bottom: calc(92px + var(--bas)); z-index: 80;
+  max-width: calc(100% - 32px); padding: 12px 18px; border: 1px solid var(--bord-fort); border-radius: 18px;
+  background: rgba(34, 40, 58, 0.97); color: var(--texte); font-weight: 650; text-align: center;
+  box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.75);
+  opacity: 0; transform: translate(-50%, 16px) scale(0.98); transition: opacity 0.25s, transform 0.3s var(--anim); pointer-events: none;
 }
-.toast.visible { opacity: 1; transform: translate(-50%, 0); }
+.toast.visible { opacity: 1; transform: translate(-50%, 0) scale(1); }
 .flash { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0; }
 .flash.actif { animation: flash 1.4s ease-out; }
-@keyframes flash { 0%, 25% { opacity: 0.3; } 100% { opacity: 0; } }
+@keyframes flash { 0%, 25% { opacity: 0.22; } 100% { opacity: 0; } }
+
+/* ---------- Petits téléphones : un peu plus compact, pour que rien ne soit coupé ---------- */
+@media (max-width: 360px) {
+  .tuiles-jour { gap: 10px; }
+  .tuile-jour { gap: 10px; padding: 12px; }
+  .tuile-jour .flamme, .tuile-jour .anneau-mini { width: 38px !important; height: 38px !important; border-radius: 13px; }
+  .tuile-jour .anneau-mini { border-radius: 0; }
+  .tuile-jour .chiffre { font-size: 23px; }
+  .heros { padding: 18px 16px 16px; }
+  .heros-titre { font-size: 27px; }
+  .commandes { gap: 10px; }
+}
+
+@media (max-width: 345px) {
+  .onglets { left: 4px; right: 4px; gap: 0; padding: 3px; }
+  .onglet span { letter-spacing: -0.02em; }
+}
+
+/* ---------- "Réduire les animations" (réglage du téléphone) : presque tout s'arrête ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  .confettis { display: none; }
+}
 </style>
 </head>
 
@@ -1704,8 +2065,10 @@ let jourStats = null;            // jour touché dans le graphique des 30 jours
 let pointStats = null;           // note touchée dans le graphique "étude et notes"
 const chiffresOuverts = new Set();  // tableaux "Voir les chiffres" ouverts
 let concentration = false;       // mode concentration affiché ?
+let jourSemaine = null;          // jour touché dans la bande "Les 7 prochains jours"
+let avanceOuvert = false;        // section "Avancé" des réglages ouverte ?
 
-// Petites icônes dessinées en SVG (elles s'affichent pareil sur tous les téléphones).
+// Petites icônes pleines (lecture, pause…), dessinées en SVG.
 const ICONES = {
   lecture: '<svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>',
   pause: '<svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.2"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.2"/></svg>',
@@ -1713,7 +2076,118 @@ const ICONES = {
   suivant: '<svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14l9.5-7zM15.5 5h3v14h-3z"/></svg>',
 };
 
+// Les icônes au trait (même style partout dans l'appli).
+const TRACES = {
+  flamme: '<path d="M12 2.8c.9 3.3 3.8 5 5 7.6a6.8 6.8 0 1 1-12.6 2c.5-1.9 1.7-3.2 2.9-4.2.1 1.6.8 2.7 1.9 3.3-.4-3.2 1-6 2.8-8.7z"/><path d="M12 20.4a2.9 2.9 0 0 1-2.9-2.9c0-1.7 1.3-2.6 2.3-3.8.4 1.1 1.2 1.6 1.9 2 .9.5 1.6 1.1 1.6 2a2.9 2.9 0 0 1-2.9 2.7z"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  horloge: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  calendrier: '<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  livre: '<path d="M5 5.5A2 2 0 0 1 7 3.5h12V18H7a2 2 0 0 0-2 2z"/><path d="M5 20a2 2 0 0 0 2 1.5h12V18"/>',
+  cible: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.6"/>',
+  alerte: '<path d="M10.3 4.2L2.8 17.5A2 2 0 0 0 4.5 20.5h15a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4M12 17v.01"/>',
+  sablier: '<path d="M6.5 3h11M6.5 21h11M8 3c0 5 4 6 4 9s-4 4-4 9M16 3c0 5-4 6-4 9s4 4 4 9"/>',
+  lune: '<path d="M20 14.5A8.2 8.2 0 0 1 9.5 4a8.2 8.2 0 1 0 10.5 10.5z"/>',
+  soleil: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>',
+  coucher: '<path d="M3 18h18M6.5 18a5.5 5.5 0 0 1 11 0M12 5.5v3.5M5 10l1.6 1.3M19 10l-1.6 1.3M8.5 21.5h7"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  chevron: '<path d="M9.5 5.5L16 12l-6.5 6.5"/>',
+  chevronGauche: '<path d="M14.5 5.5L8 12l6.5 6.5"/>',
+  chevronBas: '<path d="M5.5 9.5L12 16l6.5-6.5"/>',
+  fermer: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
+  telecharger: '<path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/>',
+  televerser: '<path d="M12 20V9M7 13.5l5-5 5 5M5 4h14"/>',
+  son: '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+  trophee: '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.9M17 6h2.5a2.5 2.5 0 0 1-2.6 3.9M12 14v4M8.5 20.5h7"/>',
+  eclair: '<path d="M13 2.5L5 13.5h6l-1 8 8-11h-6z"/>',
+  tasse: '<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M8.5 3.5c-.6 1 .6 1.8 0 3M12 3.5c-.6 1 .6 1.8 0 3"/>',
+  etincelles: '<path d="M11 3.5l1.7 4.6 4.6 1.7-4.6 1.7L11 16.1l-1.7-4.6-4.6-1.7 4.6-1.7z"/><path d="M18.5 14.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
+  note: '<path d="M5 19.5l1-4L15.5 6a2.1 2.1 0 0 1 3 3L9 18.5z"/><path d="M13.5 8l2.5 2.5"/>',
+  graphique: '<path d="M5.5 20v-6M12 20V5.5M18.5 20v-9.5M3 20h18"/>',
+  curseurs: '<path d="M4 7h9M18 7h2M4 17h3M12 17h8"/><circle cx="15.5" cy="7" r="2.4"/><circle cx="9.5" cy="17" r="2.4"/>',
+  telephone: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+  poubelle: '<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/>',
+  medaille: '<circle cx="12" cy="14.5" r="5.5"/><path d="M8.5 9.8L6 3h4l2 4.5L14 3h4l-2.5 6.8"/>',
+  cerveau: '<path d="M9 4.5a3 3 0 0 0-3 3 3 3 0 0 0-1.5 5.5A3 3 0 0 0 7 18a2.5 2.5 0 0 0 5 .5V5.5A2 2 0 0 0 9 4.5zM15 4.5a3 3 0 0 1 3 3 3 3 0 0 1 1.5 5.5A3 3 0 0 1 17 18a2.5 2.5 0 0 1-5 .5"/>',
+};
+function ic(nom, classe = '') {
+  return `<svg class="ic${classe ? ' ' + classe : ''}" viewBox="0 0 24 24" aria-hidden="true">${TRACES[nom]}</svg>`;
+}
+
+// La couleur d'une matière, avec ses versions transparentes (fond, bord, lueur).
+function styleRiche(hex) {
+  return `${styleCouleur(hex)};--couleur-fond-fort:${rgba(hex, 0.28)};--couleur-bord:${rgba(hex, 0.4)}`;
+}
+function styleMatiereRiche(id) {
+  return styleRiche(couleurMatiere(id));
+}
+
+// Un anneau de progression (ratio de 0 à 1) dessiné en SVG, avec un texte au centre.
+function anneau(ratio, { taille = 44, epaisseur = 5, contenu = '', classe = '' } = {}) {
+  const centre = taille / 2;
+  const r = (taille - epaisseur) / 2;
+  const tour = 2 * Math.PI * r;
+  const plein = borner(Number.isFinite(ratio) ? ratio : 0, 0, 1);
+  return `<span class="anneau-mini${classe ? ' ' + classe : ''}" style="width:${taille}px;height:${taille}px">
+      <svg viewBox="0 0 ${taille} ${taille}" aria-hidden="true">
+        <circle class="anneau-mini-fond" cx="${centre}" cy="${centre}" r="${n1(r)}" stroke-width="${epaisseur}"/>
+        <circle class="anneau-mini-plein" cx="${centre}" cy="${centre}" r="${n1(r)}" stroke-width="${epaisseur}" stroke-dasharray="${n1(tour)}" stroke-dashoffset="${n1(tour * (1 - plein))}" transform="rotate(-90 ${centre} ${centre})"${plein === 0 ? ' opacity="0"' : ''}/>
+      </svg>${contenu ? `<span class="anneau-mini-centre">${contenu}</span>` : ''}
+    </span>`;
+}
+
+// La couleur affichée pour le chrono : celle de la matière pendant le travail, une couleur calme en pause.
+function couleurAffichee(c) {
+  if (!c) return '#b0abff';
+  if (c.phase === 'pause') return '#2dd4bf';
+  if (c.phase === 'pauseLongue') return '#60a5fa';
+  if (c.phase === 'attente') return '#b0abff';
+  return c.matiereId && trouverMatiere(c.matiereId) ? couleurMatiere(c.matiereId) : '#b0abff';
+}
+
+// Est-ce que le téléphone demande de réduire les animations ?
+function animationsReduites() {
+  return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+
+// Petite vibration (Android), seulement si la vibration est activée dans Réglages.
+function vibrer(motif) {
+  if (!donnees.reglages.vibration || !navigator.vibrate) return;
+  try { navigator.vibrate(motif); } catch (erreur) { /* pas grave */ }
+}
+
+// Célébration à la fin d'un bloc : l'anneau pulse et des confettis légers s'envolent.
+function celebrer(couleur) {
+  if (animationsReduites()) return;
+  const cercle = document.querySelector('#vue-chrono:not([hidden]) .anneau');
+  if (cercle) {
+    cercle.classList.remove('pulse');
+    void cercle.offsetWidth;
+    cercle.classList.add('pulse');
+  }
+  const couleurs = [couleur, '#ffd43b', '#b0abff', '#38d9a9', '#f783ac', '#ffffff'];
+  let h = '';
+  for (let k = 0; k < 34; k++) {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 90 + Math.random() * 140;
+    h += `<i style="--c:${couleurs[k % couleurs.length]};--dx:${Math.round(Math.cos(angle) * distance)}px;--dy:${Math.round(Math.sin(angle) * distance * 0.8 - 40)}px;--r:${Math.round(Math.random() * 540 - 270)}deg;--delai:${(Math.random() * 0.12).toFixed(2)}s"></i>`;
+  }
+  const boite = document.createElement('div');
+  boite.className = 'confettis';
+  boite.setAttribute('aria-hidden', 'true');
+  boite.innerHTML = h;
+  document.body.appendChild(boite);
+  setTimeout(() => boite.remove(), 2000);
+}
+
+// La lueur du fond prend la couleur du chrono (matière, ou couleur calme pendant la pause).
+function majAmbiance() {
+  const c = donnees.chrono;
+  const teinte = vueActive === 'chrono' && c ? rgba(couleurAffichee(c), c.phase === 'travail' && c.debut ? 0.26 : 0.2) : 'rgba(108, 92, 255, 0.16)';
+  document.documentElement.style.setProperty('--ambiance', teinte);
+}
+
 function afficherVue(nom) {
+  const change = vueActive !== nom;
   vueActive = nom;
   for (const v of ['aujourdhui', 'echeances', 'chrono', 'stats', 'reglages']) {
     document.getElementById('vue-' + v).hidden = v !== nom;
@@ -1724,6 +2198,12 @@ function afficherVue(nom) {
   });
   rafraichir();
   window.scrollTo(0, 0);
+  if (change) {   // petite transition douce entre les onglets
+    const vue = document.getElementById('vue-' + nom);
+    vue.classList.remove('entree');
+    void vue.offsetWidth;
+    vue.classList.add('entree');
+  }
 }
 
 function rafraichir() {
@@ -1733,6 +2213,7 @@ function rafraichir() {
   else if (vueActive === 'stats') afficherStats();
   else afficherReglages();
   majOngletChrono();
+  majAmbiance();
 }
 
 /* ---------- Ressenti après un bloc ("Facile / Ok / Dur" + note) ---------- */
@@ -1745,9 +2226,11 @@ function carteRessenti() {
   const boutons = Object.entries(RESSENTIS).map(([cle, r]) =>
     `<button class="btn" data-action="ressenti" data-valeur="${cle}" type="button"><span class="emoji" aria-hidden="true">${r.emoji}</span>${r.nom}</button>`).join('');
   return `<section class="carte ressenti" aria-label="Ressenti du bloc">
-      <h2>Bloc terminé ! Comment c'était ?</h2>
-      <p class="aide" style="margin:2px 0 14px">${echapper(sujet)} · ${b.minutes} min</p>
-      <label class="champ">Note <span class="facultatif">(facultatif)</span>
+      <div class="ressenti-tete">
+        <span class="illu-petite">${ic('etincelles')}</span>
+        <div><h2>Bloc terminé ! Comment c'était ?</h2><p class="aide">${echapper(sujet)} · ${b.minutes} min</p></div>
+      </div>
+      <label class="champ">Une note pour la prochaine fois <span class="facultatif">(facultatif)</span>
         <input type="text" class="note-bloc" maxlength="120" value="${echapper(brouillonNote)}" placeholder="ex : exercices p. 42" autocomplete="off" enterkeyhint="done">
       </label>
       <div class="ressentis">${boutons}</div>
@@ -1755,52 +2238,208 @@ function carteRessenti() {
     </section>`;
 }
 
-/* ---------- Écran "Aujourd'hui" ---------- */
+/* ---------- Écran "Aujourd'hui" ----------
+   En haut : bonjour, ta série et ta progression du jour.
+   Puis UN élément principal : la prochaine chose à faire, avec un gros bouton "Lancer". */
+
+function salutation(date = new Date()) {
+  const h = date.getHours();
+  if (h >= 5 && h < 12) return { texte: 'Bon matin', icone: 'soleil' };
+  if (h >= 12 && h < 18) return { texte: 'Bon après-midi', icone: 'soleil' };
+  if (h >= 18 && h < 22) return { texte: 'Bonne soirée', icone: 'coucher' };
+  return { texte: 'Bonsoir', icone: 'lune' };
+}
+
+// Blocs prévus aujourd'hui et blocs faits (sur ce qui était prévu).
+function progressionDuJour(plan) {
+  return {
+    prevus: plan.lignesDuJour.reduce((s, l) => s + l.prevus, 0),
+    faits: plan.lignesDuJour.reduce((s, l) => s + Math.min(l.faits, l.prevus), 0),
+  };
+}
 
 function afficherAujourdhui() {
   const jour = aujourdhui();
-  let h = `<header class="entete"><div><p class="surtitre">${dateLongue(jour)}</p><h1>Aujourd'hui</h1></div></header>`;
-  h += carteRessenti();
+  const vue = document.getElementById('vue-aujourdhui');
+  const bonjour = salutation();
+  const entete = `<header class="accueil">
+      <p class="surtitre">${dateLongue(jour)}</p>
+      <h1 class="salut">${ic(bonjour.icone, bonjour.icone === 'lune' ? 'ic-lune' : '')}${bonjour.texte}</h1>
+    </header>`;
 
   if (!donnees.echeances.length) {
-    document.getElementById('vue-aujourdhui').innerHTML = h + carteResumeSemaine(jour) + carteBienvenue();
+    vue.innerHTML = entete + carteRessenti() + carteResumeSemaine(jour) + carteBienvenue();
     return;
   }
-
   const plan = planActuel();
-  h += bandeauChrono();
-  h += carteResumeSemaine(jour);
-
-  for (const e of donnees.echeances.filter(x => x.date === jour && !x.terminee)) {
-    h += `<div class="info-jour" style="${styleMatiere(e.matiereId)}">
-        <span class="texte">📌 C'est aujourd'hui : <strong>${echapper(nomEcheanceLong(e))}</strong>. Bonne chance !</span>
-        <button class="btn btn-petit" data-action="test-passe" data-id="${e.id}" type="button">✓ Passé</button>
-      </div>`;
-  }
-  // Veille d'un test ou d'un examen : la checklist de révision rapide.
-  for (const e of donnees.echeances.filter(x => estVeille(x, jour))) {
-    const { liste, coches } = avancementChecklist(e);
-    h += `<div class="info-jour" style="${styleMatiere(e.matiereId)}">
-        <span class="texte">🌙 Demain : <strong>${echapper(nomEcheanceLong(e))}</strong>. Ta checklist de la veille : ${coches}/${liste.length}.</span>
-        <button class="btn btn-petit" data-action="detail-echeance" data-id="${e.id}" type="button">Voir</button>
-      </div>`;
-  }
-  h += carteAlertes(plan);
-  h += cartePlanDuJour(plan);
-  h += carteSemaine(plan);
-  document.getElementById('vue-aujourdhui').innerHTML = h;
+  vue.innerHTML = entete
+    + tuilesDuJour(plan)
+    + carteRessenti()
+    + carteHeros(plan)
+    + bandeauxDuJour(plan)
+    + carteResumeSemaine(jour)
+    + carteAussiAujourdhui(plan)
+    + carteSemaine(plan);
 }
 
-// Les avertissements : pas assez de temps, retard, zéro marge.
-function carteAlertes(plan) {
-  if (!plan.alertes.length) return '';
-  const icones = { manque: '⚠️', retard: '⏰', marge: '🟡' };
-  const lignes = plan.alertes.map(a =>
-    `<p class="alerte-ligne"><span aria-hidden="true">${icones[a.type]}</span><strong>${texteAlerte(a, plan.jour)}</strong></p>`).join('');
-  let conseil = 'Garde un peu de marge : ajoute du temps dispo dans Réglages si tu peux.';
-  if (plan.alertes.some(a => a.type === 'retard')) conseil = 'Le temps en retard est réparti sur les jours qui restent.';
-  if (plan.alertes.some(a => a.type === 'manque')) conseil = 'Augmente ton temps dispo dans Réglages, ou fais des blocs en plus.';
-  return `<div class="alerte" role="alert">${lignes}<div class="aide">${conseil}</div></div>`;
+// Les deux tuiles du haut : la série (avec la flamme) et la progression du jour.
+function tuilesDuJour(plan) {
+  const s = series(donnees, plan.jour);
+  const { prevus, faits } = progressionDuJour(plan);
+  const blocsAujourdhui = donnees.blocs.filter(b => b.date === plan.jour).length;
+  const ratio = prevus ? faits / prevus : (blocsAujourdhui ? 1 : 0);
+  const chiffre = prevus ? `${faits}<small>/${prevus}</small>` : `${blocsAujourdhui}`;
+  const sous = prevus ? 'blocs du jour' : `bloc${blocsAujourdhui > 1 ? 's' : ''} fait${blocsAujourdhui > 1 ? 's' : ''}`;
+  return `<div class="tuiles-jour">
+      <div class="tuile-jour" role="group" aria-label="Série : ${pluriel(s.actuelle, 'jour')} d'affilée">
+        <span class="flamme${s.aujourdhuiFait ? ' allumee' : ''}">${ic('flamme')}</span>
+        <span><span class="chiffre">${s.actuelle}</span><span class="sous">${s.actuelle > 1 ? "jours d'affilée" : "jour d'affilée"}</span></span>
+      </div>
+      <div class="tuile-jour" role="group" aria-label="${prevus ? `${faits} blocs faits sur ${prevus} prévus aujourd'hui` : `${pluriel(blocsAujourdhui, 'bloc')} aujourd'hui`}">
+        ${anneau(ratio, { classe: ratio >= 1 ? 'complet' : '' })}
+        <span><span class="chiffre">${chiffre}</span><span class="sous">${sous}</span></span>
+      </div>
+    </div>`;
+}
+
+// La carte principale : selon le moment, le chrono en cours, le prochain bloc, ou "Journée terminée".
+function carteHeros(plan) {
+  const c = donnees.chrono;
+  if (c && c.phase !== 'attente') return herosChrono(c);
+  const aFaire = plan.lignesDuJour.filter(l => l.prevus > l.faits);
+  if (c && aFaire.length) return herosAttente(c);
+  if (aFaire.length) return herosBloc(aFaire[0], plan);
+  if (progressionDuJour(plan).prevus > 0) return herosFini(plan);
+  if (c) return herosAttente(c);
+  return herosRepos(plan);
+}
+
+function herosBloc(l, plan) {
+  const e = l.info.echeance;
+  const restants = l.prevus - l.faits;
+  let points = '';
+  for (let k = 0; k < l.prevus; k++) points += `<i class="${k < l.faits ? 'fait' : ''}"></i>`;
+  const affilee = e.travail === 'exercices' && restants >= 2 ? " d'affilée" : '';
+  return `<section class="carte heros" style="${styleMatiereRiche(e.matiereId)}" aria-label="À faire maintenant">
+      <p class="heros-etiquette">${ic('eclair')}À faire maintenant</p>
+      <button class="heros-tete" data-action="detail-echeance" data-id="${e.id}" type="button" aria-label="Détails : ${echapper(nomEcheanceLong(e))}">
+        <span><span class="heros-titre">${echapper(nomMatiere(e.matiereId))}</span><span class="heros-sous">${capitaliser(e.type)} ${quandCourt(e.date, plan.jour)}</span></span>
+        ${ic('chevron')}
+      </button>
+      <div class="heros-infos">
+        <span class="puce-info"><span class="blocs-points" aria-hidden="true">${points}</span>${l.faits ? `${l.faits}/${l.prevus} blocs` : pluriel(l.prevus, 'bloc')}</span>
+        <span class="puce-info">${ic('horloge')}${formaterDuree(restants * plan.W)}${affilee}</span>
+      </div>
+      <button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer · ${plan.W} min</button>
+    </section>`;
+}
+
+function herosChrono(c) {
+  const p = infosPhase(c);
+  const enTravail = c.phase === 'travail';
+  const etiquette = enTravail ? (c.debut ? 'Bloc en cours' : 'Bloc en pause') : p.libelle;
+  return `<section class="carte heros" style="${styleRiche(couleurAffichee(c))}" aria-label="Chrono en cours">
+      <p class="heros-etiquette">${ic(enTravail ? 'horloge' : 'tasse')}${etiquette}</p>
+      <div class="heros-chrono-ligne">
+        <div><h2 class="heros-titre">${echapper(sujetChrono(c))}</h2></div>
+        <span class="heros-temps" id="bandeau-temps">${formaterChrono(restantMs(c))}</span>
+      </div>
+      <button class="btn btn-principal btn-geant" data-action="aller-chrono" type="button">Ouvrir le chrono</button>
+    </section>`;
+}
+
+// La pause est finie : on enchaîne ?
+function herosAttente(c) {
+  return `<section class="carte heros" style="${styleRiche(c.matiereId ? couleurMatiere(c.matiereId) : '#b0abff')}" aria-label="Pause terminée">
+      <p class="heros-etiquette">${ic('etincelles')}Pause terminée</p>
+      <h2 class="heros-titre">Prêt pour le bloc suivant ?</h2>
+      <span class="heros-sous">${echapper(sujetChrono(c))} · ${pluriel(c.blocsSerie, 'bloc')} dans cette série</span>
+      <div class="pile" style="margin-top:18px">
+        <button class="btn btn-principal btn-geant" data-action="bloc-suivant" type="button">${ICONES.lecture} Bloc suivant · ${donnees.reglages.travail} min</button>
+        <button class="btn btn-plein" data-action="terminer" type="button">Terminer pour l'instant</button>
+      </div>
+    </section>`;
+}
+
+// Tout le plan du jour est fait : un bel écran de fin de journée.
+function herosFini(plan) {
+  const blocs = donnees.blocs.filter(b => b.date === plan.jour);
+  const minutes = blocs.reduce((s, b) => s + b.minutes, 0);
+  const prochaine = texteProchaineSeance(plan);
+  const c = donnees.chrono;
+  const premiere = plan.infos[0];
+  let boutons = '';
+  if (c) {
+    boutons = `<div class="pile"><button class="btn btn-plein" data-action="bloc-suivant" type="button">${ic('plus')} Un bloc en plus</button>
+      <button class="btn btn-principal btn-plein" data-action="terminer" type="button">Terminer la journée</button></div>`;
+  } else if (premiere) {
+    boutons = `<button class="btn btn-plein" data-action="lancer" data-id="${premiere.echeance.id}" type="button">${ic('plus')} Un bloc en plus</button>`;
+  }
+  return `<section class="carte heros heros-fini" aria-label="Journée terminée">
+      <div class="medaille-fini">${ic('check')}<i></i><i></i><i></i></div>
+      <h2 class="heros-titre">Journée terminée !</h2>
+      <span class="heros-sous">Tout ton plan d'aujourd'hui est fait : ${pluriel(blocs.length, 'bloc')} · ${formaterDuree(minutes)}. Bravo 👏</span>
+      ${prochaine ? `<p class="aide">${prochaine}</p>` : ''}
+      ${boutons}
+    </section>`;
+}
+
+// Rien de prévu aujourd'hui (ou plus rien à venir).
+function herosRepos(plan) {
+  if (!plan.infos.length) {
+    return `<section class="carte heros etat-vide" aria-label="Aucun test à venir">
+        <div class="illu">${ic('calendrier')}</div>
+        <h2>Aucun test à venir</h2>
+        <p>Ajoute ton prochain test ou examen : l'appli prépare ton plan tout de suite.</p>
+        <button class="btn btn-principal btn-plein" data-action="ajouter-echeance" type="button">+ Ajouter un test ou un examen</button>
+      </section>`;
+  }
+  const prochaine = texteProchaineSeance(plan);
+  return `<section class="carte heros heros-repos etat-vide" aria-label="Repos">
+      <div class="illu">${ic('lune')}</div>
+      <h2>Repos aujourd'hui 😌</h2>
+      <p>Rien de prévu aujourd'hui.${prochaine ? ' ' + prochaine : ''}</p>
+      <button class="btn btn-plein" data-action="aller-chrono" type="button">${ICONES.lecture} Faire un bloc quand même</button>
+    </section>`;
+}
+
+// Les bandeaux courts : test aujourd'hui, veille d'un test, retard / zéro marge (touche pour le détail).
+function bandeauxDuJour(plan) {
+  const jour = plan.jour;
+  let h = '';
+  for (const e of donnees.echeances.filter(x => x.date === jour && !x.terminee)) {
+    h += `<div class="bandeau info-jour" style="${styleMatiereRiche(e.matiereId)}">
+        ${ic('cible')}
+        <span class="texte"><strong>C'est aujourd'hui</strong> · ${echapper(nomEcheanceLong(e))}. Bonne chance !</span>
+        <button class="btn btn-petit" data-action="test-passe" data-id="${e.id}" type="button">${ic('check')}Passé</button>
+      </div>`;
+  }
+  for (const e of donnees.echeances.filter(x => estVeille(x, jour))) {
+    const { liste, coches } = avancementChecklist(e);
+    h += `<button class="bandeau info-jour veille-bandeau" style="${styleMatiereRiche(e.matiereId)}" data-action="detail-echeance" data-id="${e.id}" type="button">
+        ${ic('lune')}
+        <span class="texte"><strong>Demain</strong> · ${echapper(nomEcheanceLong(e))}<small>Ta checklist de la veille</small></span>
+        <span class="compte">${coches}/${liste.length}</span>
+        ${ic('chevron', 'chevron')}
+      </button>`;
+  }
+  for (const a of plan.alertes) {
+    h += `<details class="bandeau alerte-bandeau">
+        <summary>${ic(a.type === 'retard' ? 'sablier' : 'alerte')}<span class="texte">${texteAlerteCourt(a, jour)}</span>${ic('chevronBas', 'chevron-bas')}</summary>
+        <p class="bandeau-detail">${texteAlerte(a, jour)} ${conseilAlerte(a)}</p>
+      </details>`;
+  }
+  return h ? `<div class="bandeaux">${h}</div>` : '';
+}
+
+function texteAlerteCourt(a, jour) {
+  const nom = `<span class="insecable">${echapper(nomMatiere(a.info.echeance.matiereId))}</span>`;
+  if (a.type === 'manque') return `<strong>Pas assez de temps</strong> · ${nom} <span class="insecable">(il manque ${formaterDuree(a.minutes)})</span>`;
+  if (a.type === 'retard') {
+    const r = a.info.retard;
+    return `<strong>En retard</strong> · ${nom} <span class="insecable">+${formaterDuree(r.parJour)}${r.jusqua <= jour ? '' : ' par jour'}</span>`;
+  }
+  return `<strong>Zéro marge</strong> · ${nom}`;
 }
 
 function texteAlerte(a, jour) {
@@ -1817,86 +2456,64 @@ function texteAlerte(a, jour) {
   return `Zéro marge sur ${nom} : si tu sautes un jour, tu seras en retard.`;
 }
 
+function conseilAlerte(a) {
+  if (a.type === 'manque') return 'Augmente ton temps dispo dans Réglages, ou fais des blocs en plus.';
+  if (a.type === 'retard') return 'Le temps en retard est réparti sur les jours qui restent.';
+  return 'Garde un peu de marge : ajoute du temps dispo dans Réglages si tu peux.';
+}
+
 function carteBienvenue() {
-  return `<section class="carte bienvenue">
-      <h2>Bienvenue ! 👋</h2>
-      <p class="aide">Cette appli calcule chaque jour combien de temps étudier pour tes tests et examens.</p>
-      <ol>
-        <li>Ajoute tes <strong>matières</strong> (maths, chimie…)</li>
-        <li>Ajoute tes <strong>tests et examens</strong></li>
-        <li>Reviens ici : ton plan du jour s'affiche, lance un bloc ⏱</li>
-      </ol>
+  return `<section class="carte etat-vide bienvenue">
+      <div class="illu">${ic('calendrier')}</div>
+      <h2>Bienvenue !</h2>
+      <p>Ajoute tes tests et tes examens : chaque jour, l'appli te dit quoi réviser et combien de temps.</p>
+      <div class="etapes"><span><b>1</b>Tes matières</span><span><b>2</b>Tes tests</span><span><b>3</b>Lance un bloc</span></div>
       <div class="pile">
-        <button class="btn btn-principal btn-plein" data-action="ajouter-echeance" type="button">+ Ajouter un test ou un examen</button>
+        <button class="btn btn-principal btn-geant" data-action="ajouter-echeance" type="button">+ Ajouter un test ou un examen</button>
         <button class="btn btn-plein" data-action="exemple" type="button">Essayer avec un exemple</button>
       </div>
     </section>`;
 }
 
-function bandeauChrono() {
-  const c = donnees.chrono;
-  if (!c) return '';
-  const p = infosPhase(c);
-  return `<button class="bandeau-chrono" data-action="aller-chrono" type="button" style="--phase:${p.couleur}">
-      <span>⏱ ${p.libelle} – ${echapper(sujetChrono(c))}</span>
-      <strong id="bandeau-temps">${c.phase === 'attente' ? 'Prêt ?' : formaterChrono(restantMs(c))}</strong>
-    </button>`;
-}
-
-function cartePlanDuJour(plan) {
+// La suite du plan du jour (ce qui n'est pas déjà dans la grande carte).
+function carteAussiAujourdhui(plan) {
+  const aFaire = plan.lignesDuJour.filter(l => l.prevus > l.faits);
+  const enAvant = donnees.chrono ? null : aFaire[0];
+  const autres = plan.lignesDuJour.filter(l => l !== enAvant);
   const r = donnees.reglages;
-  const totalPrevus = plan.lignesDuJour.reduce((somme, l) => somme + l.prevus, 0);
   const dispo = estWeekend(plan.jour) ? r.dispoWeekend : r.dispoSemaine;
-
-  let h = `<section class="carte"><div class="carte-titre"><h2>Mon plan du jour</h2>`;
-  if (totalPrevus) h += `<span class="etiquette">${pluriel(totalPrevus, 'bloc')} · ${formaterDuree(totalPrevus * plan.W)}</span>`;
-  h += `</div>`;
-
-  if (!plan.lignesDuJour.length) {
-    h += `<p class="vide">Rien de prévu aujourd'hui 😌</p>`;
-    const prochaine = texteProchaineSeance(plan);
-    if (prochaine) h += `<p class="aide centre">${prochaine}</p>`;
-    else if (!plan.infos.length) {
-      h += `<p class="aide centre">Aucun test ni examen à venir.</p>
-        <div class="pile"><button class="btn btn-plein" data-action="ajouter-echeance" type="button">+ Ajouter une échéance</button></div>`;
-    }
-  } else {
-    h += `<ul class="liste-plan">${plan.lignesDuJour.map(l => lignePlan(l, plan)).join('')}</ul>`;
-  }
-  h += `<p class="aide">Temps dispo aujourd'hui : ${formaterDuree(dispo)}, soit ${pluriel(plan.capaciteAujourdhui, 'bloc')} max (pauses comprises).</p>`;
-  return h + `</section>`;
+  const capacite = `<p class="note-capacite">Temps dispo aujourd'hui : ${formaterDuree(dispo)}, soit ${pluriel(plan.capaciteAujourdhui, 'bloc')} max (pauses comprises).</p>`;
+  if (!autres.length) return '';
+  const tries = [...autres.filter(l => l.prevus > l.faits), ...autres.filter(l => l.prevus <= l.faits)];
+  return `<h2 class="titre-section">${enAvant ? 'Ensuite aujourd\'hui' : 'Mon plan du jour'}</h2>
+    <section class="carte carte-liste"><ul class="liste-plan">${tries.map(l => lignePlan(l, plan)).join('')}</ul></section>
+    ${capacite}`;
 }
 
-// Une ligne du plan : "Chimie – test jeudi – 2 blocs" + bouton Lancer.
+// Une ligne du plan : matière, quand, blocs (points), et un bouton rond pour lancer.
 function lignePlan(l, plan) {
   const e = l.info.echeance;
   const restants = Math.max(0, l.prevus - l.faits);
+  const fini = restants === 0;
   let points = '';
-  for (let k = 0; k < Math.max(l.prevus, l.faits); k++) points += `<span class="point${k < l.faits ? ' fait' : ''}"></span>`;
-
-  const titre = `${echapper(nomMatiere(e.matiereId))} – ${e.type} <span class="insecable">${quandCourt(e.date, plan.jour)}</span> <span class="insecable">– ${l.prevus ? pluriel(l.prevus, 'bloc') : 'en plus'}</span>`;
-  let sous;
-  if (restants > 0) {
-    const affilee = e.travail === 'exercices' && l.prevus >= 2 ? ", d'affilée" : '';
-    sous = l.faits ? `${pluriel(l.faits, 'bloc')} fait${l.faits > 1 ? 's' : ''}, encore ${restants}` : `${formaterDuree(l.prevus * plan.W)} de travail${affilee}`;
-  } else {
-    sous = l.prevus ? "✓ Fini pour aujourd'hui, bravo !" : `✓ ${pluriel(l.faits, 'bloc')} en plus, bien joué !`;
-  }
-  const bouton = restants > 0
-    ? `<button class="btn btn-lancer" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer</button>`
-    : `<button class="btn btn-petit" data-action="lancer" data-id="${e.id}" type="button" aria-label="Faire un bloc en plus">+1 bloc</button>`;
-
-  return `<li class="ligne-plan" style="${styleMatiere(e.matiereId)}">
-      <div class="ligne-texte">
-        <div class="ligne-titre">${titre}</div>
-        <div class="points" aria-hidden="true">${points}</div>
-        <div class="ligne-sous">${sous}</div>
-      </div>
-      ${bouton}
+  for (let k = 0; k < Math.max(l.prevus, l.faits); k++) points += `<i class="${k < l.faits ? 'fait' : ''}"></i>`;
+  const sous = fini
+    ? (l.prevus ? "✓ Fini pour aujourd'hui" : `✓ ${pluriel(l.faits, 'bloc')} en plus`)
+    : `${capitaliser(e.type)} ${quandCourt(e.date, plan.jour)} · ${formaterDuree(restants * plan.W)}`;
+  const nom = echapper(nomMatiere(e.matiereId));
+  return `<li class="ligne-plan${fini ? ' finie' : ''}" style="${styleMatiereRiche(e.matiereId)}">
+      <button class="ligne-corps" data-action="detail-echeance" data-id="${e.id}" type="button">
+        <span class="barre-v" aria-hidden="true"></span>
+        <span class="ligne-texte"><span class="ligne-titre">${nom}</span><span class="ligne-sous">${sous}</span></span>
+        <span class="blocs-points" aria-hidden="true">${points}</span>
+      </button>
+      ${fini
+        ? `<button class="btn-rond" data-action="lancer" data-id="${e.id}" type="button" aria-label="Faire un bloc en plus : ${nom}">${ic('plus')}</button>`
+        : `<button class="btn-rond accent" data-action="lancer" data-id="${e.id}" type="button" aria-label="Lancer un bloc : ${nom}">${ICONES.lecture}</button>`}
     </li>`;
 }
 
-// "Prochaine séance : jeudi (Maths)" quand rien n'est prévu aujourd'hui.
+// "Prochaine séance : jeudi (Maths)." quand rien n'est prévu aujourd'hui.
 function texteProchaineSeance(plan) {
   let meilleur = null;
   for (const i of plan.infos) {
@@ -1908,50 +2525,65 @@ function texteProchaineSeance(plan) {
   return `Prochaine séance : ${quandCourt(meilleur.jour, plan.jour)} (${echapper(nomMatiere(meilleur.info.echeance.matiereId))}).`;
 }
 
+// Les 7 prochains jours : une petite colonne par jour (touche un jour pour le détail).
 function carteSemaine(plan) {
-  let h = `<section class="carte"><div class="carte-titre"><h2>Les 7 prochains jours</h2><span class="aide-mini">blocs prévus /<br>possibles</span></div><ul class="semaine">`;
-  for (const s of plan.semaine) {
+  const choisi = plan.semaine.find(s => s.jour === jourSemaine) || plan.semaine[0];
+  const colonnes = plan.semaine.map(s => {
     const d = dateDepuisCle(s.jour);
-    let contenu = '';
-    for (const e of s.echeancesDuJour) {
-      contenu += `<div class="jour-echeance" style="${styleMatiere(e.matiereId)}">📌 ${e.type === 'examen' ? 'Examen' : 'Test'} ${echapper(de(nomMatiere(e.matiereId)))}</div>`;
-    }
-    if (s.items.length) {
-      const puces = s.items.map(x => {
-        const e = x.info.echeance;
-        const doublon = s.items.filter(y => y.info.echeance.matiereId === e.matiereId).length > 1;
-        return `<span class="puce" style="${styleMatiere(e.matiereId)}">${echapper(nomMatiere(e.matiereId))}${doublon ? ` (${e.type})` : ''} · ${x.blocs}</span>`;
-      }).join('');
-      contenu += `<div class="puces">${puces}</div>`;
-    } else if (!s.echeancesDuJour.length) {
-      contenu += `<span class="repos">Rien de prévu</span>`;
-    }
-    h += `<li class="jour">
-        <div class="jour-nom">${JOURS_COURTS[d.getDay()]}<small>${d.getDate()} ${MOIS_COURTS[d.getMonth()]}</small></div>
-        <div class="jour-contenu">${contenu}</div>
-        <div class="jour-charge${s.total && s.total >= s.capacite ? ' plein' : ''}">${s.total}/${s.capacite}</div>
-      </li>`;
-  }
-  return h + `</ul></section>`;
+    const echelle = Math.max(s.capacite, s.total, 1);
+    const morceaux = s.items.map(x => `<i style="--couleur:${couleurMatiere(x.info.echeance.matiereId)};height:${n1(x.blocs / echelle * 100)}%"></i>`).join('');
+    const marques = s.echeancesDuJour.map(e => `<i style="--couleur:${couleurMatiere(e.matiereId)}"></i>`).join('');
+    const etiquette = `${capitaliser(dateLongue(s.jour))} : ${pluriel(s.total, 'bloc')} prévu${s.total > 1 ? 's' : ''} sur ${s.capacite}${s.echeancesDuJour.length ? ', ' + s.echeancesDuJour.map(e => nomEcheanceLong(e)).join(', ') : ''}`;
+    return `<button class="jour-col${s === choisi ? ' choisi' : ''}" data-action="jour-semaine" data-jour="${s.jour}" type="button" aria-pressed="${s === choisi}" aria-label="${echapper(etiquette)}">
+        <span class="jc-nom">${JOURS_COURTS[d.getDay()].replace('.', '')}</span>
+        <span class="jc-num">${d.getDate()}</span>
+        <span class="jc-barre" aria-hidden="true">${morceaux}</span>
+        <span class="jc-ech" aria-hidden="true">${marques}</span>
+        <span class="jc-charge${s.total && s.total >= s.capacite ? ' plein' : ''}" aria-hidden="true">${s.total}/${s.capacite}</span>
+      </button>`;
+  }).join('');
+  return `<h2 class="titre-section">Les 7 prochains jours<span class="aide-mini">blocs prévus / possibles</span></h2>
+    <section class="carte semaine-carte">
+      <div class="semaine-bande">${colonnes}</div>
+      ${detailJourSemaine(choisi)}
+    </section>`;
 }
 
-/* ---------- Écran "Échéances" ---------- */
+function detailJourSemaine(s) {
+  let contenu = s.echeancesDuJour.map(e =>
+    `<span class="puce puce-ech" style="${styleMatiere(e.matiereId)}">${ic('cible')}${e.type === 'examen' ? 'Examen' : 'Test'} ${echapper(de(nomMatiere(e.matiereId)))}</span>`).join('');
+  contenu += s.items.map(x => {
+    const e = x.info.echeance;
+    const doublon = s.items.filter(y => y.info.echeance.matiereId === e.matiereId).length > 1;
+    return `<span class="puce" style="${styleMatiere(e.matiereId)}">${echapper(nomMatiere(e.matiereId))}${doublon ? ` (${e.type})` : ''} · ${pluriel(x.blocs, 'bloc')}</span>`;
+  }).join('');
+  if (!contenu) contenu = `<span class="repos">Rien de prévu : repos 😌</span>`;
+  return `<div class="jour-detail">
+      <div class="jour-detail-titre">${capitaliser(dateLongue(s.jour))}<span>${s.total}/${s.capacite} blocs</span></div>
+      <div class="puces">${contenu}</div>
+    </div>`;
+}
+
+/* ---------- Écran "Échéances" ----------
+   Des cartes compactes : matière, date, un anneau de progression et un statut court.
+   Les détails (chapitres, temps estimé, notes, difficulté) s'ouvrent en touchant la carte. */
 
 function afficherEcheances() {
   const jour = aujourdhui();
   const plan = planActuel();
   const aVenir = donnees.echeances.filter(e => !e.terminee && e.date >= jour).sort(comparerPriorite);
   const historique = donnees.echeances.filter(e => e.terminee || e.date < jour).sort((a, b) => (a.date < b.date ? 1 : -1));
+  const vue = document.getElementById('vue-echeances');
 
-  let h = `<header class="entete"><h1>Échéances</h1><button class="btn btn-principal btn-petit" data-action="ajouter-echeance" type="button">+ Ajouter</button></header>`;
+  let h = `<header class="entete"><h1>Échéances</h1><button class="btn btn-principal btn-petit" data-action="ajouter-echeance" type="button">${ic('plus')}Ajouter</button></header>`;
 
   if (!donnees.matieres.length) {
-    h += `<section class="carte bienvenue">
+    vue.innerHTML = h + `<section class="carte etat-vide">
+        <div class="illu">${ic('livre')}</div>
         <h2>Commence par tes matières</h2>
-        <p class="aide">Ajoute les matières que tu étudies (maths, chimie, philo, anglais…). Ensuite tu pourras ajouter tes tests et examens.</p>
-        <div class="pile"><button class="btn btn-principal btn-plein" data-action="ajouter-matiere" type="button">+ Ajouter une matière</button></div>
+        <p>Ajoute les matières que tu étudies (maths, chimie, philo…). Ensuite, tes tests et tes examens.</p>
+        <button class="btn btn-principal btn-plein" data-action="ajouter-matiere" type="button">+ Ajouter une matière</button>
       </section>`;
-    document.getElementById('vue-echeances').innerHTML = h;
     return;
   }
 
@@ -1960,21 +2592,26 @@ function afficherEcheances() {
       <button type="button" data-action="vue-echeances" data-vue="calendrier" aria-pressed="${vueEcheances === 'calendrier'}">Calendrier</button>
     </div>`;
   if (vueEcheances === 'calendrier') {
-    document.getElementById('vue-echeances').innerHTML = h + carteCalendrier(plan);
+    vue.innerHTML = h + carteCalendrier(plan);
     return;
   }
 
   if (!aVenir.length) {
-    h += `<div class="carte"><p class="vide">Aucun test ni examen à venir.</p><p class="aide centre">Appuie sur « + Ajouter » pour en créer un.</p></div>`;
+    h += `<section class="carte etat-vide">
+        <div class="illu">${ic('calendrier')}</div>
+        <h2>Aucun test à venir</h2>
+        <p>Profites-en ! Dès que tu ajoutes un test ou un examen, l'appli prépare ton plan.</p>
+        <button class="btn btn-principal btn-plein" data-action="ajouter-echeance" type="button">+ Ajouter un test ou un examen</button>
+      </section>`;
   }
   h += aVenir.map(e => carteEcheance(e, plan)).join('');
   if (historique.length) {
-    h += `<details class="passees"${passeesOuvertes ? ' open' : ''}><summary>Historique (${historique.length})</summary>
+    h += `<details class="passees"${passeesOuvertes ? ' open' : ''}><summary>Historique (${historique.length})${ic('chevronBas', 'chevron-bas')}</summary>
         ${historique.map(e => carteEcheance(e, plan)).join('')}
       </details>`;
   }
   h += sectionMatieres();
-  document.getElementById('vue-echeances').innerHTML = h;
+  vue.innerHTML = h;
 }
 
 // Les petites étiquettes : TEST / EXAMEN, type de travail, passé.
@@ -1986,27 +2623,48 @@ function badgesEcheance(e) {
 }
 
 function carteEcheance(e, plan) {
-  const coef = coefMatiere(e.matiereId);
   const total = tempsEcheance(e);
   const fait = minutesFaites(e.id);
-  const pourcent = total > 0 ? Math.min(100, Math.round((fait / total) * 100)) : 100;
-  const derniere = derniereNote(e.id);
-  return `<article class="carte echeance${e.terminee || e.date < plan.jour ? ' passee' : ''}" style="${styleMatiere(e.matiereId)}"
-        data-action="detail-echeance" data-id="${e.id}" role="button" tabindex="0" aria-label="Voir ${echapper(nomEcheanceLong(e))}">
-      <div class="ech-haut">
-        <span class="ech-matiere">${echapper(nomMatiere(e.matiereId))}</span>
-        ${badgesEcheance(e)}
+  const ratio = total > 0 ? Math.min(1, fait / total) : 1;
+  const pourcent = Math.round(ratio * 100);
+  const centre = pourcent >= 100 ? ic('check') : `${pourcent}<small>%</small>`;
+  return `<article class="carte echeance${e.terminee || e.date < plan.jour ? ' passee' : ''}" style="${styleMatiereRiche(e.matiereId)}"
+        data-action="detail-echeance" data-id="${e.id}" role="button" tabindex="0" aria-label="Voir ${echapper(nomEcheanceLong(e))}, ${pourcent} % fait">
+      <div class="ech-corps">
+        <div class="ech-haut"><span class="ech-matiere">${echapper(nomMatiere(e.matiereId))}</span><span class="badge badge-${e.type}">${e.type === 'examen' ? 'Examen' : 'Test'}</span></div>
+        <div class="ech-date">${capitaliser(dateCourte(e.date))} · ${delai(e.date, plan.jour)}</div>
+        <div class="ech-puces">${pucesStatut(e, plan)}</div>
       </div>
-      <div class="ech-date">${capitaliser(dateLongue(e.date))} · ${delai(e.date, plan.jour)}</div>
-      <div class="ech-details">Niveau ${e.niveau} (${NIVEAUX[e.niveau]}) · ${pluriel(e.chapitres, 'chapitre')} · ≈ ${formaterDuree(total)} d'étude${coef !== 1 ? ` (difficulté × ${formaterDecimal(coef)})` : ''}</div>
-      <div class="barre"><div style="width:${pourcent}%"></div></div>
-      <div class="ech-progres">${formaterDuree(fait)} faites sur ${formaterDuree(total)}${total > 0 && fait >= total ? ' ✓' : ''}</div>
-      ${e.note ? `<div class="ech-note">📝 ${echapper(e.note)}</div>` : ''}
-      ${derniere ? `<div class="ech-note">🔖 Dernière fois : « ${echapper(derniere.note)} »</div>` : ''}
-      ${e.resultat ? `<div class="ech-note">🎓 ${texteResultat(e.resultat)}</div>` : ''}
-      ${statutEcheance(e, plan)}
-      ${estVeille(e, plan.jour) ? ligneVeille(e) : ''}
+      ${anneau(ratio, { taille: 58, epaisseur: 6, contenu: centre, classe: pourcent >= 100 ? 'complet' : '' })}
     </article>`;
+}
+
+// Le statut en une ou deux pastilles courtes (la phrase complète est dans le détail).
+function pucesStatut(e, plan) {
+  const puce = (classe, icone, texte) => `<span class="puce-statut${classe ? ' ' + classe : ''}">${icone ? ic(icone) : ''}${texte}</span>`;
+  if (e.terminee) {
+    let h = puce('ok', 'check', 'Passé');
+    if (e.resultat) h += puce('', 'cible', formaterNote(e.resultat.note, e.resultat.sur) + (e.resultat.objectif !== null && e.resultat.note >= e.resultat.objectif ? ' 🎯' : ''));
+    return h;
+  }
+  if (e.date === plan.jour) return puce('auj', 'cible', "C'est aujourd'hui");
+  if (e.date < plan.jour) return puce('', '', 'Date passée');
+  let h = '';
+  if (estVeille(e, plan.jour)) {
+    const { liste, coches } = avancementChecklist(e);
+    h += puce('veille-puce', 'lune', `Veille · ${coches}/${liste.length}`);
+  }
+  const i = plan.parId[e.id];
+  if (!i) return h;
+  if (i.manque > 0) h += puce('alerte', 'alerte', `Il manque ${formaterDuree(i.manque * plan.W)}`);
+  else if (i.retard && i.retard.visible) h += puce('alerte', 'sablier', `Retard · +${formaterDuree(i.retard.parJour)}/jour`);
+  else if (i.zeroMarge) h += puce('alerte', 'alerte', 'Zéro marge');
+  const resteAujourdhui = i.prevuAujourdhui - i.faitsAujourdhui;
+  if (resteAujourdhui > 0) return h + puce('auj', 'eclair', `Aujourd'hui · ${pluriel(resteAujourdhui, 'bloc')}`);
+  const prochain = Object.keys(i.futur).filter(j => i.futur[j] > 0).sort()[0];
+  if (prochain) return h + puce('', 'calendrier', `Prochaine séance : ${quandCourt(prochain, plan.jour)}`);
+  if (i.total > 0) return h + puce('ok', 'check', 'Révisions finies');
+  return h;
 }
 
 // "Note : 14/20 (objectif 12/20 🎯)"
@@ -2016,11 +2674,7 @@ function texteResultat(r) {
   return texte;
 }
 
-function ligneVeille(e) {
-  const { liste, coches } = avancementChecklist(e);
-  return `<div class="ech-statut ech-veille">🌙 C'est la veille : ta checklist de révision (${coches}/${liste.length}) ›</div>`;
-}
-
+// La phrase complète du statut (dans le détail d'une échéance).
 function statutEcheance(e, plan) {
   if (e.terminee) return `<div class="ech-statut ech-ok">✓ Rangé dans l'historique${e.termineeLe ? ` (${dateCourte(e.termineeLe)})` : ''}</div>`;
   if (e.date === plan.jour) return `<div class="ech-statut">📌 C'est aujourd'hui, bonne chance !</div>`;
@@ -2042,28 +2696,25 @@ function statutEcheance(e, plan) {
 
 function sectionMatieres() {
   const jour = aujourdhui();
-  const coefs = coefsDifficulte(donnees.blocs, donnees.echeances);
   const triees = [...donnees.matieres].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
-  let h = `<section class="carte" id="matieres">
-      <div class="carte-titre"><h2>Mes matières</h2><button class="btn btn-petit" data-action="ajouter-matiere" type="button">+ Ajouter</button></div>
+  let h = `<h2 class="titre-section">Mes matières<button class="btn btn-petit btn-discret" data-action="ajouter-matiere" type="button">${ic('plus')}Ajouter</button></h2>
+    <section class="carte carte-liste" id="matieres">
       <ul class="liste-matieres">`;
   for (const m of triees) {
     const n = donnees.echeances.filter(e => e.matiereId === m.id && !e.terminee && e.date >= jour).length;
-    const coef = coefs[m.id] || 1;
-    const infos = [];
-    if (n) infos.push(pluriel(n, 'échéance'));
-    if (coef !== 1) infos.push(`difficulté × ${formaterDecimal(coef)}`);
-    h += `<li><button class="ligne-matiere" data-action="modifier-matiere" data-id="${m.id}" type="button" style="${styleCouleur(m.couleur)}">
+    h += `<li><button class="ligne-matiere" data-action="modifier-matiere" data-id="${m.id}" type="button" style="${styleCouleur(m.couleur)}" aria-label="${echapper(m.nom)}${n ? ` : ${pluriel(n, 'échéance')} à venir` : ''}">
         <span class="rond"></span>
         <span class="nom">${echapper(m.nom)}</span>
-        <span class="aide-mini">${infos.join('<br>')}</span>
-        <span class="chevron" aria-hidden="true">›</span>
+        ${n ? `<span class="compteur" aria-hidden="true">${n}</span>` : ''}
+        ${ic('chevron', 'chevron')}
       </button></li>`;
   }
   return h + `</ul></section>`;
 }
 
-/* ---------- Écran "Chrono" ---------- */
+/* ---------- Écran "Chrono" : le moment fort ----------
+   Un grand anneau aux couleurs de la matière, qui se vide pendant le bloc.
+   Pendant la pause, l'ambiance devient calme (bleu-vert) et l'anneau "respire". */
 
 function afficherChrono() {
   const c = donnees.chrono;
@@ -2104,11 +2755,20 @@ function chronoAuRepos() {
     let details = `${capitaliser(e.type)} ${quandCourt(e.date, jour)}`;
     if (n > 0) details += ` · ${pluriel(n, 'bloc')} prévu${n > 1 ? 's' : ''} aujourd'hui`;
     return optionSujet(e.id, nomMatiere(e.matiereId), details, styleMatiere(e.matiereId), e.id === choix);
-  }).join('') + optionSujet('', 'Étude libre', 'sans échéance', 'color:inherit', choix === '');
+  }).join('') + optionSujet('', 'Étude libre', 'sans échéance', styleCouleur('#b0abff'), choix === '');
+  const choisie = choix ? trouverEcheance(choix) : null;
 
-  return `<section class="carte">
+  return `<section class="chrono chrono-repos" id="chrono-repos" style="--phase:${choisie ? couleurMatiere(choisie.matiereId) : '#b0abff'}">
+      <div class="anneau anneau-repos" aria-hidden="true">
+        <svg viewBox="0 0 120 120"><circle class="anneau-fond" cx="60" cy="60" r="54"></circle><circle class="anneau-progres" cx="60" cy="60" r="54" style="stroke-dashoffset:0"></circle></svg>
+        <div class="anneau-centre">
+          <span class="chrono-phase">Prêt ?</span>
+          <span class="chrono-temps">${formaterChrono(r.travail * 60000)}</span>
+          <span class="anneau-sous" id="repos-sujet">${echapper(choisie ? nomMatiere(choisie.matiereId) : 'Étude libre')}</span>
+        </div>
+      </div>
+      <button class="btn btn-principal btn-geant" data-action="demarrer" type="button">${ICONES.lecture} Démarrer · ${r.travail} min</button>
       <fieldset class="choix-sujet"><legend>Je travaille sur…</legend>${options}</fieldset>
-      <button class="btn btn-principal btn-geant" data-action="demarrer" type="button">${ICONES.lecture} Démarrer un bloc de ${r.travail} min</button>
       <p class="aide">Travail ${r.travail} min → petite pause ${r.pauseCourte} min. Grande pause de ${r.pauseLongue} min tous les ${r.blocsAvantPauseLongue} blocs.</p>
       ${possibles.length ? '' : `<p class="aide">Astuce : ajoute une échéance pour que tes blocs comptent dans ton plan.</p>`}
     </section>`;
@@ -2117,7 +2777,9 @@ function chronoAuRepos() {
 function chronoActif(c) {
   const r = donnees.reglages;
   const p = infosPhase(c);
+  const couleur = couleurAffichee(c);
   const enPause = !c.debut && c.phase !== 'attente';
+  const repos = c.phase === 'pause' || c.phase === 'pauseLongue';
   let info = '';
   if (c.phase === 'travail') {
     const longue = (c.blocsSerie + 1) % r.blocsAvantPauseLongue === 0;
@@ -2132,6 +2794,12 @@ function chronoActif(c) {
   if (ligne && ligne.prevus) info += `<br>Pour cette échéance aujourd'hui : ${ligne.faits} fait${ligne.faits > 1 ? 's' : ''} sur ${ligne.prevus}`;
   const derniere = e && c.phase === 'travail' ? derniereNote(e.id) : null;
 
+  // Les points sous le temps : où tu en es avant la grande pause.
+  const n = r.blocsAvantPauseLongue;
+  const faitsCycle = c.phase === 'pauseLongue' ? n : c.blocsSerie % n;
+  let points = '';
+  for (let k = 0; k < n; k++) points += `<i class="${k < faitsCycle ? 'fait' : (k === faitsCycle && c.phase === 'travail' ? 'en-cours' : '')}"></i>`;
+
   let boutons;
   if (c.phase === 'attente') {
     boutons = `<div class="pile">
@@ -2139,27 +2807,31 @@ function chronoActif(c) {
         <button class="btn btn-plein" data-action="terminer" type="button">Terminer pour l'instant</button>
       </div>`;
   } else {
-    boutons = `<div class="chrono-boutons">
-        ${enPause
-          ? `<button class="btn btn-principal btn-geant" data-action="reprendre" type="button">${ICONES.lecture} Reprendre</button>`
-          : `<button class="btn btn-geant" data-action="pause" type="button">${ICONES.pause} Pause</button>`}
-        <button class="btn btn-geant btn-danger" data-action="arreter" type="button">${ICONES.stop} Arrêter</button>
+    const principal = enPause
+      ? `<button class="commande principale" data-action="reprendre" type="button"><span class="rond-cmd">${ICONES.lecture}</span>Reprendre</button>`
+      : `<button class="commande principale" data-action="pause" type="button"><span class="rond-cmd">${ICONES.pause}</span>Pause</button>`;
+    boutons = `<div class="commandes">
+        <button class="commande danger" data-action="arreter" type="button"><span class="rond-cmd">${ICONES.stop}</span>Arrêter</button>
+        ${principal}
+        <button class="commande" data-action="concentration" type="button" aria-label="Mode concentration (écran noir)"><span class="rond-cmd">${ic('lune')}</span>Concentration</button>
       </div>
-      ${c.phase !== 'travail' ? `<button class="btn btn-plein" data-action="passer-pause" type="button">${ICONES.suivant} Passer la pause</button>` : ''}
-      <div class="pile"><button class="btn btn-plein" data-action="concentration" type="button">🌙 Mode concentration (écran noir)</button></div>`;
+      ${c.phase !== 'travail' ? `<button class="btn btn-plein" data-action="passer-pause" type="button">${ICONES.suivant} Passer la pause</button>` : ''}`;
   }
 
-  return `<section class="chrono" style="--phase:${p.couleur}">
-      <div class="chrono-phase">${p.libelle}</div>
-      <div class="chrono-sujet"><span class="rond" style="--couleur:${c.matiereId ? couleurMatiere(c.matiereId) : 'var(--accent)'}"></span>${echapper(sujetChrono(c))}</div>
-      ${derniere ? `<p class="derniere-note">🔖 La dernière fois : « ${echapper(derniere.note)} »</p>` : ''}
+  return `<section class="chrono chrono-actif${repos ? ' en-pause' : ''}${enPause ? ' arrete' : ''}" style="--phase:${couleur}">
+      <div class="chrono-sujet"><span class="rond" style="${styleCouleur(couleur)}"></span>${echapper(sujetChrono(c))}</div>
       <div class="anneau">
         <svg viewBox="0 0 120 120" aria-hidden="true">
           <circle class="anneau-fond" cx="60" cy="60" r="54"></circle>
           <circle class="anneau-progres" id="anneau" cx="60" cy="60" r="54"></circle>
         </svg>
-        <div class="chrono-temps" id="chrono-temps" role="timer" aria-live="off"></div>
+        <div class="anneau-centre">
+          <span class="chrono-phase">${p.libelle}</span>
+          <div class="chrono-temps" id="chrono-temps" role="timer" aria-live="off"></div>
+          <span class="serie-points" aria-label="${pluriel(faitsCycle, 'bloc')} sur ${n} avant la grande pause">${points}</span>
+        </div>
       </div>
+      ${derniere ? `<p class="derniere-note">${ic('note')}<span>La dernière fois : « ${echapper(derniere.note)} »</span></p>` : ''}
       <p class="chrono-info">${info}</p>
       ${boutons}
     </section>`;
@@ -2168,21 +2840,21 @@ function chronoActif(c) {
 function resumeBlocsDuJour() {
   const jour = aujourdhui();
   const blocs = donnees.blocs.filter(b => b.date === jour);
-  if (!blocs.length) return `<p class="aide centre" style="margin-top:20px">Aucun bloc terminé aujourd'hui pour l'instant.</p>`;
+  if (!blocs.length) return `<p class="aide centre fait-vide">Aucun bloc terminé aujourd'hui pour l'instant.</p>`;
   const total = blocs.reduce((somme, b) => somme + b.minutes, 0);
   const lignes = blocs.slice().reverse().map(b => {
     const e = b.echeanceId ? trouverEcheance(b.echeanceId) : null;
     const nom = e ? nomEcheanceCourt(e, jour) : (b.matiereId ? nomMatiere(b.matiereId) : 'Étude libre');
     const ressenti = b.ressenti ? ` · ${RESSENTIS[b.ressenti].emoji} ${RESSENTIS[b.ressenti].nom}` : '';
     const note = b.note ? ` · « ${echapper(b.note)} »` : '';
-    return `<li style="--couleur:${b.matiereId ? couleurMatiere(b.matiereId) : 'var(--accent)'}">
+    return `<li style="${styleCouleur(b.matiereId ? couleurMatiere(b.matiereId) : '#b0abff')}">
         <span class="rond"></span>
         <span class="texte">${echapper(nom)}<small>${heure(b.debut)} · ${b.minutes} min${ressenti}${note}</small></span>
-        <button class="supprimer-bloc" data-action="supprimer-bloc" data-id="${b.id}" type="button" aria-label="Supprimer ce bloc">×</button>
+        <button class="supprimer-bloc" data-action="supprimer-bloc" data-id="${b.id}" type="button" aria-label="Supprimer ce bloc">${ic('fermer')}</button>
       </li>`;
   }).join('');
-  return `<section class="carte" style="margin-top:18px">
-      <div class="carte-titre"><h2>Fait aujourd'hui</h2><span class="etiquette">${pluriel(blocs.length, 'bloc')} · ${formaterDuree(total)}</span></div>
+  return `<h2 class="titre-section">Fait aujourd'hui<span class="etiquette">${pluriel(blocs.length, 'bloc')} · ${formaterDuree(total)}</span></h2>
+    <section class="carte carte-liste">
       <ul class="liste-faits">${lignes}</ul>
     </section>`;
 }
@@ -2191,19 +2863,19 @@ function resumeBlocsDuJour() {
 function majAffichageChrono() {
   const c = donnees.chrono;
   const temps = document.getElementById('chrono-temps');
-  const anneau = document.getElementById('anneau');
-  if (!c || !temps || !anneau) return;
+  const anneauProgres = document.getElementById('anneau');
+  if (!c || !temps || !anneauProgres) return;
   const circonference = 339.292;  // 2 × π × 54
   if (c.phase === 'attente') {
     temps.textContent = 'Prêt ?';
     temps.classList.add('petit');
-    anneau.style.strokeDashoffset = 0;
+    anneauProgres.style.strokeDashoffset = 0;
     return;
   }
   const reste = restantMs(c);
   temps.textContent = formaterChrono(reste);
   temps.classList.remove('petit');
-  anneau.style.strokeDashoffset = circonference * (1 - (c.dureeMs > 0 ? reste / c.dureeMs : 0));
+  anneauProgres.style.strokeDashoffset = circonference * (1 - (c.dureeMs > 0 ? reste / c.dureeMs : 0));
 }
 
 // Onglet "Chrono" : affiche le temps restant quand un chrono tourne (+ titre de la page).
@@ -2217,7 +2889,7 @@ function majOngletChrono() {
     const p = infosPhase(c);
     texte.textContent = temps;
     bouton.classList.add('chrono-actif');
-    bouton.style.setProperty('--phase', p.couleur);
+    bouton.style.setProperty('--phase', couleurAffichee(c));
     if (bandeau) bandeau.textContent = temps;
     document.title = `${temps} · ${p.libelle} – Plan d'étude`;
   } else {
@@ -2244,7 +2916,7 @@ function carteResumeSemaine(jour) {
     ? `<span class="tuile-valeur">${r.faits} / ${r.prevus}</span><span class="tuile-label">blocs faits / prévus</span>`
     : `<span class="tuile-valeur">${r.faits}</span><span class="tuile-label">blocs faits</span><span class="tuile-delta">(les blocs prévus sont suivis depuis la V3)</span>`;
   return `<section class="carte resume" aria-label="Résumé de la semaine">
-      <div class="carte-titre"><h2>📊 Ta semaine ${texteSemaine(r.lundi)}</h2><button class="fermer-x" data-action="fermer-resume" type="button" aria-label="Fermer le résumé">×</button></div>
+      <div class="carte-titre"><h2>${ic('graphique')}Ta semaine ${texteSemaine(r.lundi)}</h2><button class="fermer-x" data-action="fermer-resume" type="button" aria-label="Fermer le résumé">${ic('fermer')}</button></div>
       <div class="tuiles">
         <div class="tuile"><span class="tuile-valeur">${formaterDuree(r.total)}</span><span class="tuile-label">d'étude</span><span class="tuile-delta">${compare}</span></div>
         <div class="tuile"><span class="tuile-valeur">${r.top ? echapper(nomMatiere(r.top.id)) : '—'}</span><span class="tuile-label">${r.top ? `la plus travaillée (${formaterDuree(r.top.minutes)})` : 'matière la plus travaillée'}</span></div>
@@ -2285,9 +2957,9 @@ function carteCalendrier(plan) {
   }
   return `<section class="carte calendrier">
       <div class="cal-entete">
-        <button class="cal-nav" data-action="cal-mois" data-sens="-1" type="button" aria-label="Mois précédent">‹</button>
+        <button class="cal-nav" data-action="cal-mois" data-sens="-1" type="button" aria-label="Mois précédent">${ic('chevronGauche')}</button>
         <h2>${MOIS[d0.getMonth()]} ${d0.getFullYear()}</h2>
-        <button class="cal-nav" data-action="cal-mois" data-sens="1" type="button" aria-label="Mois suivant">›</button>
+        <button class="cal-nav" data-action="cal-mois" data-sens="1" type="button" aria-label="Mois suivant">${ic('chevron')}</button>
       </div>
       <div class="cal-grille">${cases}</div>
       <div class="cal-legende">
@@ -2312,9 +2984,9 @@ function detailJourCalendrier(j, plan) {
   let h = `<section class="carte"><h2>${capitaliser(dateLongue(j))}</h2>`;
   for (const e of echs) {
     h += `<button class="ligne-cal" data-action="detail-echeance" data-id="${e.id}" type="button" style="${styleMatiere(e.matiereId)}">
-        <span class="rond"></span>
-        <span class="texte">📌 ${e.type === 'examen' ? 'Examen' : 'Test'} ${echapper(de(nomMatiere(e.matiereId)))}${e.terminee ? ' (passé)' : ''}</span>
-        <span class="chevron" aria-hidden="true">›</span>
+        ${ic('cible')}
+        <span class="texte">${e.type === 'examen' ? 'Examen' : 'Test'} ${echapper(de(nomMatiere(e.matiereId)))}${e.terminee ? ' (passé)' : ''}</span>
+        ${ic('chevron', 'chevron')}
       </button>`;
   }
   if (j >= plan.jour) {
@@ -2390,8 +3062,12 @@ function afficherStats() {
   verifierBadges();
   let h = `<header class="entete"><h1>Stats</h1></header>`;
   if (!donnees.blocs.length && !resultatsAvecEtude(donnees).length) {
-    h += `<section class="carte"><p class="vide">Pas encore de stats 📊</p>
-        <p class="aide centre">Fais ton premier bloc avec le chrono : ta série, tes graphiques et tes badges apparaîtront ici.</p></section>`;
+    h += `<section class="carte etat-vide">
+        <div class="illu">${ic('graphique')}</div>
+        <h2>Pas encore de stats</h2>
+        <p>Fais ton premier bloc avec le chrono : ta série, tes graphiques et tes badges apparaîtront ici.</p>
+        <button class="btn btn-principal btn-plein" data-action="aller-chrono" type="button">${ICONES.lecture} Lancer mon premier bloc</button>
+      </section>`;
     vue.innerHTML = h + carteBadges(jour);
     return;
   }
@@ -2411,11 +3087,21 @@ function carteSerie(jour) {
   const message = s.aujourdhuiFait
     ? "Tu as étudié aujourd'hui ✓"
     : (s.actuelle ? "Fais un bloc aujourd'hui pour continuer ta série !" : "Un bloc aujourd'hui, et c'est reparti !");
-  return `<section class="carte"><h2>🔥 Ma série</h2>
+  // Les 7 derniers jours : une flamme pour chaque jour où tu as étudié.
+  const etudie = new Set(donnees.blocs.filter(b => b.minutes > 0).map(b => b.date));
+  let jours = '';
+  for (let k = 6; k >= 0; k--) {
+    const j = ajouterJours(jour, -k);
+    const lettre = JOURS_COURTS[dateDepuisCle(j).getDay()].charAt(0).toUpperCase();
+    jours += `<span class="${etudie.has(j) ? 'fait' : ''}${j === jour ? ' auj' : ''}"><i>${etudie.has(j) ? ic('flamme') : ''}</i><small>${lettre}</small></span>`;
+  }
+  return `<section class="carte serie-carte" aria-label="Ma série">
       <div class="serie">
-        <div><span class="serie-valeur">${s.actuelle}</span><span class="tuile-label">jour${s.actuelle > 1 ? 's' : ''} d'affilée</span></div>
-        <div><span class="tuile-valeur">${s.record}</span><span class="tuile-label">record</span></div>
+        <span class="flamme flamme-grande${s.aujourdhuiFait ? ' allumee' : ''}">${ic('flamme')}</span>
+        <div class="serie-num"><span class="serie-valeur">${s.actuelle}</span><span class="tuile-label">jour${s.actuelle > 1 ? 's' : ''} d'affilée</span></div>
+        <div class="serie-record"><span class="tuile-valeur">${s.record}</span><span class="tuile-label">record</span></div>
       </div>
+      <div class="jours-flammes" role="img" aria-label="Les 7 derniers jours : ${pluriel([...Array(7)].filter((x, k) => etudie.has(ajouterJours(jour, -k))).length, 'jour')} d'étude">${jours}</div>
       <p class="aide">${message} Les jours où ton temps dispo est à 0 ne cassent pas la série.</p>
     </section>`;
 }
@@ -2426,7 +3112,7 @@ function carteParMatiere(jour, L) {
   const lignes = etudeParMatiere(donnees.blocs, debut, jour);
   const total = lignes.reduce((s, x) => s + x.minutes, 0);
   const quand = periodeStats === 'mois' ? 'ce mois-ci' : 'cette semaine';
-  let h = `<section class="carte"><div class="carte-titre"><h2>⏱ Temps par matière</h2><span class="etiquette">${formaterDuree(total)}</span></div>
+  let h = `<section class="carte"><div class="carte-titre"><h2>${ic('horloge')}Temps par matière</h2><span class="etiquette">${formaterDuree(total)}</span></div>
       <div class="bascule" role="group" aria-label="Période">
         <button type="button" data-action="periode-stats" data-periode="semaine" aria-pressed="${periodeStats === 'semaine'}">Cette semaine</button>
         <button type="button" data-action="periode-stats" data-periode="mois" aria-pressed="${periodeStats === 'mois'}">Ce mois-ci</button>
@@ -2536,7 +3222,7 @@ function carte30Jours(jour, L) {
     ordre.filter(id => x.parMatiere[id] > 0).map(id => `${echapper(nomCourtId(id))} ${formaterDuree(x.parMatiere[id])}`).join(', '),
     formaterDuree(x.total),
   ]);
-  return `<section class="carte"><div class="carte-titre"><h2>📅 Les 30 derniers jours</h2><span class="etiquette">${formaterDuree(total)}</span></div>
+  return `<section class="carte"><div class="carte-titre"><h2>${ic('calendrier')}Les 30 derniers jours</h2><span class="etiquette">${formaterDuree(total)}</span></div>
       <p class="aide" style="margin:0 0 10px">${pluriel(nbJours, 'jour')} d'étude sur 30 · en moyenne ${formaterDuree(total / 30)} par jour</p>
       <svg class="graphique" viewBox="0 0 ${L} ${H}" width="${L}" height="${H}" role="img" aria-label="Temps d'étude par jour sur les 30 derniers jours : ${formaterDuree(total)} en tout">${svg}</svg>
       ${legende(ordre)}
@@ -2548,7 +3234,7 @@ function carte30Jours(jour, L) {
 // Moyenne des notes par matière.
 function carteNotes(L) {
   const res = resultatsAvecEtude(donnees);
-  let h = `<section class="carte"><h2>🎓 Mes notes</h2>`;
+  let h = `<section class="carte"><div class="carte-titre"><h2>${ic('cible')}Mes notes</h2></div>`;
   if (!res.length) return h + `<p class="aide">Quand tu marques un test comme passé, entre ta note : tes moyennes par matière apparaîtront ici.</p></section>`;
   const echelle = donnees.reglages.echelleNote || 20;
   const enEchelle = pourcent => Math.round(pourcent / 100 * echelle * 10) / 10;
@@ -2568,7 +3254,7 @@ function carteNotes(L) {
 // Temps d'étude d'une échéance ↔ note obtenue : est-ce que plus d'étude = meilleure note ?
 function carteEtudeEtNotes(L) {
   const res = resultatsAvecEtude(donnees);
-  let h = `<section class="carte"><h2>📈 Étude et notes</h2>`;
+  let h = `<section class="carte"><div class="carte-titre"><h2>${ic('graphique')}Étude et notes</h2></div>`;
   if (!res.length) return h + `<p class="aide">Ici tu verras si plus d'étude donne une meilleure note, dès que tu auras entré tes premières notes.</p></section>`;
   const echelle = donnees.reglages.echelleNote || 20;
   const gauche = 34;
@@ -2643,7 +3329,7 @@ function carteBadges(jour) {
     if (b.id === 'heures-10') {
       // Celui-ci se gagne une fois par matière.
       for (const id of Object.keys(donnees.badges).filter(x => x.startsWith('heures-10:'))) {
-        tuiles.push(tuileBadge(infoBadge(id), donnees.badges[id], ''));
+        tuiles.push(tuileBadge(infoBadge(id), donnees.badges[id], '', 1, 'heures-10'));
       }
       const minutes = {};
       for (const bl of donnees.blocs) if (bl.matiereId) minutes[bl.matiereId] = (minutes[bl.matiereId] || 0) + bl.minutes;
@@ -2651,24 +3337,45 @@ function carteBadges(jour) {
         .filter(m => !donnees.badges['heures-10:' + m.id])
         .map(m => ({ m, minutes: minutes[m.id] || 0 }))
         .sort((x, y) => y.minutes - x.minutes)[0];
-      if (prochaine) tuiles.push(tuileBadge(b, null, `${prochaine.m.nom} : ${formaterDuree(prochaine.minutes)} / 10 h`));
+      if (prochaine) tuiles.push(tuileBadge(b, null, `${prochaine.m.nom} : ${formaterDuree(prochaine.minutes)} / 10 h`, prochaine.minutes / 600, b.id));
       continue;
     }
     const date = donnees.badges[b.id];
-    tuiles.push(tuileBadge(b, date, date ? '' : progressionBadge(b.id, s)));
+    tuiles.push(tuileBadge(b, date, date ? '' : progressionBadge(b.id, s), ratioBadge(b.id, s), b.id));
   }
   const nb = Object.keys(donnees.badges).length;
-  return `<section class="carte"><div class="carte-titre"><h2>🏅 Badges</h2><span class="etiquette">${nb} gagné${nb > 1 ? 's' : ''}</span></div>
+  return `<section class="carte"><div class="carte-titre"><h2>${ic('medaille')}Badges</h2><span class="etiquette">${nb} gagné${nb > 1 ? 's' : ''}</span></div>
       <div class="badges-grille">${tuiles.join('')}</div>
     </section>`;
 }
 
-function tuileBadge(b, date, aide) {
-  return `<div class="badge-tuile${date ? '' : ' verrouille'}">
-      <span class="emoji" aria-hidden="true">${b.emoji}</span>
+// La couleur de chaque médaille.
+const TEINTES_BADGES = {
+  'premier-bloc': '#51cf66', 'serie-3': '#ff922b', 'serie-7': '#ff6b4a', 'serie-30': '#fcc419',
+  'blocs-50': '#f783ac', 'heures-10': '#4dabf7', objectif: '#ff6b6b', 'semaine-parfaite': '#ffd43b',
+};
+// Une couleur plus sombre (pour le relief des médailles).
+function assombrir(hex, f) {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgb(${Math.round(((n >> 16) & 255) * f)}, ${Math.round(((n >> 8) & 255) * f)}, ${Math.round((n & 255) * f)})`;
+}
+
+// Une médaille : en couleur si elle est gagnée, grise avec un anneau de progression sinon.
+function tuileBadge(b, date, aide, ratio = 0, idBase = '') {
+  const teinte = TEINTES_BADGES[idBase] || '#b0abff';
+  const style = `--teinte:${teinte};--teinte-sombre:${assombrir(teinte, 0.55)};--teinte-fond:${rgba(teinte, 0.16)};--teinte-bord:${rgba(teinte, 0.35)};--teinte-lueur:${rgba(teinte, 0.7)}`;
+  return `<div class="badge-tuile${date ? ' gagne' : ' verrouille'}" style="${style}">
+      <span class="medaille">${date ? '' : anneau(ratio, { taille: 74, epaisseur: 4 })}<span class="emoji" aria-hidden="true">${b.emoji}</span></span>
       <strong>${echapper(b.nom)}</strong>
       <small>${date ? `le ${dateCourteSansJour(date)}` : echapper(aide)}</small>
     </div>`;
+}
+
+// Où tu en es pour une médaille pas encore gagnée (de 0 à 1).
+function ratioBadge(id, s) {
+  if (id.startsWith('serie-')) return Math.min(1, s.actuelle / Number(id.slice(6)));
+  if (id === 'blocs-50') return Math.min(1, donnees.blocs.length / 50);
+  return 0;
 }
 
 function progressionBadge(id, s) {
@@ -2703,63 +3410,67 @@ function afficherReglages() {
   let h = `<header class="entete"><h1>Réglages</h1></header>`;
   h += carteInstaller();
 
-  h += `<section class="carte"><h2>⏰ Mon temps disponible</h2>
+  h += `<h2 class="titre-section">Mon temps disponible</h2>
+    <section class="carte">
       ${ligneReglage('dispoSemaine', 'En semaine', 'du lundi au vendredi', 15, 0, 720, 'duree')}
       ${ligneReglage('dispoWeekend', 'Le week-end', 'samedi et dimanche', 15, 0, 720, 'duree')}
       <p class="aide">Pauses comprises, ça fait <strong>${pluriel(capSemaine, 'bloc')}</strong> par jour en semaine et <strong>${pluriel(capWeekend, 'bloc')}</strong> le week-end.</p>
     </section>`;
 
-  h += `<section class="carte"><h2>🍅 Pomodoro</h2>
+  h += `<h2 class="titre-section">Chrono</h2>
+    <section class="carte">
       ${ligneReglage('travail', 'Travail', 'durée d\'un bloc', 5, 5, 90, 'min')}
       ${ligneReglage('pauseCourte', 'Petite pause', 'après chaque bloc', 1, 1, 30, 'min')}
       ${ligneReglage('pauseLongue', 'Grande pause', '', 5, 5, 60, 'min')}
       ${ligneReglage('blocsAvantPauseLongue', 'Grande pause tous les', '', 1, 2, 10, 'blocs')}
-    </section>`;
-
-  h += `<section class="carte"><h2>📚 Temps d'étude de base</h2>
-      <p class="aide">Selon le niveau, avant l'ajustement par chapitres.</p>
-      <h3>Test</h3>
-      ${[1, 2, 3, 4].map(n => ligneReglage(`tempsBase.test.${n - 1}`, `Niveau ${n}`, NIVEAUX[n], 15, 15, 1200, 'duree')).join('')}
-      <h3>Examen</h3>
-      ${[1, 2, 3, 4].map(n => ligneReglage(`tempsBase.examen.${n - 1}`, `Niveau ${n}`, NIVEAUX[n], 15, 15, 3000, 'duree')).join('')}
-    </section>`;
-
-  h += `<section class="carte"><h2>📖 Ajustement par chapitres</h2>
-      <p class="formule">temps = base × (${formaterDecimal(r.coefBase)} + ${formaterDecimal(r.coefChapitre)} × chapitres)</p>
-      ${ligneReglage('coefBase', 'Part fixe', '', 0.05, 0, 3, 'decimal')}
-      ${ligneReglage('coefChapitre', 'Par chapitre', '', 0.05, 0, 2, 'decimal')}
-      <p class="aide">${[1, 2, 4, 6].map(n => `<span class="insecable">${pluriel(n, 'chapitre')} → × ${facteur(n)}</span>`).join(' · ')}<br>
-        Ex : test niveau 3 de 4 chapitres = ${formaterDuree(exemple)}.<br>
-        Ce temps est ensuite multiplié par ta difficulté perso dans la matière (entre × 0,7 et × 1,5, selon tes ressentis et tes notes).</p>
-    </section>`;
-
-  h += `<section class="carte"><h2>📅 Planification</h2>
-      ${ligneReglage('joursAvant.test', 'Un test', 'commence au plus tôt', 1, 1, 30, 'avant')}
-      ${ligneReglage('joursAvant.examen', 'Un examen', 'commence au plus tôt', 1, 1, 60, 'avant')}
-      ${ligneReglage('progression', 'Montée en puissance', 'la veille vs le 1er jour', 0.5, 1, 10, 'fois')}
-      ${ligneReglage('joursEnPlusParCoeur', 'Par cœur', 'commence plus tôt de', 1, 0, 30, 'plusjours')}
-      ${ligneReglage('blocsParSession', 'Exercices', "blocs d'affilée minimum", 1, 1, 4, 'blocs')}
-      <p class="aide">Avec × ${formaterDecimal(r.progression)}, la veille on étudie ${formaterDecimal(r.progression)} fois plus que le premier jour. « Par cœur » : 1 bloc par jour sur plus de jours. « Exercices » : des séances d'au moins ${pluriel(r.blocsParSession, 'bloc')} d'affilée.</p>
-    </section>`;
-
-  h += `<section class="carte"><h2>🔔 Alertes du chrono</h2>
       ${ligneInterrupteur('son', 'Son', 'sur iPhone : pas en mode silencieux')}
       ${ligneInterrupteur('vibration', 'Vibration', 'Android seulement (pas possible sur iPhone)')}
       ${ligneInterrupteur('ecranAllume', "Garder l'écran allumé", 'pendant un bloc, si le téléphone le permet')}
-      <div class="pile"><button class="btn btn-plein" data-action="tester-alerte" type="button">🔊 Tester le son et la vibration</button></div>
+      <div class="pile"><button class="btn btn-plein" data-action="tester-alerte" type="button">${ic('son')} Tester le son et la vibration</button></div>
     </section>`;
 
-  h += `<section class="carte"><h2>💾 Mes données</h2>
-      <p class="aide">Tout est enregistré uniquement dans ce navigateur, sur cet appareil. Exporte une sauvegarde de temps en temps, et avant de changer de téléphone.</p>
+  // Les réglages avancés sont rangés dans une section repliable.
+  h += `<details class="carte avance"${avanceOuvert ? ' open' : ''}>
+      <summary>
+        <span class="illu-petite">${ic('curseurs')}</span>
+        <span class="avance-titre">Avancé<small>Temps de base, chapitres, planification</small></span>
+        ${ic('chevronBas', 'chevron-bas')}
+      </summary>
+      <div class="avance-corps">
+        <h3>Temps d'étude de base : test</h3>
+        <p class="aide">Selon le niveau, avant l'ajustement par chapitres.</p>
+        ${[1, 2, 3, 4].map(n => ligneReglage(`tempsBase.test.${n - 1}`, `Niveau ${n}`, NIVEAUX[n], 15, 15, 1200, 'duree')).join('')}
+        <h3>Temps d'étude de base : examen</h3>
+        ${[1, 2, 3, 4].map(n => ligneReglage(`tempsBase.examen.${n - 1}`, `Niveau ${n}`, NIVEAUX[n], 15, 15, 3000, 'duree')).join('')}
+        <h3>Ajustement par chapitres</h3>
+        <p class="formule">temps = base × (${formaterDecimal(r.coefBase)} + ${formaterDecimal(r.coefChapitre)} × chapitres)</p>
+        ${ligneReglage('coefBase', 'Part fixe', '', 0.05, 0, 3, 'decimal')}
+        ${ligneReglage('coefChapitre', 'Par chapitre', '', 0.05, 0, 2, 'decimal')}
+        <p class="aide">${[1, 2, 4, 6].map(n => `<span class="insecable">${pluriel(n, 'chapitre')} → × ${facteur(n)}</span>`).join(' · ')}<br>
+          Ex : test niveau 3 de 4 chapitres = ${formaterDuree(exemple)}.<br>
+          Ce temps est ensuite multiplié par ta difficulté perso dans la matière (entre × 0,7 et × 1,5, selon tes ressentis et tes notes).</p>
+        <h3>Planification</h3>
+        ${ligneReglage('joursAvant.test', 'Un test', 'commence au plus tôt', 1, 1, 30, 'avant')}
+        ${ligneReglage('joursAvant.examen', 'Un examen', 'commence au plus tôt', 1, 1, 60, 'avant')}
+        ${ligneReglage('progression', 'Montée en puissance', 'la veille vs le 1er jour', 0.5, 1, 10, 'fois')}
+        ${ligneReglage('joursEnPlusParCoeur', 'Par cœur', 'commence plus tôt de', 1, 0, 30, 'plusjours')}
+        ${ligneReglage('blocsParSession', 'Exercices', "blocs d'affilée minimum", 1, 1, 4, 'blocs')}
+        <p class="aide">Avec × ${formaterDecimal(r.progression)}, la veille on étudie ${formaterDecimal(r.progression)} fois plus que le premier jour. « Par cœur » : 1 bloc par jour sur plus de jours. « Exercices » : des séances d'au moins ${pluriel(r.blocsParSession, 'bloc')} d'affilée.</p>
+      </div>
+    </details>`;
+
+  h += `<h2 class="titre-section">Mes données</h2>
+    <section class="carte">
+      <p class="aide" style="margin-top:0">Tout est enregistré uniquement dans ce navigateur, sur cet appareil. Exporte une sauvegarde de temps en temps, et avant de changer de téléphone.</p>
       <div class="pile">
-        <button class="btn btn-principal btn-plein" data-action="exporter" type="button">⬇️ Exporter mes données</button>
-        <button class="btn btn-plein" data-action="importer" type="button">⬆️ Importer une sauvegarde</button>
+        <button class="btn btn-principal btn-plein" data-action="exporter" type="button">${ic('telecharger')} Exporter mes données</button>
+        <button class="btn btn-plein" data-action="importer" type="button">${ic('televerser')} Importer une sauvegarde</button>
         <button class="btn btn-plein" data-action="exemple" type="button">Ajouter des exemples (pour tester)</button>
         <button class="btn btn-plein" data-action="reglages-defaut" type="button">Remettre les réglages par défaut</button>
         <button class="btn btn-plein btn-danger" data-action="tout-effacer" type="button">Tout effacer</button>
       </div>
     </section>
-    <p class="aide centre">Plan d'étude · V3</p>`;
+    <p class="aide centre version">Plan d'étude · V3 · nouveau look</p>`;
 
   document.getElementById('vue-reglages').innerHTML = h;
 }
@@ -2832,7 +3543,7 @@ function carteInstaller() {
         <li>Choisis <strong>« Installer l'application »</strong> (ou « Ajouter à l'écran d'accueil »).</li></ol>
         <p class="aide">Pas d'option d'installation ? Recharge la page, attends quelques secondes et regarde à nouveau le menu.</p>`;
   }
-  return `<section class="carte installer"><h2>📲 Installer l'appli</h2>${corps}</section>`;
+  return `<section class="carte installer"><div class="carte-titre"><h2>${ic('telephone')}Installer l'appli</h2></div>${corps}</section>`;
 }
 
 async function installerAppli() {
@@ -2970,7 +3681,8 @@ function ouvrirDetailEcheance(id) {
   const coef = coefMatiere(e.matiereId);
   const total = tempsEcheance(e);
   const fait = minutesFaites(e.id);
-  const pourcent = total > 0 ? Math.min(100, Math.round((fait / total) * 100)) : 100;
+  const ratio = total > 0 ? Math.min(1, fait / total) : 1;
+  const pourcent = Math.round(ratio * 100);
   const active = !e.terminee && e.date >= plan.jour;
   const blocs = blocsDe(e.id);
   const notes = blocs.length
@@ -2980,24 +3692,38 @@ function ouvrirDetailEcheance(id) {
         </li>`).join('')}</ul>`
     : `<p class="aide">Aucun bloc pour l'instant.</p>`;
 
-  ouvrirFeuille(`<div class="detail" style="${styleMatiere(e.matiereId)}">
-      <div class="ech-haut"><h2 class="detail-titre">${echapper(nomMatiere(e.matiereId))}</h2>${badgesEcheance(e)}</div>
-      <div class="ech-date">${capitaliser(dateLongue(e.date))} · ${delai(e.date, plan.jour)}</div>
-      <div class="ech-details">Niveau ${e.niveau} (${NIVEAUX[e.niveau]}) · ${pluriel(e.chapitres, 'chapitre')} · ${nomTravail(e)}</div>
-      <div class="ech-details">≈ ${formaterDuree(total)} d'étude${coef !== 1 ? ` (dont difficulté perso × ${formaterDecimal(coef)})` : ''}</div>
-      <div class="barre"><div style="width:${pourcent}%"></div></div>
-      <div class="ech-progres">${formaterDuree(fait)} faites sur ${formaterDuree(total)}</div>
-      ${e.note ? `<div class="ech-note">📝 ${echapper(e.note)}</div>` : ''}
+  ouvrirFeuille(`<div class="detail" style="${styleMatiereRiche(e.matiereId)}">
+      <div class="detail-tete">
+        <span class="pastille-matiere" aria-hidden="true"></span>
+        <div class="detail-tete-texte">
+          <h2 class="detail-titre">${echapper(nomMatiere(e.matiereId))}</h2>
+          <p class="detail-date">${capitaliser(dateLongue(e.date))} · ${delai(e.date, plan.jour)}</p>
+        </div>
+        ${badgesEcheance(e)}
+      </div>
+      <div class="detail-progres">
+        ${anneau(ratio, { taille: 84, epaisseur: 8, contenu: `${pourcent}<small>%</small>`, classe: pourcent >= 100 ? 'complet' : '' })}
+        <div class="detail-chiffres">
+          <div><strong>${formaterDuree(fait)}</strong><span>faites sur ${formaterDuree(total)}</span></div>
+          <div><strong>≈ ${formaterDuree(total)}</strong><span>d'étude${coef !== 1 ? ` (dont difficulté perso × ${formaterDecimal(coef)})` : ''}</span></div>
+        </div>
+      </div>
+      <div class="puces-infos">
+        <span class="puce-info">${ic('cible')}Niveau ${e.niveau} (${NIVEAUX[e.niveau]})</span>
+        <span class="puce-info">${ic('livre')}${pluriel(e.chapitres, 'chapitre')}</span>
+        <span class="puce-info">${ic('eclair')}${nomTravail(e)}</span>
+      </div>
+      ${e.note ? `<p class="ech-note">${ic('note')}<span>${echapper(e.note)}</span></p>` : ''}
       ${statutEcheance(e, plan)}
       ${estVeille(e, plan.jour) ? blocChecklist(e) : ''}
       ${e.terminee ? blocResultat(e) : ''}
-      ${active ? `<div class="pile" style="margin-top:14px"><button class="btn btn-lancer btn-plein" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer un bloc</button></div>` : ''}
+      ${active ? `<div class="pile" style="margin-top:16px"><button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer un bloc</button></div>` : ''}
       <h3>Mes blocs et mes notes</h3>
       ${notes}
       <div class="pile" style="margin-top:18px">
         ${e.terminee
           ? `<button class="btn btn-plein" data-action="remettre" data-id="${e.id}" type="button">↩ Remettre dans le plan</button>`
-          : `<button class="btn btn-plein btn-principal" data-action="test-passe" data-id="${e.id}" type="button">✓ ${e.type === 'examen' ? 'Examen' : 'Test'} passé</button>`}
+          : `<button class="btn btn-plein${active ? '' : ' btn-principal'}" data-action="test-passe" data-id="${e.id}" type="button">✓ ${e.type === 'examen' ? 'Examen' : 'Test'} passé</button>`}
         <button class="btn btn-plein" data-action="modifier-echeance" data-id="${e.id}" type="button">Modifier</button>
         <button class="btn btn-plein btn-danger" data-action="supprimer-echeance" data-id="${e.id}" type="button">Supprimer</button>
         <button class="btn btn-plein" data-action="fermer" type="button">Fermer</button>
@@ -3009,7 +3735,7 @@ function ouvrirDetailEcheance(id) {
 function blocChecklist(e) {
   const { liste, coches } = avancementChecklist(e);
   return `<div class="veille">
-      <strong>🌙 C'est la veille : révision rapide</strong> <span class="aide" id="compte-checklist">(${coches}/${liste.length})</span>
+      <div class="veille-titre">${ic('lune')}<strong>C'est la veille : révision rapide</strong> <span class="aide" id="compte-checklist" style="margin:0">(${coches}/${liste.length})</span></div>
       <ul class="checklist">${liste.map(item => `<li>
           <label><input type="checkbox" data-checklist="${item.id}" data-id="${e.id}"${e.checklist[item.id] ? ' checked' : ''}><span>${echapper(item.texte)}</span></label>
           ${(item.details || []).map(t => `<span class="sous">${echapper(t)}</span>`).join('')}
@@ -3034,7 +3760,7 @@ function cocherChecklist(id, cle, coche) {
 function blocResultat(e) {
   const r = e.resultat;
   if (!r) {
-    return `<div class="resultat"><strong>🎓 Ta note</strong>
+    return `<div class="resultat"><div class="resultat-titre">${ic('cible')}<strong>Ta note</strong></div>
         <p class="aide" style="margin:4px 0 10px">Entre ta note quand tu l'as : elle compte dans tes stats et, avec un objectif, elle ajuste ta difficulté perso.</p>
         <button class="btn btn-plein" data-action="note-resultat" data-id="${e.id}" type="button">Entrer ma note</button>
       </div>`;
@@ -3048,7 +3774,7 @@ function blocResultat(e) {
     else if (effet < 0) texte = `Largement au-dessus de ton objectif : ta difficulté en ${nomMatiere(e.matiereId)} baisse un peu (${signe(effet)}).`;
     else texte = 'Objectif atteint : ta difficulté ne change pas.';
   }
-  return `<div class="resultat"><strong>🎓 ${texteResultat(r)}</strong>
+  return `<div class="resultat"><div class="resultat-titre">${ic('cible')}<strong>${texteResultat(r)}</strong></div>
       <p class="aide" style="margin:4px 0 10px">${echapper(texte)}</p>
       <button class="btn btn-plein" data-action="note-resultat" data-id="${e.id}" type="button">Modifier ma note</button>
     </div>`;
@@ -3091,7 +3817,7 @@ function ouvrirFormResultat(id, justePasse = false) {
   const propose = r ? null : objectifPropose(e.matiereId, sur, e.id);
   const objectif = r ? r.objectif : propose;
   ouvrirFeuille(`<form id="form-resultat" data-id="${e.id}" data-propose="${propose === null ? '' : propose}" novalidate style="${styleMatiere(e.matiereId)}">
-      <h2>🎓 Ta note ${echapper(e.type === 'examen' ? "à l'examen" : 'au test')} ${echapper(de(nomMatiere(e.matiereId)))}</h2>
+      <h2>Ta note ${echapper(e.type === 'examen' ? "à l'examen" : 'au test')} ${echapper(de(nomMatiere(e.matiereId)))}</h2>
       <p class="aide" style="margin:-6px 0 16px">${justePasse ? `✓ Rangé dans l'historique. ` : ''}${capitaliser(dateLongue(e.date))}.
         Pas encore ta note ? Touche « Plus tard » : tu pourras l'entrer depuis l'historique.</p>
       <fieldset>
@@ -3646,6 +4372,7 @@ function demarrerBloc(echeanceId, blocsSerie = 0) {
   };
   if (e) choixChrono = e.id;
   sauvegarder();
+  vibrer(30);   // petite vibration : c'est parti !
   majVerrouEcran();
   afficherVue('chrono');
 }
@@ -3803,6 +4530,7 @@ function verifierChrono(silencieux = false) {
   }
   majVerrouEcran();
   rafraichir();
+  if (blocsEnregistres && !silencieux) celebrer(c.matiereId && trouverMatiere(c.matiereId) ? couleurMatiere(c.matiereId) : '#b0abff');
   if (blocsEnregistres) verifierBadges(silencieux);
 }
 
@@ -3976,6 +4704,10 @@ const ACTIONS = {
     rafraichir();
   },
   'cal-mois': (id, bouton) => changerMois(Number(bouton.dataset.sens) || 0),
+  'jour-semaine': (id, bouton) => {
+    jourSemaine = bouton.dataset.jour;
+    rafraichir();
+  },
   'cal-jour': (id, bouton) => {
     jourCalendrier = bouton.dataset.jour;
     rafraichir();
@@ -4047,7 +4779,14 @@ document.addEventListener('change', ev => {
     majApercuResultat();
   }
   if (t.dataset.checklist) cocherChecklist(t.dataset.id, t.dataset.checklist, t.checked);
-  if (t.name === 'sujet-chrono') choixChrono = t.value;
+  if (t.name === 'sujet-chrono') {
+    choixChrono = t.value;
+    const zone = document.getElementById('chrono-repos');
+    const couleur = getComputedStyle(t.closest('.option-sujet')).getPropertyValue('--couleur').trim();
+    if (zone && couleur) zone.style.setProperty('--phase', couleur);
+    const nom = document.getElementById('repos-sujet');
+    if (nom) nom.textContent = t.closest('.option-sujet').querySelector('strong').textContent;
+  }
   if (t.id === 'fichier-import' && t.files && t.files[0]) {
     importerFichier(t.files[0]);
     t.value = '';
@@ -4060,6 +4799,7 @@ document.addEventListener('change', ev => {
 });
 document.addEventListener('toggle', ev => {
   if (ev.target.matches && ev.target.matches('details.passees')) passeesOuvertes = ev.target.open;
+  if (ev.target.matches && ev.target.matches('details.avance')) avanceOuvert = ev.target.open;
   if (ev.target.matches && ev.target.matches('details.chiffres')) {
     if (ev.target.open) chiffresOuverts.add(ev.target.dataset.cle);
     else chiffresOuverts.delete(ev.target.dataset.cle);
