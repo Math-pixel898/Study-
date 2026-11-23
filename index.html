@@ -405,6 +405,7 @@ details[open] > summary .chevron-bas { transform: rotate(180deg); }
 .badge-examen { background: rgba(248, 113, 113, 0.15); color: #fca5a5; }
 .badge-travail { background: var(--carte-3); color: var(--texte-2); }
 .badge-passe { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
+.badge-lecture { background: rgba(192, 132, 252, 0.16); color: #d8b4fe; }
 .ech-note { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0 0; color: var(--texte-2); font-size: 14px; font-style: italic; overflow-wrap: anywhere; }
 .ech-note .ic { margin-top: 1px; color: var(--couleur, var(--texte-3)); }
 .ech-statut { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: var(--carte-2); font-size: 14px; font-weight: 650; }
@@ -601,6 +602,7 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .cal-marques { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; min-height: 9px; }
 .cal-ech { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--couleur); }
 .cal-ech.examen { width: 15px; border-radius: 3px; }
+.cal-ech.lecture { width: 8px; height: 8px; margin: 0 1px; border-radius: 2px; transform: rotate(45deg); }
 .cal-barre { display: flex; gap: 2px; width: 80%; height: 4px; margin-top: auto; }
 .cal-barre i { min-width: 2px; height: 100%; border-radius: 2px; background: var(--couleur); }
 .cal-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 12px; color: var(--texte-2); font-size: 13px; }
@@ -688,6 +690,17 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .conc-sujet { color: #9a9fa9; font-size: 20px; font-weight: 650; }
 .conc-note { max-width: 32ch; color: #6c717c; font-size: 16px; font-style: italic; overflow-wrap: anywhere; }
 .conc-quitter { position: absolute; left: 50%; bottom: calc(24px + var(--bas)); transform: translateX(-50%); padding: 12px 20px; border: 1px solid #2a2d33; border-radius: 999px; background: none; color: #7d828c; font-weight: 600; white-space: nowrap; }
+
+/* ---------- Lectures (livres) ---------- */
+#form-echeance[data-genre="lecture"] .seulement-etude, #form-echeance[data-genre="etude"] .seulement-lecture { display: none; }
+.liste-livres { list-style: none; margin: 0; padding: 0; }
+.liste-livres li { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--bord); }
+.liste-livres li:first-child { border-top: 0; padding-top: 0; }
+.liste-livres .texte { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.liste-livres .texte strong { display: block; font-size: 15px; }
+.liste-livres .texte small { display: block; color: var(--texte-2); font-size: 13px; }
+.liste-notes li.seance { display: flex; align-items: flex-start; gap: 10px; }
+.seance-texte { flex: 1; min-width: 0; }
 
 /* ---------- Formulaires (dans la feuille qui monte du bas) ---------- */
 .champ { display: block; margin: 0 0 18px; font-size: 15px; font-weight: 650; }
@@ -925,6 +938,7 @@ const BADGES = [
   { id: 'heures-10', emoji: '📚', nom: '10 h sur une matière' },
   { id: 'objectif', emoji: '🎯', nom: 'Objectif de note atteint' },
   { id: 'semaine-parfaite', emoji: '⭐', nom: 'Semaine parfaite' },
+  { id: 'livre-fini', emoji: '📖', nom: 'Livre terminé' },
 ];
 
 // Les réglages de départ. Toutes les durées sont en minutes.
@@ -945,6 +959,7 @@ const REGLAGES_DEFAUT = {
   progression: 3,            // la veille, on étudie 3 fois plus que le premier jour
   joursEnPlusParCoeur: 7,    // "par cœur" : on peut commencer 7 jours plus tôt
   blocsParSession: 2,        // "exercices" : au moins 2 blocs d'affilée
+  minutesParPage: 2,         // lecture : 2 min pour lire une page (30 pages par heure) au départ
   echelleNote: 20,           // échelle proposée pour tes notes : 10, 20 ou 100 (pour les %)
   son: true,
   vibration: true,
@@ -958,10 +973,12 @@ function donneesVides() {
   return {
     version: VERSION_DONNEES,
     matieres: [],   // { id, nom, couleur }
-    echeances: [],  // { id, matiereId, type: 'test' | 'examen', date: 'AAAA-MM-JJ', niveau: 1 à 4, chapitres, note,
+    echeances: [],  // { id, matiereId, type: 'test' | 'examen' | 'lecture', date: 'AAAA-MM-JJ', niveau: 1 à 4, chapitres, note,
                     //   travail: 'parcoeur' | 'exercices' | 'mixte', terminee, termineeLe, rythme,
                     //   resultat: { note, sur, objectif } ou null, checklist: { idCase: true } }
+                    //   + pour une lecture : titre, pageDebut, pageFin (les pages à lire)
     blocs: [],      // blocs de travail faits : { id, echeanceId, matiereId, date, debut, minutes, ressenti, note }
+                    //   + pour une lecture : pages (pages lues), page (page atteinte), manuel (noté sans chrono)
     reglages: copie(REGLAGES_DEFAUT),
     chrono: null,   // le chrono en cours (ou null s'il n'y en a pas)
     aEvaluer: null, // le bloc dont on attend le ressenti (Facile / Ok / Dur)
@@ -1034,10 +1051,10 @@ function normaliser(lu) {
   if (Array.isArray(lu.echeances)) {
     d.echeances = lu.echeances
       .filter(e => e && e.id && estCleDate(e.date))
-      .map(e => ({
+      .map(e => Object.assign({
         id: idPropre(e.id),
         matiereId: idPropre(e.matiereId),
-        type: e.type === 'examen' ? 'examen' : 'test',
+        type: e.type === 'examen' || e.type === 'lecture' ? e.type : 'test',
         date: e.date,
         niveau: borner(Math.round(Number(e.niveau)) || 1, 1, 4),
         chapitres: borner(Math.round(Number(e.chapitres)) || 1, 1, 99),
@@ -1048,12 +1065,12 @@ function normaliser(lu) {
         rythme: normaliserRythme(e.rythme),                                      // nouveau en V2
         resultat: normaliserResultat(e.resultat),                                // nouveau en V3
         checklist: normaliserChecklist(e.checklist),                             // nouveau en V3
-      }));
+      }, e.type === 'lecture' ? normaliserLecture(e) : {}));                     // nouveau : les lectures
   }
   if (Array.isArray(lu.blocs)) {
     d.blocs = lu.blocs
       .filter(b => b && estCleDate(b.date) && Number(b.minutes) > 0)
-      .map(b => ({
+      .map(b => Object.assign({
         id: idPropre(b.id) || nouvelId(),
         echeanceId: idPropre(b.echeanceId),
         matiereId: idPropre(b.matiereId),
@@ -1062,7 +1079,7 @@ function normaliser(lu) {
         minutes: Number(b.minutes),
         ressenti: Object.keys(RESSENTIS).includes(b.ressenti) ? b.ressenti : null,  // nouveau en V2
         note: String(b.note || ''),                                                // nouveau en V2
-      }));
+      }, normaliserPagesBloc(b)));                                                // nouveau : pages lues
   }
   d.reglages = completerReglages(lu.reglages);
   const c = lu.chrono;
@@ -1084,6 +1101,25 @@ function normaliser(lu) {
   }
   if (estCleDate(lu.resumeFerme)) d.resumeFerme = lu.resumeFerme;
   return d;
+}
+
+// Une lecture : le titre du livre et les pages à lire (de pageDebut à pageFin).
+function normaliserLecture(e) {
+  const debut = borner(Math.round(Number(e.pageDebut)) || 1, 1, 9999);
+  return {
+    titre: String(e.titre || '').trim().slice(0, 80),
+    pageDebut: debut,
+    pageFin: borner(Math.round(Number(e.pageFin)) || debut, debut, 9999),
+  };
+}
+
+// Les pages d'un bloc de lecture (seulement si elles existent : les autres blocs ne changent pas).
+function normaliserPagesBloc(b) {
+  const x = {};
+  if (Number.isInteger(b.pages) && b.pages >= 0 && b.pages <= 9999) x.pages = b.pages;
+  if (Number.isInteger(b.page) && b.page >= 0 && b.page <= 9999) x.page = b.page;
+  if (b.manuel === true) x.manuel = true;
+  return x;
 }
 
 // Le "rythme prévu" d'une échéance : { depuis: "AAAA-MM-JJ", prevu: { "AAAA-MM-JJ": minutes } }
@@ -1371,11 +1407,59 @@ function nomTravail(e) {
 // "le test de Chimie" / "l'examen d'Anglais"
 function nomEcheanceLong(e) {
   const nom = nomMatiere(e.matiereId);
+  if (e.type === 'lecture') return e.titre ? `la lecture « ${e.titre} »` : `la lecture ${de(nom)}`;
   return e.type === 'examen' ? `l'examen ${de(nom)}` : `le test ${de(nom)}`;
 }
 // "Chimie – test jeudi"
 function nomEcheanceCourt(e, jour = aujourdhui()) {
-  return `${nomMatiere(e.matiereId)} – ${e.type} ${quandCourt(e.date, jour)}`;
+  return `${titreEcheance(e)} – ${e.type} ${quandCourt(e.date, jour)}`;
+}
+
+/* ---------- Les lectures (livres à lire pour l'école) ----------
+   Une lecture se compte en PAGES. Pour la caser dans ton temps dispo, l'appli
+   convertit les pages en minutes avec ta vitesse de lecture (2 min par page au
+   départ, puis ta vraie vitesse, mesurée quand tu lis avec le chrono). */
+function estLecture(e) {
+  return Boolean(e) && e.type === 'lecture';
+}
+// Le nom principal : le titre du livre pour une lecture, sinon la matière.
+function titreEcheance(e) {
+  if (estLecture(e)) return e.titre || `Lecture ${de(nomMatiere(e.matiereId))}`;
+  return nomMatiere(e.matiereId);
+}
+// "Test", "Examen" ou "Lecture"
+function nomType(e) {
+  return { test: 'Test', examen: 'Examen', lecture: 'Lecture' }[e.type] || 'Test';
+}
+function pagesTotal(e) {
+  return Math.max(0, e.pageFin - e.pageDebut + 1);
+}
+// Pages lues (en tout, ou seulement avant / pendant un jour donné).
+function pagesLues(e, d = donnees, filtre = () => true) {
+  return d.blocs.filter(b => b.echeanceId === e.id && b.pages > 0 && filtre(b)).reduce((s, b) => s + b.pages, 0);
+}
+// La page où tu en es (0 si pas commencé à la page 1).
+function pageActuelle(e, d = donnees) {
+  return Math.min(e.pageFin, e.pageDebut - 1 + pagesLues(e, d));
+}
+// Ta vitesse de lecture (minutes par page) : la moyenne de tes 5 dernières lectures
+// chronométrées (au moins 2, avec au moins 3 pages chacune), sinon le réglage.
+function vitesseLecture(d = donnees) {
+  const lectures = new Set(d.echeances.filter(estLecture).map(e => e.id));
+  const sessions = d.blocs
+    .filter(b => lectures.has(b.echeanceId) && !b.manuel && b.pages >= 3)
+    .sort((x, y) => (x.debut || 0) - (y.debut || 0))
+    .slice(-5);
+  const parDefaut = d.reglages.minutesParPage || 2;
+  if (sessions.length < 2) return parDefaut;
+  const minutes = sessions.reduce((s, b) => s + b.minutes, 0);
+  const pages = sessions.reduce((s, b) => s + b.pages, 0);
+  return borner(Math.round(minutes / pages * 10) / 10, 0.5, 6);
+}
+// La vitesse vient-elle de tes vraies lectures (true) ou du réglage (false) ?
+function vitesseMesuree(d = donnees) {
+  const lectures = new Set(d.echeances.filter(estLecture).map(e => e.id));
+  return d.blocs.filter(b => lectures.has(b.echeanceId) && !b.manuel && b.pages >= 3).length >= 2;
 }
 // Total des minutes déjà travaillées pour une échéance.
 function minutesFaites(echeanceId) {
@@ -1407,7 +1491,9 @@ function ecrireChemin(objet, chemin, valeur) {
 
 // Temps d'étude total estimé pour une échéance (en minutes) :
 // temps = temps de base (selon le type et le niveau) × (0,5 + 0,25 × chapitres) × difficulté perso
-function tempsEstime(e, r = donnees.reglages, coef = 1) {
+function tempsEstime(e, r = donnees.reglages, coef = 1, vitesse = null) {
+  // Une lecture : nombre de pages × minutes par page (pas de difficulté perso).
+  if (e.type === 'lecture') return Math.max(0, Math.round(pagesTotal(e) * (vitesse || r.minutesParPage || 2)));
   const bases = r.tempsBase[e.type] || r.tempsBase.test;
   const base = bases[(e.niveau || 1) - 1] || 0;
   const facteur = r.coefBase + r.coefChapitre * (e.chapitres || 0);
@@ -1416,6 +1502,7 @@ function tempsEstime(e, r = donnees.reglages, coef = 1) {
 
 // Même calcul pour une échéance des vraies données (avec le coefficient de sa matière).
 function tempsEcheance(e) {
+  if (estLecture(e)) return tempsEstime(e, donnees.reglages, 1, vitesseLecture());
   return tempsEstime(e, donnees.reglages, coefMatiere(e.matiereId));
 }
 
@@ -1507,12 +1594,14 @@ function capaciteDuJour(cle, r = donnees.reglages) {
 // Combien de jours avant la date on peut commencer à réviser.
 // "Par cœur" commence plus tôt (7 jours de plus par défaut).
 function dureeFenetre(e, r) {
+  if (e.type === 'lecture') return 3650;   // une lecture se commence tout de suite
   return (r.joursAvant[e.type] || 7) + (e.travail === 'parcoeur' ? (r.joursEnPlusParCoeur || 0) : 0);
 }
 
 // "Poids" d'un jour pour une échéance : 1 le premier jour possible,
 // puis ça augmente jusqu'à 3 la veille (avec le réglage "progression" = 3).
 function poidsDuJour(cle, e, r) {
+  if (e.type === 'lecture') return 1;     // une lecture : un peu chaque jour, régulièrement
   const L = dureeFenetre(e, r);           // 7 jours (test) ou 21 jours (examen), plus pour "par cœur"
   const k = ecartJours(cle, e.date);      // 1 = la veille, L = le premier jour possible
   if (L <= 1) return 1;
@@ -1522,7 +1611,7 @@ function poidsDuJour(cle, e, r) {
 // Ordre de priorité : la date la plus proche d'abord.
 function comparerPriorite(a, b) {
   if (a.date !== b.date) return a.date < b.date ? -1 : 1;
-  if (a.type !== b.type) return a.type === 'examen' ? -1 : 1;
+  if (a.type !== b.type) return ({ examen: 0, test: 1, lecture: 2 })[a.type] - ({ examen: 0, test: 1, lecture: 2 })[b.type];
   if (a.niveau !== b.niveau) return b.niveau - a.niveau;
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
@@ -1556,12 +1645,16 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
   const coefs = coefsDifficulte(d.blocs, d.echeances);
 
   // a) Minutes déjà travaillées pour chaque échéance : avant aujourd'hui, et aujourd'hui.
+  //    (une lecture compte ses PAGES lues, converties en minutes avec ta vitesse de lecture)
+  const vitesse = vitesseLecture(d);
+  const lectures = new Set(d.echeances.filter(estLecture).map(e => e.id));
+  const valeurBloc = b => (lectures.has(b.echeanceId) ? (b.pages || 0) * vitesse : b.minutes);
   const faitAvant = {};
   const faitAujourdhui = {};
   for (const b of d.blocs) {
     if (!b.echeanceId) continue;
-    if (b.date < jour) faitAvant[b.echeanceId] = (faitAvant[b.echeanceId] || 0) + b.minutes;
-    else if (b.date === jour) faitAujourdhui[b.echeanceId] = (faitAujourdhui[b.echeanceId] || 0) + b.minutes;
+    if (b.date < jour) faitAvant[b.echeanceId] = (faitAvant[b.echeanceId] || 0) + valeurBloc(b);
+    else if (b.date === jour) faitAujourdhui[b.echeanceId] = (faitAujourdhui[b.echeanceId] || 0) + valeurBloc(b);
   }
 
   // b) Les échéances à préparer (pas terminées, date après aujourd'hui), la plus proche d'abord.
@@ -1569,8 +1662,8 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
     .filter(e => !e.terminee && e.date > jour)
     .sort(comparerPriorite)
     .map(e => {
-      const coef = coefs[e.matiereId] || 1;
-      const total = tempsEstime(e, r, coef);
+      const coef = estLecture(e) ? 1 : (coefs[e.matiereId] || 1);
+      const total = tempsEstime(e, r, coef, vitesse);
       const avant = faitAvant[e.id] || 0;
       return {
         echeance: e,
@@ -1654,7 +1747,7 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
       for (const [j, minutes] of Object.entries(ref.prevu)) if (j >= ref.depuis && j < jour) attendu += minutes;
       const fait = d.blocs
         .filter(b => b.echeanceId === i.echeance.id && b.date >= ref.depuis && b.date < jour)
-        .reduce((s, b) => s + b.minutes, 0);
+        .reduce((s, b) => s + valeurBloc(b), 0);
       const retard = Math.min(attendu - fait, i.restant);
       if (retard >= W && joursUtiles > 0) {
         const parJour = Math.ceil(retard / joursUtiles / 5) * 5;   // arrondi aux 5 min au-dessus
@@ -1692,7 +1785,7 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
   const parId = {};
   for (const i of infos) parId[i.echeance.id] = i;
 
-  return { jour, W, capaciteAujourdhui: capacites[jour], infos, lignesDuJour, semaine, alertes, parId };
+  return { jour, W, vitesse, capaciteAujourdhui: capacites[jour], infos, lignesDuJour, semaine, alertes, parId };
 }
 
 // Retient le "rythme prévu" de chaque échéance tant que tu es à jour.
@@ -1978,6 +2071,16 @@ function badgesMerites(d, jour = aujourdhui()) {
   }
   const reussis = resultatsAvecEtude(d).filter(x => x.atteint).map(x => x.echeance.termineeLe || x.echeance.date).sort();
   if (reussis.length) gagnes.objectif = reussis[0];
+  const livres = [];
+  for (const e of d.echeances.filter(estLecture)) {
+    let cumul = 0;
+    for (const b of blocs.filter(x => x.echeanceId === e.id && x.pages > 0)) {
+      cumul += b.pages;
+      if (cumul >= pagesTotal(e)) { livres.push(b.date); break; }
+    }
+    if (e.terminee && e.termineeLe && e.termineeLe <= jour) livres.push(e.termineeLe);
+  }
+  if (livres.length) gagnes['livre-fini'] = livres.sort()[0];
   // Semaine parfaite : une semaine finie, avec au moins 3 blocs prévus, et tous faits.
   for (const lundi of [...new Set(Object.keys(d.planJours).map(lundiDe))].sort()) {
     if (ajouterJours(lundi, 6) >= jour) continue;   // semaine pas encore finie
@@ -2024,6 +2127,17 @@ function estVeille(e, jour = aujourdhui()) {
 // La checklist de révision rapide de la veille, faite à partir de tes blocs et de tes notes.
 function checklistVeille(e) {
   const blocs = blocsDe(e.id);
+  if (estLecture(e)) {
+    const reste = e.pageFin - pageActuelle(e);
+    const notesLecture = blocs.filter(b => b.note);
+    const liste = [];
+    if (reste > 0) liste.push({ id: 'reste', texte: `Finir les ${pluriel(reste, 'page')} qui restent (jusqu'à la page ${e.pageFin})` });
+    if (notesLecture.length) liste.push({ id: 'notes', texte: `Relire mes notes de lecture (${notesLecture.length})`, details: notesLecture.slice(0, 5).map(b => `« ${b.note} »`) });
+    liste.push({ id: 'resume', texte: 'Résumer le livre en 5 lignes (personnages, idées principales)' });
+    liste.push({ id: 'affaires', texte: 'Mettre le livre dans mon sac 🎒' });
+    liste.push({ id: 'dormir', texte: 'Me coucher tôt 😴' });
+    return liste;
+  }
   const notes = blocs.filter(b => b.note);
   const durs = blocs.filter(b => b.ressenti === 'dur');
   const methodes = {
@@ -2222,6 +2336,7 @@ function carteRessenti() {
   const b = donnees.aEvaluer ? donnees.blocs.find(x => x.id === donnees.aEvaluer) : null;
   if (!b) return '';
   const e = b.echeanceId ? trouverEcheance(b.echeanceId) : null;
+  if (estLecture(e)) return carteLecture(b, e);
   const sujet = e ? nomEcheanceCourt(e) : (b.matiereId ? nomMatiere(b.matiereId) : 'Étude libre');
   const boutons = Object.entries(RESSENTIS).map(([cle, r]) =>
     `<button class="btn" data-action="ressenti" data-valeur="${cle}" type="button"><span class="emoji" aria-hidden="true">${r.emoji}</span>${r.nom}</button>`).join('');
@@ -2235,6 +2350,28 @@ function carteRessenti() {
       </label>
       <div class="ressentis">${boutons}</div>
       <button class="lien" data-action="ressenti" data-valeur="" type="button">Passer</button>
+    </section>`;
+}
+
+// Après un bloc de lecture : "Tu es arrivé(e) à quelle page ?"
+let brouillonPage = '';   // la page tapée (gardée si l'écran se redessine)
+function carteLecture(b, e) {
+  const avant = pageActuelle(e);
+  const proposee = Math.min(e.pageFin, Math.max(avant, e.pageDebut - 1) + Math.round(b.minutes / vitesseLecture()));
+  return `<section class="carte ressenti" aria-label="Pages lues">
+      <div class="ressenti-tete">
+        <span class="illu-petite">${ic('livre')}</span>
+        <div><h2>Bloc de lecture terminé !</h2><p class="aide">${echapper(titreEcheance(e))} · ${b.minutes} min</p></div>
+      </div>
+      <label class="champ">Tu es arrivé(e) à quelle page ?
+        <input type="number" class="page-lecture" inputmode="numeric" min="${avant}" max="${e.pageFin}" value="${echapper(brouillonPage || String(proposee))}">
+      </label>
+      <p class="aide" style="margin:-8px 0 16px">${avant >= e.pageDebut ? `Tu en étais à la page ${avant}` : `Tu as commencé à la page ${e.pageDebut}`} · le livre va jusqu'à la page ${e.pageFin}.</p>
+      <label class="champ">Une note pour la prochaine fois <span class="facultatif">(facultatif)</span>
+        <input type="text" class="note-bloc" maxlength="120" value="${echapper(brouillonNote)}" placeholder="ex : chapitre 4, le renard" autocomplete="off" enterkeyhint="done">
+      </label>
+      <button class="btn btn-principal btn-plein" data-action="pages-lues" type="button">${ic('check')} Enregistrer ma page</button>
+      <button class="lien" data-action="passer-lecture" type="button">Passer</button>
     </section>`;
 }
 
@@ -2314,8 +2451,37 @@ function carteHeros(plan) {
   return herosRepos(plan);
 }
 
+// L'objectif de lecture d'aujourd'hui : de quelle page à quelle page.
+function objectifLecture(l, plan) {
+  const e = l.info.echeance;
+  const avant = e.pageDebut - 1 + pagesLues(e, donnees, b => b.date < plan.jour);
+  const luAujourdhui = pagesLues(e, donnees, b => b.date === plan.jour);
+  const cible = Math.min(e.pageFin, avant + Math.ceil(l.prevus * plan.W / plan.vitesse - 1e-9));
+  const actuelle = Math.min(e.pageFin, avant + luAujourdhui);
+  return { de: actuelle + 1, a: cible, reste: Math.max(0, cible - actuelle), luAujourdhui };
+}
+
+function herosLecture(l, plan) {
+  const e = l.info.echeance;
+  const o = objectifLecture(l, plan);
+  return `<section class="carte heros" style="${styleMatiereRiche(e.matiereId)}" aria-label="À lire maintenant">
+      <p class="heros-etiquette">${ic('livre')}À lire maintenant</p>
+      <button class="heros-tete" data-action="detail-echeance" data-id="${e.id}" type="button" aria-label="Détails : ${echapper(nomEcheanceLong(e))}">
+        <span><span class="heros-titre">${echapper(titreEcheance(e))}</span><span class="heros-sous">${echapper(nomMatiere(e.matiereId))} · à finir ${quandCourt(e.date, plan.jour)}</span></span>
+        ${ic('chevron')}
+      </button>
+      <div class="heros-infos">
+        <span class="puce-info">${ic('livre')}p. ${o.de} → ${o.a}</span>
+        <span class="puce-info">${ic('horloge')}${pluriel(o.reste, 'page')} · ≈ ${formaterDuree(o.reste * plan.vitesse)}</span>
+      </div>
+      <button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer · ${plan.W} min</button>
+      <button class="lien" data-action="j-ai-lu" data-id="${e.id}" type="button">J'ai lu sans chrono</button>
+    </section>`;
+}
+
 function herosBloc(l, plan) {
   const e = l.info.echeance;
+  if (estLecture(e)) return herosLecture(l, plan);
   const restants = l.prevus - l.faits;
   let points = '';
   for (let k = 0; k < l.prevus; k++) points += `<i class="${k < l.faits ? 'fait' : ''}"></i>`;
@@ -2361,6 +2527,12 @@ function herosAttente(c) {
     </section>`;
 }
 
+// Raccourcis "J'ai lu" pour les livres en cours (pour noter une lecture faite en dehors du plan).
+function liensJaiLu(plan) {
+  const livres = donnees.echeances.filter(e => estLecture(e) && !e.terminee && e.date >= plan.jour && pageActuelle(e) < e.pageFin).sort(comparerPriorite).slice(0, 2);
+  return livres.map(e => `<button class="lien" data-action="j-ai-lu" data-id="${e.id}" type="button">📖 J'ai lu : ${echapper(titreEcheance(e))}</button>`).join('');
+}
+
 // Tout le plan du jour est fait : un bel écran de fin de journée.
 function herosFini(plan) {
   const blocs = donnees.blocs.filter(b => b.date === plan.jour);
@@ -2381,6 +2553,7 @@ function herosFini(plan) {
       <span class="heros-sous">Tout ton plan d'aujourd'hui est fait : ${pluriel(blocs.length, 'bloc')} · ${formaterDuree(minutes)}. Bravo 👏</span>
       ${prochaine ? `<p class="aide">${prochaine}</p>` : ''}
       ${boutons}
+      ${liensJaiLu(plan)}
     </section>`;
 }
 
@@ -2400,6 +2573,7 @@ function herosRepos(plan) {
       <h2>Repos aujourd'hui 😌</h2>
       <p>Rien de prévu aujourd'hui.${prochaine ? ' ' + prochaine : ''}</p>
       <button class="btn btn-plein" data-action="aller-chrono" type="button">${ICONES.lecture} Faire un bloc quand même</button>
+      ${liensJaiLu(plan)}
     </section>`;
 }
 
@@ -2410,8 +2584,8 @@ function bandeauxDuJour(plan) {
   for (const e of donnees.echeances.filter(x => x.date === jour && !x.terminee)) {
     h += `<div class="bandeau info-jour" style="${styleMatiereRiche(e.matiereId)}">
         ${ic('cible')}
-        <span class="texte"><strong>C'est aujourd'hui</strong> · ${echapper(nomEcheanceLong(e))}. Bonne chance !</span>
-        <button class="btn btn-petit" data-action="test-passe" data-id="${e.id}" type="button">${ic('check')}Passé</button>
+        <span class="texte"><strong>C'est aujourd'hui</strong> · ${echapper(nomEcheanceLong(e))}. ${estLecture(e) ? 'Dernier jour !' : 'Bonne chance !'}</span>
+        <button class="btn btn-petit" data-action="test-passe" data-id="${e.id}" type="button">${ic('check')}${estLecture(e) ? 'Finie' : 'Passé'}</button>
       </div>`;
   }
   for (const e of donnees.echeances.filter(x => estVeille(x, jour))) {
@@ -2466,7 +2640,7 @@ function carteBienvenue() {
   return `<section class="carte etat-vide bienvenue">
       <div class="illu">${ic('calendrier')}</div>
       <h2>Bienvenue !</h2>
-      <p>Ajoute tes tests et tes examens : chaque jour, l'appli te dit quoi réviser et combien de temps.</p>
+      <p>Ajoute tes tests, tes examens et tes livres à lire : chaque jour, l'appli te dit quoi faire et combien de temps.</p>
       <div class="etapes"><span><b>1</b>Tes matières</span><span><b>2</b>Tes tests</span><span><b>3</b>Lance un bloc</span></div>
       <div class="pile">
         <button class="btn btn-principal btn-geant" data-action="ajouter-echeance" type="button">+ Ajouter un test ou un examen</button>
@@ -2497,10 +2671,14 @@ function lignePlan(l, plan) {
   const fini = restants === 0;
   let points = '';
   for (let k = 0; k < Math.max(l.prevus, l.faits); k++) points += `<i class="${k < l.faits ? 'fait' : ''}"></i>`;
-  const sous = fini
+  let sous = fini
     ? (l.prevus ? "✓ Fini pour aujourd'hui" : `✓ ${pluriel(l.faits, 'bloc')} en plus`)
     : `${capitaliser(e.type)} ${quandCourt(e.date, plan.jour)} · ${formaterDuree(restants * plan.W)}`;
-  const nom = echapper(nomMatiere(e.matiereId));
+  if (estLecture(e)) {
+    const o = objectifLecture(l, plan);
+    sous = fini ? `✓ ${pluriel(o.luAujourdhui, 'page')} lue${o.luAujourdhui > 1 ? 's' : ''} aujourd'hui` : `Lecture · p. ${o.de} → ${o.a}`;
+  }
+  const nom = echapper(titreEcheance(e));
   return `<li class="ligne-plan${fini ? ' finie' : ''}" style="${styleMatiereRiche(e.matiereId)}">
       <button class="ligne-corps" data-action="detail-echeance" data-id="${e.id}" type="button">
         <span class="barre-v" aria-hidden="true"></span>
@@ -2551,10 +2729,11 @@ function carteSemaine(plan) {
 
 function detailJourSemaine(s) {
   let contenu = s.echeancesDuJour.map(e =>
-    `<span class="puce puce-ech" style="${styleMatiere(e.matiereId)}">${ic('cible')}${e.type === 'examen' ? 'Examen' : 'Test'} ${echapper(de(nomMatiere(e.matiereId)))}</span>`).join('');
+    `<span class="puce puce-ech" style="${styleMatiere(e.matiereId)}">${estLecture(e) ? `${ic('livre')}Fin de lecture : ${echapper(titreEcheance(e))}` : `${ic('cible')}${nomType(e)} ${echapper(de(nomMatiere(e.matiereId)))}`}</span>`).join('');
   contenu += s.items.map(x => {
     const e = x.info.echeance;
     const doublon = s.items.filter(y => y.info.echeance.matiereId === e.matiereId).length > 1;
+    if (estLecture(e)) return `<span class="puce" style="${styleMatiere(e.matiereId)}">${echapper(titreEcheance(e))} · ≈ ${pluriel(Math.round(x.blocs * donnees.reglages.travail / vitesseLecture()), 'page')}</span>`;
     return `<span class="puce" style="${styleMatiere(e.matiereId)}">${echapper(nomMatiere(e.matiereId))}${doublon ? ` (${e.type})` : ''} · ${pluriel(x.blocs, 'bloc')}</span>`;
   }).join('');
   if (!contenu) contenu = `<span class="repos">Rien de prévu : repos 😌</span>`;
@@ -2600,7 +2779,7 @@ function afficherEcheances() {
     h += `<section class="carte etat-vide">
         <div class="illu">${ic('calendrier')}</div>
         <h2>Aucun test à venir</h2>
-        <p>Profites-en ! Dès que tu ajoutes un test ou un examen, l'appli prépare ton plan.</p>
+        <p>Profites-en ! Dès que tu ajoutes un test, un examen ou un livre à lire, l'appli prépare ton plan.</p>
         <button class="btn btn-principal btn-plein" data-action="ajouter-echeance" type="button">+ Ajouter un test ou un examen</button>
       </section>`;
   }
@@ -2616,23 +2795,24 @@ function afficherEcheances() {
 
 // Les petites étiquettes : TEST / EXAMEN, type de travail, passé.
 function badgesEcheance(e) {
-  let h = `<span class="badge badge-${e.type}">${e.type === 'examen' ? 'Examen' : 'Test'}</span>`;
+  let h = `<span class="badge badge-${e.type}">${nomType(e)}</span>`;
   if (e.travail && e.travail !== 'mixte') h += `<span class="badge badge-travail">${nomTravail(e)}</span>`;
-  if (e.terminee) h += `<span class="badge badge-passe">✓ Passé</span>`;
+  if (e.terminee) h += `<span class="badge badge-passe">${estLecture(e) ? '✓ Finie' : '✓ Passé'}</span>`;
   return `<span class="badges">${h}</span>`;
 }
 
 function carteEcheance(e, plan) {
-  const total = tempsEcheance(e);
-  const fait = minutesFaites(e.id);
+  const lecture = estLecture(e);
+  const total = lecture ? pagesTotal(e) : tempsEcheance(e);
+  const fait = lecture ? pagesLues(e) : minutesFaites(e.id);
   const ratio = total > 0 ? Math.min(1, fait / total) : 1;
   const pourcent = Math.round(ratio * 100);
   const centre = pourcent >= 100 ? ic('check') : `${pourcent}<small>%</small>`;
   return `<article class="carte echeance${e.terminee || e.date < plan.jour ? ' passee' : ''}" style="${styleMatiereRiche(e.matiereId)}"
         data-action="detail-echeance" data-id="${e.id}" role="button" tabindex="0" aria-label="Voir ${echapper(nomEcheanceLong(e))}, ${pourcent} % fait">
       <div class="ech-corps">
-        <div class="ech-haut"><span class="ech-matiere">${echapper(nomMatiere(e.matiereId))}</span><span class="badge badge-${e.type}">${e.type === 'examen' ? 'Examen' : 'Test'}</span></div>
-        <div class="ech-date">${capitaliser(dateCourte(e.date))} · ${delai(e.date, plan.jour)}</div>
+        <div class="ech-haut"><span class="ech-matiere">${echapper(titreEcheance(e))}</span><span class="badge badge-${e.type}">${nomType(e)}</span></div>
+        <div class="ech-date">${lecture ? `${echapper(nomMatiere(e.matiereId))} · à finir ${quandCourt(e.date, plan.jour)}` : `${capitaliser(dateCourte(e.date))} · ${delai(e.date, plan.jour)}`}</div>
         <div class="ech-puces">${pucesStatut(e, plan)}</div>
       </div>
       ${anneau(ratio, { taille: 58, epaisseur: 6, contenu: centre, classe: pourcent >= 100 ? 'complet' : '' })}
@@ -2642,8 +2822,14 @@ function carteEcheance(e, plan) {
 // Le statut en une ou deux pastilles courtes (la phrase complète est dans le détail).
 function pucesStatut(e, plan) {
   const puce = (classe, icone, texte) => `<span class="puce-statut${classe ? ' ' + classe : ''}">${icone ? ic(icone) : ''}${texte}</span>`;
+  const lecture = estLecture(e);
+  if (lecture && !e.terminee && e.date >= plan.jour) {
+    const lues = Math.min(pagesTotal(e), pagesLues(e));
+    if (lues >= pagesTotal(e)) return puce('ok', 'check', 'Livre fini !');
+  }
   if (e.terminee) {
-    let h = puce('ok', 'check', 'Passé');
+    let h = puce('ok', 'check', lecture ? 'Finie' : 'Passé');
+    if (lecture) return h + puce('', 'livre', `${Math.min(pagesTotal(e), pagesLues(e))}/${pluriel(pagesTotal(e), 'page')}`);
     if (e.resultat) h += puce('', 'cible', formaterNote(e.resultat.note, e.resultat.sur) + (e.resultat.objectif !== null && e.resultat.note >= e.resultat.objectif ? ' 🎯' : ''));
     return h;
   }
@@ -2660,6 +2846,11 @@ function pucesStatut(e, plan) {
   else if (i.retard && i.retard.visible) h += puce('alerte', 'sablier', `Retard · +${formaterDuree(i.retard.parJour)}/jour`);
   else if (i.zeroMarge) h += puce('alerte', 'alerte', 'Zéro marge');
   const resteAujourdhui = i.prevuAujourdhui - i.faitsAujourdhui;
+  if (lecture) h += puce('', 'livre', `${pagesLues(e)}/${pluriel(pagesTotal(e), 'page')}`);
+  if (resteAujourdhui > 0 && lecture) {
+    const ligne = plan.lignesDuJour.find(l => l.info === i);
+    return h + puce('auj', 'eclair', `Aujourd'hui · ${pluriel(ligne ? objectifLecture(ligne, plan).reste : 0, 'page')}`);
+  }
   if (resteAujourdhui > 0) return h + puce('auj', 'eclair', `Aujourd'hui · ${pluriel(resteAujourdhui, 'bloc')}`);
   const prochain = Object.keys(i.futur).filter(j => i.futur[j] > 0).sort()[0];
   if (prochain) return h + puce('', 'calendrier', `Prochaine séance : ${quandCourt(prochain, plan.jour)}`);
@@ -2677,7 +2868,8 @@ function texteResultat(r) {
 // La phrase complète du statut (dans le détail d'une échéance).
 function statutEcheance(e, plan) {
   if (e.terminee) return `<div class="ech-statut ech-ok">✓ Rangé dans l'historique${e.termineeLe ? ` (${dateCourte(e.termineeLe)})` : ''}</div>`;
-  if (e.date === plan.jour) return `<div class="ech-statut">📌 C'est aujourd'hui, bonne chance !</div>`;
+  if (e.date === plan.jour) return `<div class="ech-statut">📌 ${estLecture(e) ? "C'est le dernier jour !" : "C'est aujourd'hui, bonne chance !"}</div>`;
+  if (estLecture(e) && pagesLues(e) >= pagesTotal(e)) return `<div class="ech-statut ech-ok">✓ Livre fini, bravo !</div>`;
   const i = plan.parId[e.id];
   if (!i) return '';
   if (i.manque > 0) return `<div class="ech-statut ech-alerte">⚠️ Pas assez de temps : il manque ${formaterDuree(i.manque * plan.W)}</div>`;
@@ -2687,8 +2879,14 @@ function statutEcheance(e, plan) {
   }
   if (i.zeroMarge) return `<div class="ech-statut ech-alerte">🟡 Zéro marge : si tu sautes un jour, tu seras en retard</div>`;
   const resteAujourdhui = i.prevuAujourdhui - i.faitsAujourdhui;
+  const ligne = estLecture(e) ? plan.lignesDuJour.find(l => l.info === i) : null;
+  if (resteAujourdhui > 0 && ligne) {
+    const o = objectifLecture(ligne, plan);
+    return `<div class="ech-statut">📅 Aujourd'hui : ${pluriel(o.reste, 'page')} à lire (p. ${o.de} → ${o.a})</div>`;
+  }
   if (resteAujourdhui > 0) return `<div class="ech-statut">📅 Aujourd'hui : ${pluriel(resteAujourdhui, 'bloc')} à faire</div>`;
   const prochain = Object.keys(i.futur).filter(j => i.futur[j] > 0).sort()[0];
+  if (prochain && estLecture(e)) return `<div class="ech-statut">📅 Prochaine séance : ${quandCourt(prochain, plan.jour)} (≈ ${pluriel(Math.round(i.futur[prochain] * plan.W / plan.vitesse), 'page')})</div>`;
   if (prochain) return `<div class="ech-statut">📅 Prochaine séance : ${quandCourt(prochain, plan.jour)} (${pluriel(i.futur[prochain], 'bloc')})</div>`;
   if (i.total > 0) return `<div class="ech-statut ech-ok">✓ Révisions terminées, bravo !</div>`;
   return '';
@@ -2753,8 +2951,12 @@ function chronoAuRepos() {
   const options = ordre.map(e => {
     const n = reste(e);
     let details = `${capitaliser(e.type)} ${quandCourt(e.date, jour)}`;
-    if (n > 0) details += ` · ${pluriel(n, 'bloc')} prévu${n > 1 ? 's' : ''} aujourd'hui`;
-    return optionSujet(e.id, nomMatiere(e.matiereId), details, styleMatiere(e.matiereId), e.id === choix);
+    if (estLecture(e)) {
+      const ligne = plan.lignesDuJour.find(l => l.info.echeance.id === e.id);
+      const o = ligne ? objectifLecture(ligne, plan) : null;
+      details = `Lecture · ${o && o.reste > 0 ? `p. ${o.de} → ${o.a} aujourd'hui` : `page ${pageActuelle(e)} sur ${e.pageFin}`}`;
+    } else if (n > 0) details += ` · ${pluriel(n, 'bloc')} prévu${n > 1 ? 's' : ''} aujourd'hui`;
+    return optionSujet(e.id, titreEcheance(e), details, styleMatiere(e.matiereId), e.id === choix);
   }).join('') + optionSujet('', 'Étude libre', 'sans échéance', styleCouleur('#b0abff'), choix === '');
   const choisie = choix ? trouverEcheance(choix) : null;
 
@@ -2764,7 +2966,7 @@ function chronoAuRepos() {
         <div class="anneau-centre">
           <span class="chrono-phase">Prêt ?</span>
           <span class="chrono-temps">${formaterChrono(r.travail * 60000)}</span>
-          <span class="anneau-sous" id="repos-sujet">${echapper(choisie ? nomMatiere(choisie.matiereId) : 'Étude libre')}</span>
+          <span class="anneau-sous" id="repos-sujet">${echapper(choisie ? titreEcheance(choisie) : 'Étude libre')}</span>
         </div>
       </div>
       <button class="btn btn-principal btn-geant" data-action="demarrer" type="button">${ICONES.lecture} Démarrer · ${r.travail} min</button>
@@ -2847,9 +3049,11 @@ function resumeBlocsDuJour() {
     const nom = e ? nomEcheanceCourt(e, jour) : (b.matiereId ? nomMatiere(b.matiereId) : 'Étude libre');
     const ressenti = b.ressenti ? ` · ${RESSENTIS[b.ressenti].emoji} ${RESSENTIS[b.ressenti].nom}` : '';
     const note = b.note ? ` · « ${echapper(b.note)} »` : '';
+    const pages = b.pages !== undefined ? ` · 📖 +${pluriel(b.pages, 'page')}` : '';
+    const duree = b.manuel ? `≈ ${b.minutes} min (sans chrono)` : `${b.minutes} min`;
     return `<li style="${styleCouleur(b.matiereId ? couleurMatiere(b.matiereId) : '#b0abff')}">
         <span class="rond"></span>
-        <span class="texte">${echapper(nom)}<small>${heure(b.debut)} · ${b.minutes} min${ressenti}${note}</small></span>
+        <span class="texte">${echapper(nom)}<small>${b.manuel ? '' : heure(b.debut) + ' · '}${duree}${pages}${ressenti}${note}</small></span>
         <button class="supprimer-bloc" data-action="supprimer-bloc" data-id="${b.id}" type="button" aria-label="Supprimer ce bloc">${ic('fermer')}</button>
       </li>`;
   }).join('');
@@ -2965,6 +3169,7 @@ function carteCalendrier(plan) {
       <div class="cal-legende">
         <span><i class="cal-ech" style="--couleur:var(--texte-2)"></i>test</span>
         <span><i class="cal-ech examen" style="--couleur:var(--texte-2)"></i>examen</span>
+        <span><i class="cal-ech lecture" style="--couleur:var(--texte-2)"></i>lecture</span>
         <span><span class="cal-barre"><i style="flex:1;--couleur:var(--texte-2)"></i></span>blocs prévus (ou faits)</span>
       </div>
     </section>
@@ -2985,7 +3190,7 @@ function detailJourCalendrier(j, plan) {
   for (const e of echs) {
     h += `<button class="ligne-cal" data-action="detail-echeance" data-id="${e.id}" type="button" style="${styleMatiere(e.matiereId)}">
         ${ic('cible')}
-        <span class="texte">${e.type === 'examen' ? 'Examen' : 'Test'} ${echapper(de(nomMatiere(e.matiereId)))}${e.terminee ? ' (passé)' : ''}</span>
+        <span class="texte">${estLecture(e) ? `Fin de lecture : ${echapper(titreEcheance(e))}${e.terminee ? ' (finie)' : ''}` : `${nomType(e)} ${echapper(de(nomMatiere(e.matiereId)))}${e.terminee ? ' (passé)' : ''}`}</span>
         ${ic('chevron', 'chevron')}
       </button>`;
   }
@@ -2994,7 +3199,7 @@ function detailJourCalendrier(j, plan) {
       .map(i => ({ i, n: j === plan.jour ? i.prevuAujourdhui : (i.futur[j] || 0) }))
       .filter(x => x.n > 0);
     h += prevus.length
-      ? `<p class="aide">Prévu :</p><div class="puces" style="margin-top:6px">${prevus.map(x => `<span class="puce" style="${styleMatiere(x.i.echeance.matiereId)}">${echapper(nomMatiere(x.i.echeance.matiereId))} (${x.i.echeance.type}) · ${pluriel(x.n, 'bloc')}</span>`).join('')}</div>`
+      ? `<p class="aide">Prévu :</p><div class="puces" style="margin-top:6px">${prevus.map(x => `<span class="puce" style="${styleMatiere(x.i.echeance.matiereId)}">${estLecture(x.i.echeance) ? `${echapper(titreEcheance(x.i.echeance))} · ≈ ${pluriel(Math.round(x.n * plan.W / plan.vitesse), 'page')}` : `${echapper(nomMatiere(x.i.echeance.matiereId))} (${x.i.echeance.type}) · ${pluriel(x.n, 'bloc')}`}</span>`).join('')}</div>`
       : `<p class="aide">Rien de prévu ce jour-là.</p>`;
   }
   if (j <= plan.jour) {
@@ -3074,6 +3279,7 @@ function afficherStats() {
   const L = largeurGraphique();
   h += carteSerie(jour);
   h += carteParMatiere(jour, L);
+  h += carteLectures(jour);
   h += carte30Jours(jour, L);
   h += carteNotes(L);
   h += carteEtudeEtNotes(L);
@@ -3129,6 +3335,31 @@ function carteParMatiere(jour, L) {
     lignes.map(x => ({ nom: nomCourtId(x.id), couleur: couleurId(x.id), valeur: x.minutes, texte: formaterDuree(x.minutes) })),
     L, `Temps d'étude par matière ${quand}`);
   return h + `</section>`;
+}
+
+// Mes lectures : pages lues cette semaine, et où tu en es dans chaque livre.
+function carteLectures(jour) {
+  const livres = donnees.echeances
+    .filter(e => estLecture(e) && (!e.terminee || (e.termineeLe && e.termineeLe >= ajouterJours(jour, -30))))
+    .sort((a, b) => (a.terminee !== b.terminee ? (a.terminee ? 1 : -1) : a.date < b.date ? -1 : 1));
+  if (!livres.length) return '';
+  const lundi = lundiDe(jour);
+  const tousLivres = donnees.echeances.filter(estLecture);
+  const semaine = tousLivres.reduce((s, e) => s + pagesLues(e, donnees, b => b.date >= lundi && b.date <= jour), 0);
+  const mois = tousLivres.reduce((s, e) => s + pagesLues(e, donnees, b => b.date >= jour.slice(0, 8) + '01' && b.date <= jour), 0);
+  const lignes = livres.map(e => {
+    const total = pagesTotal(e);
+    const lues = Math.min(total, pagesLues(e));
+    const pourcent = total ? Math.round(lues / total * 100) : 100;
+    return `<li style="${styleMatiereRiche(e.matiereId)}">
+        ${anneau(total ? lues / total : 1, { taille: 46, epaisseur: 5, contenu: pourcent >= 100 ? ic('check') : `${pourcent}<small>%</small>`, classe: pourcent >= 100 ? 'complet' : '' })}
+        <span class="texte"><strong>${echapper(titreEcheance(e))}</strong><small>${lues}/${pluriel(total, 'page')} · ${e.terminee ? 'finie' : `à finir ${quandCourt(e.date, jour)}`}</small></span>
+      </li>`;
+  }).join('');
+  return `<section class="carte"><div class="carte-titre"><h2>${ic('livre')}Mes lectures</h2><span class="etiquette">${pluriel(semaine, 'page')} cette semaine</span></div>
+      <ul class="liste-livres">${lignes}</ul>
+      <p class="aide">${pluriel(mois, 'page')} lue${mois > 1 ? 's' : ''} ce mois-ci · vitesse : ${formaterDecimal(vitesseLecture())} min par page${vitesseMesuree() ? ' (mesurée avec le chrono)' : ''}.</p>
+    </section>`;
 }
 
 // Barres horizontales : une ligne par matière (nom à gauche, valeur au bout de la barre).
@@ -3456,6 +3687,12 @@ function afficherReglages() {
         ${ligneReglage('joursEnPlusParCoeur', 'Par cœur', 'commence plus tôt de', 1, 0, 30, 'plusjours')}
         ${ligneReglage('blocsParSession', 'Exercices', "blocs d'affilée minimum", 1, 1, 4, 'blocs')}
         <p class="aide">Avec × ${formaterDecimal(r.progression)}, la veille on étudie ${formaterDecimal(r.progression)} fois plus que le premier jour. « Par cœur » : 1 bloc par jour sur plus de jours. « Exercices » : des séances d'au moins ${pluriel(r.blocsParSession, 'bloc')} d'affilée.</p>
+        <h3>Lecture</h3>
+        ${ligneReglage('minutesParPage', 'Vitesse de départ', 'minutes pour lire une page', 0.5, 0.5, 6, 'minpage')}
+        <p class="aide">${vitesseMesuree()
+          ? `Ta vitesse mesurée avec le chrono : <strong>${formaterDecimal(vitesseLecture())} min par page</strong> (environ ${Math.round(60 / vitesseLecture())} pages par heure). C'est elle qui est utilisée.`
+          : `Soit environ ${Math.round(60 / r.minutesParPage)} pages par heure. Dès que tu auras chronométré 2 lectures (en notant ta page), l'appli utilisera ta vraie vitesse.`}
+          Une lecture se répartit régulièrement, dès aujourd'hui et jusqu'à la veille.</p>
       </div>
     </details>`;
 
@@ -3502,6 +3739,7 @@ function formaterValeur(v, format) {
   if (format === 'avant') return `${v} j avant`;
   if (format === 'plusjours') return `+${v} j`;
   if (format === 'fois') return `× ${formaterDecimal(v)}`;
+  if (format === 'minpage') return `${formaterDecimal(v)} min`;
   return formaterDecimal(v);
 }
 
@@ -3677,6 +3915,7 @@ function erreurForm(message) {
 function ouvrirDetailEcheance(id) {
   const e = trouverEcheance(id);
   if (!e) return;
+  if (estLecture(e)) return ouvrirDetailLecture(e);
   const plan = planActuel();
   const coef = coefMatiere(e.matiereId);
   const total = tempsEcheance(e);
@@ -3724,6 +3963,67 @@ function ouvrirDetailEcheance(id) {
         ${e.terminee
           ? `<button class="btn btn-plein" data-action="remettre" data-id="${e.id}" type="button">↩ Remettre dans le plan</button>`
           : `<button class="btn btn-plein${active ? '' : ' btn-principal'}" data-action="test-passe" data-id="${e.id}" type="button">✓ ${e.type === 'examen' ? 'Examen' : 'Test'} passé</button>`}
+        <button class="btn btn-plein" data-action="modifier-echeance" data-id="${e.id}" type="button">Modifier</button>
+        <button class="btn btn-plein btn-danger" data-action="supprimer-echeance" data-id="${e.id}" type="button">Supprimer</button>
+        <button class="btn btn-plein" data-action="fermer" type="button">Fermer</button>
+      </div>
+    </div>`);
+}
+
+// Détail d'un livre : où tu en es, ta vitesse, tes séances de lecture.
+function ouvrirDetailLecture(e) {
+  const plan = planActuel();
+  const total = pagesTotal(e);
+  const lues = Math.min(total, pagesLues(e));
+  const ratio = total ? lues / total : 1;
+  const pourcent = Math.round(ratio * 100);
+  const reste = total - lues;
+  const vitesse = vitesseLecture();
+  const active = !e.terminee && e.date >= plan.jour;
+  const seances = blocsDe(e.id);
+  const liste = seances.length
+    ? `<ul class="liste-notes">${seances.map(b => `<li class="seance">
+          <span class="seance-texte">
+            <span class="quand">${capitaliser(dateCourte(b.date))} · ${b.pages !== undefined ? `+${pluriel(b.pages, 'page')}${b.page ? ` (jusqu'à la p. ${b.page})` : ''}` : 'pages pas notées'} · ${b.manuel ? `≈ ${b.minutes} min, sans chrono` : `${b.minutes} min`}</span>
+            ${b.note ? `<span class="texte-note">« ${echapper(b.note)} »</span>` : ''}
+          </span>
+          <button class="supprimer-bloc" data-action="supprimer-seance" data-id="${b.id}" type="button" aria-label="Supprimer cette séance de lecture">${ic('fermer')}</button>
+        </li>`).join('')}</ul>`
+    : `<p class="aide">Aucune séance de lecture pour l'instant.</p>`;
+
+  ouvrirFeuille(`<div class="detail" style="${styleMatiereRiche(e.matiereId)}">
+      <div class="detail-tete">
+        <span class="pastille-matiere" aria-hidden="true"></span>
+        <div class="detail-tete-texte">
+          <h2 class="detail-titre">${echapper(titreEcheance(e))}</h2>
+          <p class="detail-date">${echapper(nomMatiere(e.matiereId))} · à finir pour le ${dateLongue(e.date)} · ${delai(e.date, plan.jour)}</p>
+        </div>
+        ${badgesEcheance(e)}
+      </div>
+      <div class="detail-progres">
+        ${anneau(ratio, { taille: 84, epaisseur: 8, contenu: pourcent >= 100 ? ic('check') : `${pourcent}<small>%</small>`, classe: pourcent >= 100 ? 'complet' : '' })}
+        <div class="detail-chiffres">
+          <div><strong>${lues} / ${pluriel(total, 'page')}</strong><span>${lues ? `lues · tu es à la page ${pageActuelle(e)}` : 'pas encore commencé'}</span></div>
+          <div><strong>${reste ? `≈ ${formaterDuree(reste * vitesse)}` : 'Fini ✓'}</strong><span>${reste ? `de lecture pour les ${pluriel(reste, 'page')} qui restent` : 'bravo, tout est lu !'}</span></div>
+        </div>
+      </div>
+      <div class="puces-infos">
+        <span class="puce-info">${ic('livre')}Pages ${e.pageDebut} à ${e.pageFin}</span>
+        <span class="puce-info">${ic('horloge')}${formaterDecimal(vitesse)} min par page${vitesseMesuree() ? ' (ta vitesse)' : ''}</span>
+      </div>
+      ${e.note ? `<p class="ech-note">${ic('note')}<span>${echapper(e.note)}</span></p>` : ''}
+      ${statutEcheance(e, plan)}
+      ${estVeille(e, plan.jour) ? blocChecklist(e) : ''}
+      ${active && reste > 0 ? `<div class="pile" style="margin-top:16px">
+          <button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer un bloc de lecture</button>
+          <button class="btn btn-plein" data-action="j-ai-lu" data-id="${e.id}" type="button">${ic('livre')} J'ai lu sans chrono</button>
+        </div>` : ''}
+      <h3>Mes séances de lecture</h3>
+      ${liste}
+      <div class="pile" style="margin-top:18px">
+        ${e.terminee
+          ? `<button class="btn btn-plein" data-action="remettre" data-id="${e.id}" type="button">↩ Remettre dans le plan</button>`
+          : `<button class="btn btn-plein${active && reste > 0 ? '' : ' btn-principal'}" data-action="test-passe" data-id="${e.id}" type="button">✓ Lecture finie</button>`}
         <button class="btn btn-plein" data-action="modifier-echeance" data-id="${e.id}" type="button">Modifier</button>
         <button class="btn btn-plein btn-danger" data-action="supprimer-echeance" data-id="${e.id}" type="button">Supprimer</button>
         <button class="btn btn-plein" data-action="fermer" type="button">Fermer</button>
@@ -3784,6 +4084,18 @@ function blocResultat(e) {
 function marquerPassee(id) {
   const e = trouverEcheance(id);
   if (!e) return;
+  if (estLecture(e)) {
+    e.terminee = true;
+    e.termineeLe = aujourdhui();
+    e.rythme = null;
+    e.checklist = {};
+    sauvegarder();
+    fermerFeuille();
+    rafraichir();
+    afficherToast("📖 Lecture rangée dans l'historique ✓");
+    verifierBadges();
+    return;
+  }
   e.terminee = true;
   e.termineeLe = aujourdhui();
   e.rythme = null;
@@ -3791,6 +4103,147 @@ function marquerPassee(id) {
   sauvegarder();
   rafraichir();
   ouvrirFormResultat(id, true);   // (la feuille dit déjà "✓ Rangé dans l'historique")
+}
+
+/* ---------- Lecture : noter où tu en es (après un bloc, ou "J'ai lu" sans chrono) ---------- */
+
+// "J'ai lu sans chrono" : tu indiques la page où tu es arrivé(e).
+function ouvrirFormLecture(id) {
+  const e = trouverEcheance(id);
+  if (!estLecture(e)) return;
+  const avant = pageActuelle(e);
+  ouvrirFeuille(`<form id="form-lecture" data-id="${e.id}" novalidate style="${styleMatiereRiche(e.matiereId)}">
+      <h2>${echapper(titreEcheance(e))}</h2>
+      <p class="aide" style="margin:-6px 0 16px">${avant >= e.pageDebut ? `Tu en étais à la page ${avant}` : `Tu commences à la page ${e.pageDebut}`} · le livre va jusqu'à la page ${e.pageFin}.</p>
+      <label class="champ">J'en suis à la page
+        <input type="number" name="page" inputmode="numeric" min="${Math.max(avant + 1, e.pageDebut)}" max="${e.pageFin}" placeholder="ex : ${Math.min(e.pageFin, Math.max(avant, e.pageDebut - 1) + 15)}" autocomplete="off">
+      </label>
+      <label class="champ">Note <span class="facultatif">(facultatif)</span>
+        <input type="text" name="note" maxlength="120" placeholder="ex : chapitre 4, le renard" autocomplete="off">
+      </label>
+      <div class="estimation" id="apercu-lecture"><div class="aide">Ces pages comptent dans ton plan, ta série et tes stats (avec un temps estimé à ${formaterDecimal(vitesseLecture())} min par page).</div></div>
+      <p class="erreur" id="erreur-form" hidden></p>
+      <div class="pile">
+        <button type="submit" class="btn btn-principal btn-geant">${ic('check')} Enregistrer</button>
+        <button type="button" class="btn btn-plein" data-action="fermer">Annuler</button>
+      </div>
+    </form>`);
+}
+
+// Aperçu en direct : combien de pages, et le temps compté.
+function majApercuLecture() {
+  const form = document.getElementById('form-lecture');
+  const e = form && trouverEcheance(form.dataset.id);
+  if (!estLecture(e)) return;
+  const page = lireNombre(new FormData(form).get('page'));
+  const avant = pageActuelle(e);
+  const zone = document.getElementById('apercu-lecture');
+  if (!Number.isInteger(page) || page <= avant || page > e.pageFin) return;
+  const pages = page - avant;
+  zone.innerHTML = `<strong>+${pluriel(pages, 'page')}</strong> · ≈ ${formaterDuree(pages * vitesseLecture())} de lecture comptées
+    <div class="aide">${page === e.pageFin ? 'Et le livre est fini ! 🎉' : `Encore ${pluriel(e.pageFin - page, 'page')} ensuite.`}</div>`;
+}
+
+function enregistrerLecture(form) {
+  const e = trouverEcheance(form.dataset.id);
+  if (!estLecture(e)) return fermerFeuille();
+  const f = new FormData(form);
+  const page = lireNombre(f.get('page'));
+  const avant = pageActuelle(e);
+  if (page === null) return erreurForm('Indique la page où tu es arrivé(e).');
+  if (!Number.isInteger(page)) return erreurForm('Indique un numéro de page (un nombre entier).');
+  if (page > e.pageFin) return erreurForm(`Le livre s'arrête à la page ${e.pageFin}.`);
+  if (page < e.pageDebut) return erreurForm(`La lecture commence à la page ${e.pageDebut}.`);
+  if (page <= avant) return erreurForm(`Tu en étais déjà à la page ${avant}. (Pour corriger une erreur, supprime une séance dans le détail du livre.)`);
+  const pages = page - Math.max(avant, e.pageDebut - 1);
+  const note = String(f.get('note') || '').trim().slice(0, 120);
+  const jour = aujourdhui();
+  // Un bloc de lecture d'aujourd'hui où la page n'a pas été notée ("Passer") ? On le complète.
+  const sansPages = donnees.blocs.filter(b => b.echeanceId === e.id && b.date === jour && b.pages === undefined && !b.manuel).pop();
+  if (sansPages) {
+    Object.assign(sansPages, { pages, page, note: note || sansPages.note });
+    if (donnees.aEvaluer === sansPages.id) donnees.aEvaluer = null;
+  } else {
+    donnees.blocs.push({
+      id: nouvelId(), echeanceId: e.id, matiereId: e.matiereId, date: jour, debut: Date.now(),
+      minutes: Math.max(1, Math.round(pages * vitesseLecture())), ressenti: null, note, pages, page, manuel: true,
+    });
+  }
+  sauvegarder();
+  fermerFeuille();
+  rafraichir();
+  apresLecture(e, pages);
+}
+
+// Après un bloc de lecture chronométré : la page atteinte.
+function enregistrerPagesLues(bouton) {
+  const b = donnees.blocs.find(x => x.id === donnees.aEvaluer);
+  const e = b ? trouverEcheance(b.echeanceId) : null;
+  const carte = bouton.closest('.ressenti');
+  if (!b || !estLecture(e) || !carte) {
+    donnees.aEvaluer = null;
+    sauvegarder();
+    rafraichir();
+    return;
+  }
+  const page = Number(carte.querySelector('.page-lecture').value);
+  const avant = pageActuelle(e);
+  const minimum = Math.max(avant, e.pageDebut - 1);
+  if (!Number.isInteger(page) || page < minimum || page > e.pageFin) {
+    afficherToast(`⚠️ Indique une page entre ${minimum} et ${e.pageFin}`);
+    return;
+  }
+  b.pages = page - minimum;
+  b.page = page;
+  b.note = (carte.querySelector('.note-bloc').value || '').trim().slice(0, 120);
+  donnees.aEvaluer = null;
+  brouillonNote = '';
+  brouillonPage = '';
+  sauvegarder();
+  rafraichir();
+  apresLecture(e, b.pages);
+}
+
+// "Passer" : la page n'est pas notée (tu pourras le faire avec "J'ai lu").
+function passerLecture(bouton) {
+  const b = donnees.blocs.find(x => x.id === donnees.aEvaluer);
+  const champ = bouton.closest('.ressenti') && bouton.closest('.ressenti').querySelector('.note-bloc');
+  if (b && champ) b.note = champ.value.trim().slice(0, 120);
+  donnees.aEvaluer = null;
+  brouillonNote = '';
+  brouillonPage = '';
+  sauvegarder();
+  rafraichir();
+  afficherToast("OK. Tu pourras noter ta page plus tard avec « J'ai lu ».");
+}
+
+// Le message après une lecture, et si le livre est fini : bravo, et on propose de le ranger.
+async function apresLecture(e, pages) {
+  const reste = e.pageFin - pageActuelle(e);
+  if (reste > 0) {
+    afficherToast(`📖 ${pluriel(pages, 'page')} lue${pages > 1 ? 's' : ''} · encore ${pluriel(reste, 'page')}`);
+    verifierBadges();
+    return;
+  }
+  celebrer(couleurMatiere(e.matiereId));
+  vibrer([30, 60, 30]);
+  verifierBadges(true);
+  const ranger = await confirmer(`Bravo, tu as fini « ${titreEcheance(e)} » ! 🎉 Ranger cette lecture dans l'historique ?`, "Ranger dans l'historique");
+  if (ranger) marquerPassee(e.id);
+  else afficherToast('📖 Livre terminé ! Il reste dans tes échéances.');
+}
+
+// Supprimer une séance de lecture (depuis le détail du livre).
+async function supprimerSeance(id) {
+  const b = donnees.blocs.find(x => x.id === id);
+  if (!b) return;
+  const texte = b.pages !== undefined ? `+${pluriel(b.pages, 'page')}, ${b.minutes} min` : `${b.minutes} min`;
+  if (!(await confirmer(`Supprimer cette séance de lecture (${texte}) ?`, 'Supprimer', true))) return;
+  donnees.blocs = donnees.blocs.filter(x => x.id !== id);
+  if (donnees.aEvaluer === id) donnees.aEvaluer = null;
+  sauvegarder();
+  rafraichir();
+  if (b.echeanceId && trouverEcheance(b.echeanceId)) ouvrirDetailEcheance(b.echeanceId);
 }
 
 /* ---------- Ta note à un test ou un examen ---------- */
@@ -3956,8 +4409,8 @@ function ouvrirFormEcheance(id, preselection = {}) {
   const e = id ? trouverEcheance(id) : null;
   const v = e || {
     matiereId: preselection.matiereId || (donnees.matieres.length === 1 ? donnees.matieres[0].id : ''),
-    type: 'test',
-    date: ajouterJours(aujourdhui(), 7),
+    type: preselection.type || 'test',
+    date: ajouterJours(aujourdhui(), preselection.type === 'lecture' ? 14 : 7),
     niveau: 2,
     chapitres: 2,
     note: '',
@@ -3965,7 +4418,7 @@ function ouvrirFormEcheance(id, preselection = {}) {
   };
   const matieres = [...donnees.matieres].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
 
-  ouvrirFeuille(`<form id="form-echeance" data-id="${e ? e.id : ''}" novalidate>
+  ouvrirFeuille(`<form id="form-echeance" data-id="${e ? e.id : ''}" data-genre="${v.type === 'lecture' ? 'lecture' : 'etude'}" novalidate>
       <h2>${e ? "Modifier l'échéance" : 'Nouvelle échéance'}</h2>
       <fieldset>
         <legend>Matière</legend>
@@ -3978,9 +4431,20 @@ function ouvrirFormEcheance(id, preselection = {}) {
         <div class="segments">
           <label><input type="radio" name="type" value="test"${v.type === 'test' ? ' checked' : ''}><span>Test</span></label>
           <label><input type="radio" name="type" value="examen"${v.type === 'examen' ? ' checked' : ''}><span>Examen</span></label>
+          <label><input type="radio" name="type" value="lecture"${v.type === 'lecture' ? ' checked' : ''}><span>Lecture</span></label>
         </div>
       </fieldset>
-      <label class="champ">Date<input type="date" name="date" value="${v.date}" required></label>
+      <div class="seulement-lecture">
+        <label class="champ">Titre du livre <span class="facultatif">(facultatif)</span>
+          <input type="text" name="titre" maxlength="80" value="${echapper(v.titre || '')}" placeholder="ex : Le Petit Prince" autocomplete="off">
+        </label>
+        <div class="deux-champs">
+          <label class="champ">De la page<input type="number" name="pageDebut" value="${v.pageDebut || 1}" min="1" max="9999" inputmode="numeric"></label>
+          <label class="champ">À la page<input type="number" name="pageFin" value="${v.pageFin || ''}" min="1" max="9999" inputmode="numeric" placeholder="ex : 180"></label>
+        </div>
+      </div>
+      <label class="champ"><span class="seulement-etude">Date</span><span class="seulement-lecture">À finir pour le</span><input type="date" name="date" value="${v.date}" required></label>
+      <div class="seulement-etude">
       <fieldset>
         <legend>Niveau d'étude</legend>
         <div class="segments">
@@ -4000,6 +4464,7 @@ function ouvrirFormEcheance(id, preselection = {}) {
           <input type="number" name="chapitres" value="${v.chapitres}" min="1" max="99" inputmode="numeric" aria-label="Nombre de chapitres">
           <button type="button" data-action="chapitres-plus" aria-label="Un chapitre de plus">+</button>
         </div>
+      </div>
       </div>
       <label class="champ">Note <span class="facultatif">(facultatif)</span>
         <input type="text" name="note" maxlength="120" value="${echapper(v.note)}" placeholder="ex : chapitres 3 à 5" autocomplete="off">
@@ -4021,6 +4486,11 @@ function majEstimation() {
   if (!form) return;
   const f = new FormData(form);
   const r = donnees.reglages;
+  form.dataset.genre = f.get('type') === 'lecture' ? 'lecture' : 'etude';
+  if (f.get('type') === 'lecture') {
+    document.getElementById('estimation').innerHTML = estimationLecture(f);
+    return;
+  }
   const e = {
     matiereId: f.get('matiere'),
     type: f.get('type') === 'examen' ? 'examen' : 'test',
@@ -4044,6 +4514,24 @@ function majEstimation() {
   document.getElementById('estimation').innerHTML = texte;
 }
 
+// Lecture : combien de temps, et combien de pages par jour d'ici la date.
+function estimationLecture(f) {
+  const debut = parseInt(f.get('pageDebut'), 10) || 1;
+  const fin = parseInt(f.get('pageFin'), 10);
+  if (!(fin >= debut)) return `<div class="aide">Indique les pages à lire (ex : de la page 1 à la page 180) : l'appli les répartit sur les jours qui restent.</div>`;
+  const pages = fin - debut + 1;
+  const vitesse = vitesseLecture();
+  let texte = `<strong>${pluriel(pages, 'page')}</strong> · ≈ <strong>${formaterDuree(pages * vitesse)}</strong> de lecture
+    <div class="aide">À ${formaterDecimal(vitesse)} min par page${vitesseMesuree() ? ' (ta vitesse mesurée)' : ' (environ ' + Math.round(60 / vitesse) + ' pages par heure)'}.</div>`;
+  const date = f.get('date');
+  if (estCleDate(date)) {
+    const jours = ecartJours(aujourdhui(), date);
+    if (jours <= 0) texte += `<div class="aide">⚠️ Cette date est aujourd'hui ou déjà passée : rien ne sera planifié.</div>`;
+    else texte += `<div class="aide">Environ <strong>${pluriel(Math.ceil(pages / jours), 'page')} par jour</strong> dès aujourd'hui, jusqu'à la veille (si ton temps dispo le permet).</div>`;
+  }
+  return texte;
+}
+
 function changerChapitres(sens) {
   const champ = document.querySelector('#form-echeance input[name="chapitres"]');
   if (!champ) return;
@@ -4055,35 +4543,48 @@ function enregistrerEcheance(form) {
   const f = new FormData(form);
   const matiereId = f.get('matiere');
   const date = f.get('date');
-  const chapitres = parseInt(f.get('chapitres'), 10);
+  const lecture = f.get('type') === 'lecture';
+  const chapitres = lecture ? 1 : parseInt(f.get('chapitres'), 10);
   if (!matiereId) return erreurForm('Choisis une matière.');
+  let livre = null;
+  if (lecture) {
+    const debut = Number(f.get('pageDebut') || 1);
+    const fin = Number(f.get('pageFin'));
+    if (!(Number.isInteger(debut) && debut >= 1 && debut <= 9999)) return erreurForm('La première page doit être un nombre entier (1 si tu commences au début).');
+    if (!f.get('pageFin')) return erreurForm('Indique la dernière page à lire.');
+    if (!(Number.isInteger(fin) && fin >= debut && fin <= 9999)) return erreurForm(`La dernière page doit être un nombre entier, au moins ${debut}.`);
+    livre = { titre: String(f.get('titre') || '').trim().replace(/\s+/g, ' ').slice(0, 80), pageDebut: debut, pageFin: fin };
+  }
   if (!estCleDate(date)) return erreurForm('Choisis une date.');
   if (!(chapitres >= 1 && chapitres <= 99)) return erreurForm('Le nombre de chapitres doit être entre 1 et 99.');
 
   const valeurs = {
     matiereId,
-    type: f.get('type') === 'examen' ? 'examen' : 'test',
+    type: lecture ? 'lecture' : (f.get('type') === 'examen' ? 'examen' : 'test'),
     date,
-    niveau: borner(Number(f.get('niveau')) || 2, 1, 4),
+    niveau: lecture ? 1 : borner(Number(f.get('niveau')) || 2, 1, 4),
     chapitres,
     note: String(f.get('note') || '').trim(),
-    travail: Object.keys(TRAVAUX).includes(f.get('travail')) ? f.get('travail') : 'mixte',
+    travail: lecture ? 'mixte' : (Object.keys(TRAVAUX).includes(f.get('travail')) ? f.get('travail') : 'mixte'),
   };
   const id = form.dataset.id;
   if (id) {
     const e = trouverEcheance(id);
     // Si ce qui compte pour le plan change, on repart d'un rythme neuf (pas de faux retard).
-    const change = ['matiereId', 'type', 'date', 'niveau', 'chapitres', 'travail'].some(cle => e[cle] !== valeurs[cle]);
+    const change = ['matiereId', 'type', 'date', 'niveau', 'chapitres', 'travail'].some(cle => e[cle] !== valeurs[cle])
+      || (livre !== null && (e.pageDebut !== livre.pageDebut || e.pageFin !== livre.pageFin));
     if (e.date !== valeurs.date) e.checklist = {};   // nouvelle date : nouvelle veille
     Object.assign(e, valeurs);
+    if (livre) Object.assign(e, livre);
+    else { delete e.titre; delete e.pageDebut; delete e.pageFin; }
     if (change) e.rythme = null;
   } else {
-    donnees.echeances.push({ id: nouvelId(), ...valeurs, terminee: false, termineeLe: null, rythme: null, resultat: null, checklist: {} });
+    donnees.echeances.push(Object.assign({ id: nouvelId(), ...valeurs, terminee: false, termineeLe: null, rythme: null, resultat: null, checklist: {} }, livre || {}));
   }
   sauvegarder();
   fermerFeuille();
   rafraichir();
-  afficherToast(date <= aujourdhui() ? 'Enregistré (attention : date passée)' : (id ? 'Échéance modifiée ✓' : 'Échéance ajoutée ✓'));
+  afficherToast(date <= aujourdhui() ? 'Enregistré (attention : date passée)' : (id ? 'Échéance modifiée ✓' : (lecture ? '📖 Lecture ajoutée ✓' : 'Échéance ajoutée ✓')));
 }
 
 async function supprimerEcheance(id) {
@@ -4724,6 +5225,10 @@ const ACTIONS = {
   'concentration': () => entrerConcentration(),
   'quitter-concentration': () => quitterConcentration(),
   'note-resultat': id => ouvrirFormResultat(id),
+  'j-ai-lu': id => ouvrirFormLecture(id),
+  'pages-lues': (id, bouton) => enregistrerPagesLues(bouton),
+  'passer-lecture': (id, bouton) => passerLecture(bouton),
+  'supprimer-seance': id => supprimerSeance(id),
   'effacer-note': id => effacerNote(id),
 };
 
@@ -4763,12 +5268,15 @@ document.addEventListener('submit', ev => {
   if (ev.target.id === 'form-echeance') enregistrerEcheance(ev.target);
   if (ev.target.id === 'form-matiere') enregistrerMatiere(ev.target);
   if (ev.target.id === 'form-resultat') enregistrerResultat(ev.target);
+  if (ev.target.id === 'form-lecture') enregistrerLecture(ev.target);
 });
 
 // Changements dans les formulaires et les réglages.
 document.addEventListener('input', ev => {
   if (ev.target.closest('#form-echeance')) majEstimation();
   if (ev.target.closest('#form-resultat')) majApercuResultat();
+  if (ev.target.closest('#form-lecture')) majApercuLecture();
+  if (ev.target.classList.contains('page-lecture')) brouillonPage = ev.target.value;
   if (ev.target.classList.contains('note-bloc')) brouillonNote = ev.target.value;
 });
 document.addEventListener('change', ev => {
