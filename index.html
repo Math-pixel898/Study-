@@ -476,6 +476,7 @@ details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
 .serie-points i.fait { background: var(--phase); }
 .serie-points i.en-cours { background: var(--phase); animation: clignote 1.6s ease-in-out infinite; }
 @keyframes clignote { 50% { opacity: 0.35; } }
+.actions-lecture { margin: 0 0 14px; grid-template-columns: 2fr 1fr; }
 .derniere-note { display: flex; align-items: flex-start; justify-content: center; gap: 8px; margin: 0 auto 10px; max-width: 34ch; color: var(--texte-2); font-size: 15px; font-style: italic; overflow-wrap: anywhere; }
 .derniere-note .ic { margin-top: 2px; color: var(--phase); }
 .chrono-info { margin: 0 0 18px; color: var(--texte-2); font-size: 14.5px; }
@@ -2355,9 +2356,16 @@ function carteRessenti() {
 
 // Après un bloc de lecture : "Tu es arrivé(e) à quelle page ?"
 let brouillonPage = '';   // la page tapée (gardée si l'écran se redessine)
+let blocFiniEnAvance = null;   // bloc de lecture arrêté avec "J'ai fini mes pages" (on propose la page visée)
 function carteLecture(b, e) {
   const avant = pageActuelle(e);
-  const proposee = Math.min(e.pageFin, Math.max(avant, e.pageDebut - 1) + Math.round(b.minutes / vitesseLecture()));
+  let proposee = Math.min(e.pageFin, Math.max(avant, e.pageDebut - 1) + Math.round(b.minutes / vitesseLecture()));
+  if (blocFiniEnAvance === b.id) {
+    const plan = planActuel();
+    const ligne = plan.lignesDuJour.find(l => l.info.echeance.id === e.id);
+    const cible = ligne ? objectifLecture(ligne, plan).a : 0;
+    if (cible > avant) proposee = cible;
+  }
   return `<section class="carte ressenti" aria-label="Pages lues">
       <div class="ressenti-tete">
         <span class="illu-petite">${ic('livre')}</span>
@@ -2993,7 +3001,11 @@ function chronoActif(c) {
   }
   const e = c.echeanceId ? trouverEcheance(c.echeanceId) : null;
   const ligne = e ? planActuel().lignesDuJour.find(l => l.info.echeance.id === e.id) : null;
-  if (ligne && ligne.prevus) info += `<br>Pour cette échéance aujourd'hui : ${ligne.faits} fait${ligne.faits > 1 ? 's' : ''} sur ${ligne.prevus}`;
+  const lecture = estLecture(e) && c.phase === 'travail';
+  if (lecture && ligne && ligne.prevus) {
+    const o = objectifLecture(ligne, planActuel());
+    if (o.reste > 0) info += `<br>Objectif : lire jusqu'à la page ${o.a} (${pluriel(o.reste, 'page')})`;
+  } else if (ligne && ligne.prevus) info += `<br>Pour cette échéance aujourd'hui : ${ligne.faits} fait${ligne.faits > 1 ? 's' : ''} sur ${ligne.prevus}`;
   const derniere = e && c.phase === 'travail' ? derniereNote(e.id) : null;
 
   // Les points sous le temps : où tu en es avant la grande pause.
@@ -3017,6 +3029,10 @@ function chronoActif(c) {
         ${principal}
         <button class="commande" data-action="concentration" type="button" aria-label="Mode concentration (écran noir)"><span class="rond-cmd">${ic('lune')}</span>Concentration</button>
       </div>
+      ${lecture ? `<div class="pile actions-lecture">
+          <button class="btn btn-principal btn-plein" data-action="fini-lecture" type="button">${ic('check')} J'ai fini mes pages</button>
+          <button class="btn btn-plein" data-action="allonger-lecture" type="button">${ic('plus')} 5 min de plus</button>
+        </div>` : ''}
       ${c.phase !== 'travail' ? `<button class="btn btn-plein" data-action="passer-pause" type="button">${ICONES.suivant} Passer la pause</button>` : ''}`;
   }
 
@@ -4906,9 +4922,10 @@ async function arreter() {
   if (c.phase === 'travail') {
     const minutes = Math.floor(ecouleMs(c) / 60000);
     if (minutes >= 1) {
-      const choix = await choisir(`Tu as travaillé ${minutes} min sur ce bloc. On les garde ?`, [
-        { valeur: 'garder', texte: 'Garder ces minutes et arrêter', style: 'principal' },
-        { valeur: 'jeter', texte: 'Arrêter sans les garder', style: 'danger' },
+      const lectureEnCours = estLecture(trouverEcheance(c.echeanceId));
+      const choix = await choisir(lectureEnCours ? `Tu as lu ${minutes} min. On les garde ? (tu noteras ensuite ta page)` : `Tu as travaillé ${minutes} min sur ce bloc. On les garde ?`, [
+        { valeur: 'garder', texte: lectureEnCours ? 'Garder et noter ma page' : 'Garder ces minutes et arrêter', style: 'principal' },
+        { valeur: 'jeter', texte: lectureEnCours ? 'Arrêter sans rien compter' : 'Arrêter sans les garder', style: 'danger' },
         { valeur: null, texte: 'Continuer le bloc' },
       ]);
       if (!choix) return;
@@ -4925,6 +4942,44 @@ async function arreter() {
   majVerrouEcran();
   rafraichir();
   verifierBadges();
+}
+
+// Lecture : "J'ai fini mes pages" → le bloc s'arrête tout de suite, avec le vrai temps passé,
+// puis la pause commence et on te demande ta page (l'objectif est proposé).
+function finirBlocLecture() {
+  verifierChrono();
+  const c = donnees.chrono;
+  const e = c ? trouverEcheance(c.echeanceId) : null;
+  if (!c || c.phase !== 'travail' || !estLecture(e)) return;
+  const r = donnees.reglages;
+  const minutes = Math.max(1, Math.round(ecouleMs(c) / 60000));
+  const bloc = enregistrerBloc(c, minutes);
+  blocFiniEnAvance = bloc ? bloc.id : null;
+  c.blocsSerie += 1;
+  const longue = c.blocsSerie % r.blocsAvantPauseLongue === 0;
+  c.phase = longue ? 'pauseLongue' : 'pause';
+  c.dureeMs = (longue ? r.pauseLongue : r.pauseCourte) * 60000;
+  c.debut = Date.now();
+  c.dejaEcouleMs = 0;
+  sauvegarder();
+  quitterConcentration();
+  majVerrouEcran();
+  rafraichir();
+  celebrer(couleurMatiere(e.matiereId));
+  vibrer(30);
+  afficherToast(`✓ Lecture enregistrée (${minutes} min) · note ta page`);
+  verifierBadges();
+}
+
+// Lecture : pas fini à temps ? 5 minutes de plus sur ce bloc.
+function allongerBlocLecture() {
+  verifierChrono();
+  const c = donnees.chrono;
+  if (!c || c.phase !== 'travail' || !estLecture(trouverEcheance(c.echeanceId))) return;
+  c.dureeMs += 5 * 60000;
+  sauvegarder();
+  rafraichir();
+  afficherToast('+5 min de lecture ⏱');
 }
 
 function passerPause() {
@@ -5226,6 +5281,8 @@ const ACTIONS = {
   'quitter-concentration': () => quitterConcentration(),
   'note-resultat': id => ouvrirFormResultat(id),
   'j-ai-lu': id => ouvrirFormLecture(id),
+  'fini-lecture': () => finirBlocLecture(),
+  'allonger-lecture': () => allongerBlocLecture(),
   'pages-lues': (id, bouton) => enregistrerPagesLues(bouton),
   'passer-lecture': (id, bouton) => passerLecture(bouton),
   'supprimer-seance': id => supprimerSeance(id),
