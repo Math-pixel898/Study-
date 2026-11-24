@@ -407,6 +407,7 @@ details[open] > summary .chevron-bas { transform: rotate(180deg); }
 .badge-travail { background: var(--carte-3); color: var(--texte-2); }
 .badge-passe { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
 .badge-lecture { background: rgba(192, 132, 252, 0.16); color: #d8b4fe; }
+.badge-devoir { background: rgba(251, 191, 36, 0.15); color: #fcd34d; }
 .ech-note { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0 0; color: var(--texte-2); font-size: 14px; font-style: italic; overflow-wrap: anywhere; }
 .ech-note .ic { margin-top: 1px; color: var(--couleur, var(--texte-3)); }
 .ech-statut { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: var(--carte-2); font-size: 14px; font-weight: 650; }
@@ -605,6 +606,7 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .cal-ech { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--couleur); }
 .cal-ech.examen { width: 15px; border-radius: 3px; }
 .cal-ech.lecture { width: 8px; height: 8px; margin: 0 1px; border-radius: 2px; transform: rotate(45deg); }
+.cal-ech.devoir { width: 9px; height: 9px; border-radius: 1px; }
 .cal-barre { display: flex; gap: 2px; width: 80%; height: 4px; margin-top: auto; }
 .cal-barre i { min-width: 2px; height: 100%; border-radius: 2px; background: var(--couleur); }
 .cal-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 12px; color: var(--texte-2); font-size: 13px; }
@@ -709,7 +711,9 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .durees { margin: 0 0 12px; }
 
 /* ---------- Lectures (livres) ---------- */
-#form-echeance[data-genre="lecture"] .seulement-etude, #form-echeance[data-genre="etude"] .seulement-lecture { display: none; }
+#form-echeance:not([data-genre="etude"]) .seulement-etude,
+#form-echeance:not([data-genre="lecture"]) .seulement-lecture,
+#form-echeance:not([data-genre="devoir"]) .seulement-devoir { display: none; }
 .liste-livres { list-style: none; margin: 0; padding: 0; }
 .liste-livres li { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--bord); }
 .liste-livres li:first-child { border-top: 0; padding-top: 0; }
@@ -717,6 +721,47 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .liste-livres .texte strong { display: block; font-size: 15px; }
 .liste-livres .texte small { display: block; color: var(--texte-2); font-size: 13px; }
 .liste-notes li.seance { display: flex; align-items: flex-start; gap: 10px; }
+
+/* ---------- Lot 2 : chapitres, questions, conseils, examen blanc, fiche de lecture ---------- */
+.titre-compte { margin-left: 6px; color: var(--texte-2); letter-spacing: 0; }
+.liste-chapitres { list-style: none; margin: 4px 0 0; padding: 0; }
+.liste-chapitres li { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--bord); }
+.liste-chapitres li:first-child { border-top: 0; }
+.liste-chapitres label { display: flex; flex: 1; align-items: center; gap: 12px; min-width: 0; min-height: 48px; padding: 4px 0; font-weight: 600; cursor: pointer; overflow-wrap: anywhere; }
+.liste-chapitres input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--accent); }
+.liste-chapitres input:checked + span { color: var(--texte-3); text-decoration: line-through; }
+.form-ligne { display: flex; gap: 8px; margin-top: 10px; }
+.form-ligne input { flex: 1; min-width: 0; min-height: 48px; padding: 10px 14px; border: 1px solid var(--bord-fort); border-radius: 14px; background: var(--carte-2); font-size: 16px; }
+.form-ligne input:focus { outline: none; border-color: var(--accent-clair); box-shadow: 0 0 0 4px var(--accent-fond); }
+.form-ligne .btn { flex: none; }
+.aide-sync { margin-top: 10px; }
+.aide-sync .lien { display: inline; margin: 0; padding: 4px 0; }
+.chapitres-ressenti { margin: 0 0 14px; }
+.chapitres-ressenti .aide { margin: 0 0 8px; }
+.puce-bouton { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 12px; border: 1px solid var(--bord); border-radius: 999px; background: var(--carte-2); font-size: 14px; font-weight: 650; text-align: left; overflow-wrap: anywhere; }
+.puce-bouton .ic { width: 16px; height: 16px; color: var(--accent-clair); }
+.carte-questions { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; cursor: pointer; }
+.carte-questions .texte { flex: 1; min-width: 0; }
+.carte-questions .texte strong { display: block; font-size: 16px; }
+.carte-questions .texte small { display: block; margin-top: 2px; color: var(--texte-2); font-size: 14px; font-style: italic; overflow-wrap: anywhere; }
+.carte-questions > .ic:last-child { color: var(--texte-3); }
+.groupe-questions h3 { display: flex; align-items: center; gap: 8px; }
+.groupe-questions h3 .rond { width: 10px; height: 10px; border-radius: 50%; background: var(--couleur); }
+.liste-questions { list-style: none; margin: 0; padding: 0; }
+.liste-questions li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--bord); }
+.liste-questions li:first-child { border-top: 0; }
+.liste-questions .texte { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.liste-questions .texte small { display: block; margin-top: 2px; color: var(--texte-3); font-size: 13px; }
+.liste-questions .btn { flex: none; }
+.conseil { display: flex; align-items: flex-start; gap: 8px; margin: 14px auto 0; max-width: 36ch; padding: 10px 14px; border-radius: 16px; background: var(--carte-2); color: var(--texte-2); font-size: 14px; text-align: left; overflow-wrap: anywhere; }
+.conseil .ic { flex: none; margin-top: 1px; color: var(--phase); }
+.conseil strong { color: var(--texte); }
+.chrono-repos .liens-heros .lien { margin-top: 2px; }
+.fiche-champ { margin: 10px 0 0; }
+.fiche-champ strong { display: block; color: var(--texte-2); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
+.fiche-champ p { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.puce-choix.sans-rond { --couleur: var(--accent-clair); --couleur-fond: var(--accent-fond); }
+.puce-choix.sans-rond span::before { display: none; }
 .seance-texte { flex: 1; min-width: 0; }
 
 /* ---------- Formulaires (dans la feuille qui monte du bas) ---------- */
@@ -728,6 +773,14 @@ details.avance > summary::-webkit-details-marker { display: none; }
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .champ input:focus, .champ select:focus { border-color: var(--accent-clair); box-shadow: 0 0 0 4px var(--accent-fond); }
+.champ textarea {
+  display: block; width: 100%; margin-top: 8px; min-height: 96px; padding: 12px 14px; resize: vertical;
+  border: 1px solid var(--bord-fort); border-radius: 16px; background: var(--carte-2); color: inherit;
+  font: inherit; font-size: 16px; font-weight: 500; line-height: 1.45; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.champ textarea:focus { outline: none; border-color: var(--accent-clair); box-shadow: 0 0 0 4px var(--accent-fond); }
+.champ-ligne small { display: block; color: var(--texte-3); font-size: 13px; font-weight: 500; }
+.stepper .valeur-stepper { min-width: 76px; text-align: center; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
 input[type="date"]::-webkit-date-and-time-value { text-align: left; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8); }
 .champ .facultatif { color: var(--texte-3); font-weight: 500; }
@@ -903,7 +956,7 @@ legend { margin-bottom: 8px; padding: 0; font-size: 15px; font-weight: 650; }
 const CLE_STOCKAGE = 'plan-etude-v1';
 // Version du format des données. V1 = 1 ; V2 = 2 (type de travail, ressentis, historique, rythme) ;
 // V3 = 3 (notes et objectifs, checklist de la veille, badges, blocs prévus jour par jour).
-const VERSION_DONNEES = 4;   // V4 : jours spéciaux, temps dispo jour par jour, reports, rappel de sauvegarde
+const VERSION_DONNEES = 5;   // V4 : jours spéciaux, jour par jour, reports, rappel de sauvegarde · V5 : devoirs, chapitres, questions, fiches de lecture
 // Copie de secours des données d'avant la mise à jour (faite une seule fois).
 // La copie d'avant la V2 ("plan-etude-copie-avant-v2") reste aussi en place.
 const CLE_SECOURS = 'plan-etude-copie-avant-v' + VERSION_DONNEES;
@@ -976,11 +1029,12 @@ const REGLAGES_DEFAUT = {
   },
   coefBase: 0.5,             // temps = base × (0,5 + 0,25 × chapitres)
   coefChapitre: 0.25,
-  joursAvant: { test: 7, examen: 21 },  // on commence à réviser au plus tôt N jours avant
+  joursAvant: { test: 7, examen: 21, devoir: 14 },  // on commence au plus tôt N jours avant (V5 : devoir)
   progression: 3,            // la veille, on étudie 3 fois plus que le premier jour
   joursEnPlusParCoeur: 7,    // "par cœur" : on peut commencer 7 jours plus tôt
   blocsParSession: 2,        // "exercices" : au moins 2 blocs d'affilée
   minutesParPage: 2,         // lecture : 2 min pour lire une page (30 pages par heure) au départ
+  conseils: true,            // V5 : un conseil de méthode au début de chaque bloc
   echelleNote: 20,           // échelle proposée pour tes notes : 10, 20 ou 100 (pour les %)
   son: true,
   vibration: true,
@@ -1009,6 +1063,7 @@ function donneesVides() {
     joursSpeciaux: [],  // V4 : { id, debut, fin, minutes (0 = pas dispo), motif }
     reportes: {},       // V4 : échéances reportées un jour donné ("Pas aujourd'hui") : { "AAAA-MM-JJ": [id, …] }
     sauvegarde: { derniere: null, rappelMasque: null },  // V4 : dernière sauvegarde (export) et rappel masqué jusqu'au…
+    questions: [],      // V5 : questions pour le prof ajoutées à la main : { id, matiereId, texte, date, resolue }
   };
 }
 
@@ -1078,7 +1133,7 @@ function normaliser(lu) {
       .map(e => Object.assign({
         id: idPropre(e.id),
         matiereId: idPropre(e.matiereId),
-        type: e.type === 'examen' || e.type === 'lecture' ? e.type : 'test',
+        type: ['examen', 'lecture', 'devoir'].includes(e.type) ? e.type : 'test',
         date: e.date,
         niveau: borner(Math.round(Number(e.niveau)) || 1, 1, 4),
         chapitres: borner(Math.round(Number(e.chapitres)) || 1, 1, 99),
@@ -1089,7 +1144,9 @@ function normaliser(lu) {
         rythme: normaliserRythme(e.rythme),                                      // nouveau en V2
         resultat: normaliserResultat(e.resultat),                                // nouveau en V3
         checklist: normaliserChecklist(e.checklist),                             // nouveau en V3
-      }, e.type === 'lecture' ? normaliserLecture(e) : {}));                     // nouveau : les lectures
+      }, e.type === 'lecture' ? normaliserLecture(e) : {},                        // les lectures
+         e.type === 'devoir' ? normaliserDevoir(e) : {},                          // V5 : les devoirs à rendre
+         normaliserExtrasEcheance(e)));                                           // V5 : chapitres, fiche de lecture
   }
   if (Array.isArray(lu.blocs)) {
     d.blocs = lu.blocs
@@ -1141,6 +1198,11 @@ function normaliser(lu) {
       if (estCleDate(jour) && Array.isArray(ids)) d.reportes[jour] = ids.map(idPropre).filter(Boolean);
     }
   }
+  if (Array.isArray(lu.questions)) {   // V5
+    d.questions = lu.questions
+      .filter(q => q && String(q.texte || '').trim() && estCleDate(q.date))
+      .map(q => ({ id: idPropre(q.id) || nouvelId(), matiereId: idPropre(q.matiereId), texte: String(q.texte).trim().slice(0, 200), date: q.date, resolue: estCleDate(q.resolue) ? q.resolue : null }));
+  }
   if (lu.sauvegarde && typeof lu.sauvegarde === 'object') {
     if (estCleDate(lu.sauvegarde.derniere)) d.sauvegarde.derniere = lu.sauvegarde.derniere;
     if (estCleDate(lu.sauvegarde.rappelMasque)) d.sauvegarde.rappelMasque = lu.sauvegarde.rappelMasque;
@@ -1151,11 +1213,38 @@ function normaliser(lu) {
 // Une lecture : le titre du livre et les pages à lire (de pageDebut à pageFin).
 function normaliserLecture(e) {
   const debut = borner(Math.round(Number(e.pageDebut)) || 1, 1, 9999);
-  return {
+  const x = {
     titre: String(e.titre || '').trim().slice(0, 80),
     pageDebut: debut,
     pageFin: borner(Math.round(Number(e.pageFin)) || debut, debut, 9999),
   };
+  if (['facile', 'difficile'].includes(e.difficulteLecture)) x.difficulteLecture = e.difficulteLecture;   // V5
+  return x;
+}
+
+// V5 : un devoir à rendre (exposé, dissertation…) : un titre et le temps de travail estimé.
+function normaliserDevoir(e) {
+  return {
+    titre: String(e.titre || '').trim().slice(0, 80),
+    minutesEstimees: borner(Math.round(Number(e.minutesEstimees)) || 60, 15, 6000),
+  };
+}
+
+// V5 : la liste des chapitres (ou étapes) à cocher, et la fiche de lecture — seulement s'ils existent.
+function normaliserExtrasEcheance(e) {
+  const x = {};
+  if (Array.isArray(e.chapitresListe)) {
+    x.chapitresListe = e.chapitresListe
+      .filter(c => c && String(c.nom || '').trim())
+      .slice(0, 40)
+      .map(c => ({ id: String(c.id || nouvelId()).replace(/[^a-zA-Z0-9_-]/g, '') || nouvelId(), nom: String(c.nom).trim().slice(0, 60), fait: c.fait === true }));
+  }
+  if (e.fiche && typeof e.fiche === 'object') {
+    const f = {};
+    for (const cle of ['personnages', 'resume', 'citations', 'avis']) f[cle] = String(e.fiche[cle] || '').slice(0, 4000);
+    if (Object.values(f).some(v => v.trim())) x.fiche = f;
+  }
+  return x;
 }
 
 // Les pages d'un bloc de lecture (seulement si elles existent : les autres blocs ne changent pas).
@@ -1164,6 +1253,8 @@ function normaliserPagesBloc(b) {
   if (Number.isInteger(b.pages) && b.pages >= 0 && b.pages <= 9999) x.pages = b.pages;
   if (Number.isInteger(b.page) && b.page >= 0 && b.page <= 9999) x.page = b.page;
   if (b.manuel === true) x.manuel = true;
+  if (estCleDate(b.compris)) x.compris = b.compris;         // V5 : point "Dur" compris (plus dans les questions)
+  if (b.examenBlanc === true) x.examenBlanc = true;       // V5 : bloc fait en examen blanc
   return x;
 }
 
@@ -1204,7 +1295,7 @@ function completerReglages(lus) {
   for (const cle of Object.keys(r)) {
     const valeur = lus[cle];
     if (cle === 'tempsBase' || cle === 'joursAvant') {
-      for (const type of ['test', 'examen']) {
+      for (const type of ['test', 'examen', 'devoir']) {
         const v = valeur && valeur[type];
         if (cle === 'tempsBase' && Array.isArray(v) && v.length === 4 && v.every(Number.isFinite)) r.tempsBase[type] = v;
         if (cle === 'joursAvant' && Number.isFinite(v)) r.joursAvant[type] = v;
@@ -1383,9 +1474,10 @@ function formaterDuree(minutes) {
 // 1499000 millisecondes → "24:59"
 function formaterChrono(ms) {
   const secondes = Math.max(0, Math.ceil(ms / 1000));
-  const m = Math.floor(secondes / 60);
+  const h = Math.floor(secondes / 3600);
+  const m = Math.floor(secondes / 60) % (h ? 60 : 100000);
   const s = secondes % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return `${h ? h + ':' : ''}${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
 // 0.25 → "0,25"
@@ -1455,11 +1547,17 @@ function nomTravail(e) {
 function nomEcheanceLong(e) {
   const nom = nomMatiere(e.matiereId);
   if (e.type === 'lecture') return e.titre ? `la lecture « ${e.titre} »` : `la lecture ${de(nom)}`;
+  if (e.type === 'devoir') return e.titre ? `le devoir « ${e.titre} »` : `le devoir ${de(nom)}`;
   return e.type === 'examen' ? `l'examen ${de(nom)}` : `le test ${de(nom)}`;
 }
-// "Chimie – test jeudi"
+// "Chimie – test jeudi" (devoir : "Exposé – à rendre jeudi")
 function nomEcheanceCourt(e, jour = aujourdhui()) {
+  if (e.type === 'devoir') return `${titreEcheance(e)} – à rendre ${quandCourt(e.date, jour)}`;
   return `${titreEcheance(e)} – ${e.type} ${quandCourt(e.date, jour)}`;
+}
+// "Test jeudi" / "À rendre jeudi"
+function libelleQuand(e, jour = aujourdhui()) {
+  return e.type === 'devoir' ? `À rendre ${quandCourt(e.date, jour)}` : `${capitaliser(e.type)} ${quandCourt(e.date, jour)}`;
 }
 
 /* ---------- Les lectures (livres à lire pour l'école) ----------
@@ -1472,11 +1570,12 @@ function estLecture(e) {
 // Le nom principal : le titre du livre pour une lecture, sinon la matière.
 function titreEcheance(e) {
   if (estLecture(e)) return e.titre || `Lecture ${de(nomMatiere(e.matiereId))}`;
+  if (e.type === 'devoir') return e.titre || `Devoir ${de(nomMatiere(e.matiereId))}`;
   return nomMatiere(e.matiereId);
 }
 // "Test", "Examen" ou "Lecture"
 function nomType(e) {
-  return { test: 'Test', examen: 'Examen', lecture: 'Lecture' }[e.type] || 'Test';
+  return { test: 'Test', examen: 'Examen', lecture: 'Lecture', devoir: 'Devoir' }[e.type] || 'Test';
 }
 function pagesTotal(e) {
   return Math.max(0, e.pageFin - e.pageDebut + 1);
@@ -1503,6 +1602,25 @@ function vitesseLecture(d = donnees) {
   const pages = sessions.reduce((s, b) => s + b.pages, 0);
   return borner(Math.round(minutes / pages * 10) / 10, 0.5, 6);
 }
+// V5 : la vitesse d'UN livre. Ses propres lectures chronométrées (au moins 2) d'abord ;
+// sinon ta vitesse générale, ajustée si tu as dit que le livre est facile ou difficile à lire.
+const FACTEURS_LECTURE = { facile: 0.75, normal: 1, difficile: 1.4 };
+function seancesDuLivre(e, d = donnees) {
+  return d.blocs.filter(b => b.echeanceId === e.id && !b.manuel && b.pages >= 3).sort((x, y) => (x.debut || 0) - (y.debut || 0)).slice(-5);
+}
+function vitesseLivre(e, d = donnees) {
+  const seances = seancesDuLivre(e, d);
+  if (seances.length >= 2) {
+    const minutes = seances.reduce((s, b) => s + b.minutes, 0);
+    const pages = seances.reduce((s, b) => s + b.pages, 0);
+    return borner(Math.round(minutes / pages * 10) / 10, 0.5, 8);
+  }
+  return borner(Math.round(vitesseLecture(d) * (FACTEURS_LECTURE[e.difficulteLecture] || 1) * 10) / 10, 0.5, 8);
+}
+function vitesseLivreMesuree(e, d = donnees) {
+  return seancesDuLivre(e, d).length >= 2;
+}
+
 // La vitesse vient-elle de tes vraies lectures (true) ou du réglage (false) ?
 function vitesseMesuree(d = donnees) {
   const lectures = new Set(d.echeances.filter(estLecture).map(e => e.id));
@@ -1541,6 +1659,8 @@ function ecrireChemin(objet, chemin, valeur) {
 function tempsEstime(e, r = donnees.reglages, coef = 1, vitesse = null) {
   // Une lecture : nombre de pages × minutes par page (pas de difficulté perso).
   if (e.type === 'lecture') return Math.max(0, Math.round(pagesTotal(e) * (vitesse || r.minutesParPage || 2)));
+  // Un devoir : le temps que tu as estimé (pas de difficulté perso).
+  if (e.type === 'devoir') return Math.max(0, Math.round(e.minutesEstimees || 60));
   const bases = r.tempsBase[e.type] || r.tempsBase.test;
   const base = bases[(e.niveau || 1) - 1] || 0;
   const facteur = r.coefBase + r.coefChapitre * (e.chapitres || 0);
@@ -1549,7 +1669,8 @@ function tempsEstime(e, r = donnees.reglages, coef = 1, vitesse = null) {
 
 // Même calcul pour une échéance des vraies données (avec le coefficient de sa matière).
 function tempsEcheance(e) {
-  if (estLecture(e)) return tempsEstime(e, donnees.reglages, 1, vitesseLecture());
+  if (estLecture(e)) return tempsEstime(e, donnees.reglages, 1, vitesseLivre(e));
+  if (e.type === 'devoir') return tempsEstime(e, donnees.reglages, 1);
   return tempsEstime(e, donnees.reglages, coefMatiere(e.matiereId));
 }
 
@@ -1659,13 +1780,14 @@ function capaciteDuJour(cle, r = donnees.reglages, speciaux = donnees.joursSpeci
 // "Par cœur" commence plus tôt (7 jours de plus par défaut).
 function dureeFenetre(e, r) {
   if (e.type === 'lecture') return 3650;   // une lecture se commence tout de suite
+  if (e.type === 'devoir') return r.joursAvant.devoir || 14;
   return (r.joursAvant[e.type] || 7) + (e.travail === 'parcoeur' ? (r.joursEnPlusParCoeur || 0) : 0);
 }
 
 // "Poids" d'un jour pour une échéance : 1 le premier jour possible,
 // puis ça augmente jusqu'à 3 la veille (avec le réglage "progression" = 3).
 function poidsDuJour(cle, e, r) {
-  if (e.type === 'lecture') return 1;     // une lecture : un peu chaque jour, régulièrement
+  if (e.type === 'lecture' || e.type === 'devoir') return 1;   // lecture, devoir : un peu chaque jour, régulièrement
   const L = dureeFenetre(e, r);           // 7 jours (test) ou 21 jours (examen), plus pour "par cœur"
   const k = ecartJours(cle, e.date);      // 1 = la veille, L = le premier jour possible
   if (L <= 1) return 1;
@@ -1675,7 +1797,7 @@ function poidsDuJour(cle, e, r) {
 // Ordre de priorité : la date la plus proche d'abord.
 function comparerPriorite(a, b) {
   if (a.date !== b.date) return a.date < b.date ? -1 : 1;
-  if (a.type !== b.type) return ({ examen: 0, test: 1, lecture: 2 })[a.type] - ({ examen: 0, test: 1, lecture: 2 })[b.type];
+  if (a.type !== b.type) return ({ examen: 0, test: 1, devoir: 2, lecture: 3 })[a.type] - ({ examen: 0, test: 1, devoir: 2, lecture: 3 })[b.type];
   if (a.niveau !== b.niveau) return b.niveau - a.niveau;
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
@@ -1711,8 +1833,9 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
   // a) Minutes déjà travaillées pour chaque échéance : avant aujourd'hui, et aujourd'hui.
   //    (une lecture compte ses PAGES lues, converties en minutes avec ta vitesse de lecture)
   const vitesse = vitesseLecture(d);
-  const lectures = new Set(d.echeances.filter(estLecture).map(e => e.id));
-  const valeurBloc = b => (lectures.has(b.echeanceId) ? (b.pages || 0) * vitesse : b.minutes);
+  const vitesses = {};   // V5 : la vitesse de chaque livre
+  for (const e of d.echeances) if (estLecture(e)) vitesses[e.id] = vitesseLivre(e, d);
+  const valeurBloc = b => (b.echeanceId in vitesses ? (b.pages || 0) * vitesses[b.echeanceId] : b.minutes);
   const faitAvant = {};
   const faitAujourdhui = {};
   for (const b of d.blocs) {
@@ -1726,8 +1849,8 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
     .filter(e => !e.terminee && e.date > jour)
     .sort(comparerPriorite)
     .map(e => {
-      const coef = estLecture(e) ? 1 : (coefs[e.matiereId] || 1);
-      const total = tempsEstime(e, r, coef, vitesse);
+      const coef = estLecture(e) || e.type === 'devoir' ? 1 : (coefs[e.matiereId] || 1);
+      const total = tempsEstime(e, r, coef, vitesses[e.id] || vitesse);
       const avant = faitAvant[e.id] || 0;
       return {
         echeance: e,
@@ -1852,7 +1975,7 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
   const parId = {};
   for (const i of infos) parId[i.echeance.id] = i;
 
-  return { jour, W, vitesse, capaciteAujourdhui: capacites[jour], infos, lignesDuJour, semaine, alertes, parId };
+  return { jour, W, vitesse, vitesses, capaciteAujourdhui: capacites[jour], infos, lignesDuJour, semaine, alertes, parId };
 }
 
 // Retient le "rythme prévu" de chaque échéance tant que tu es à jour.
@@ -2200,8 +2323,19 @@ function checklistVeille(e) {
     const liste = [];
     if (reste > 0) liste.push({ id: 'reste', texte: `Finir les ${pluriel(reste, 'page')} qui restent (jusqu'à la page ${e.pageFin})` });
     if (notesLecture.length) liste.push({ id: 'notes', texte: `Relire mes notes de lecture (${notesLecture.length})`, details: notesLecture.slice(0, 5).map(b => `« ${b.note} »`) });
+    if (e.fiche) liste.push({ id: 'fiche', texte: 'Relire ma fiche de lecture', details: [e.fiche.personnages, e.fiche.resume].filter(t => t && t.trim()).map(t => raccourcir(t.trim().replace(/\s+/g, ' '), 90)) });
     liste.push({ id: 'resume', texte: 'Résumer le livre en 5 lignes (personnages, idées principales)' });
     liste.push({ id: 'affaires', texte: 'Mettre le livre dans mon sac 🎒' });
+    liste.push({ id: 'dormir', texte: 'Me coucher tôt 😴' });
+    return liste;
+  }
+  const restants = (e.chapitresListe || []).filter(c => !c.fait);
+  if (e.type === 'devoir') {
+    const liste = [];
+    if (restants.length) liste.push({ id: 'etapes', texte: `Finir les étapes qui restent (${restants.length})`, details: restants.slice(0, 6).map(c => c.nom) });
+    liste.push({ id: 'consigne', texte: 'Relire la consigne (longueur, forme, date et heure de remise)' });
+    liste.push({ id: 'relire', texte: 'Me relire une dernière fois (orthographe, sources)' });
+    liste.push({ id: 'remise', texte: "Imprimer ou envoyer mon devoir, et le mettre dans mon sac 🎒" });
     liste.push({ id: 'dormir', texte: 'Me coucher tôt 😴' });
     return liste;
   }
@@ -2216,6 +2350,7 @@ function checklistVeille(e) {
   if (notes.length) liste.push({ id: 'notes', texte: `Relire mes notes de blocs (${notes.length})`, details: notes.slice(0, 5).map(b => `« ${b.note} »`) });
   if (durs.length) liste.push({ id: 'durs', texte: `Revoir les points marqués « Dur » (${durs.length})`, details: durs.slice(0, 5).map(b => (b.note ? `« ${b.note} »` : `bloc du ${dateCourte(b.date)}`)) });
   if (e.note) liste.push({ id: 'programme', texte: `Vérifier le programme : « ${e.note} »` });
+  if (restants.length) liste.push({ id: 'chapitres', texte: `Revoir les chapitres pas encore cochés (${restants.length})`, details: restants.slice(0, 6).map(c => c.nom) });
   liste.push({ id: 'methode', texte: methodes[e.travail] || methodes.mixte });
   liste.push({ id: 'affaires', texte: 'Préparer mes affaires (stylos, calculatrice, carte…)' });
   liste.push({ id: 'dormir', texte: 'Me coucher tôt 😴' });
@@ -2410,8 +2545,9 @@ function carteRessenti() {
   return `<section class="carte ressenti" aria-label="Ressenti du bloc">
       <div class="ressenti-tete">
         <span class="illu-petite">${ic('etincelles')}</span>
-        <div><h2>Bloc terminé ! Comment c'était ?</h2><p class="aide">${echapper(sujet)} · ${b.minutes} min</p></div>
+        <div><h2>${b.examenBlanc ? 'Examen blanc terminé !' : 'Bloc terminé !'} Comment c'était ?</h2><p class="aide">${echapper(sujet)} · ${b.examenBlanc ? formaterDuree(b.minutes) : `${b.minutes} min`}</p></div>
       </div>
+      ${chapitresRessenti(e)}
       <label class="champ">Une note pour la prochaine fois <span class="facultatif">(facultatif)</span>
         <input type="text" class="note-bloc" maxlength="120" value="${echapper(brouillonNote)}" placeholder="ex : exercices p. 42" autocomplete="off" enterkeyhint="done">
       </label>
@@ -2425,7 +2561,7 @@ let brouillonPage = '';   // la page tapée (gardée si l'écran se redessine)
 let blocFiniEnAvance = null;   // bloc de lecture arrêté avec "J'ai fini mes pages" (on propose la page visée)
 function carteLecture(b, e) {
   const avant = pageActuelle(e);
-  let proposee = Math.min(e.pageFin, Math.max(avant, e.pageDebut - 1) + Math.round(b.minutes / vitesseLecture()));
+  let proposee = Math.min(e.pageFin, Math.max(avant, e.pageDebut - 1) + Math.round(b.minutes / vitesseLivre(e)));
   if (blocFiniEnAvance === b.id) {
     const plan = planActuel();
     const ligne = plan.lignesDuJour.find(l => l.info.echeance.id === e.id);
@@ -2525,12 +2661,26 @@ function carteHeros(plan) {
   return herosRepos(plan);
 }
 
+// "(vitesse de ce livre)", "(ta vitesse, livre difficile)", "(livre facile)"…
+function precisionVitesse(e) {
+  if (vitesseLivreMesuree(e)) return ' (vitesse de ce livre)';
+  const morceaux = [];
+  if (vitesseMesuree()) morceaux.push('ta vitesse');
+  if (e.difficulteLecture === 'facile') morceaux.push('livre facile');
+  if (e.difficulteLecture === 'difficile') morceaux.push('livre difficile');
+  return morceaux.length ? ` (${morceaux.join(', ')})` : '';
+}
+// La vitesse (min par page) utilisée par le plan pour ce livre.
+function vitessePlan(e, plan) {
+  return (plan.vitesses && plan.vitesses[e.id]) || plan.vitesse;
+}
+
 // L'objectif de lecture d'aujourd'hui : de quelle page à quelle page.
 function objectifLecture(l, plan) {
   const e = l.info.echeance;
   const avant = e.pageDebut - 1 + pagesLues(e, donnees, b => b.date < plan.jour);
   const luAujourdhui = pagesLues(e, donnees, b => b.date === plan.jour);
-  const cible = Math.min(e.pageFin, avant + Math.ceil(l.prevus * plan.W / plan.vitesse - 1e-9));
+  const cible = Math.min(e.pageFin, avant + Math.ceil(l.prevus * plan.W / vitessePlan(e, plan) - 1e-9));
   const actuelle = Math.min(e.pageFin, avant + luAujourdhui);
   return { de: actuelle + 1, a: cible, reste: Math.max(0, cible - actuelle), luAujourdhui };
 }
@@ -2546,7 +2696,7 @@ function herosLecture(l, plan) {
       </button>
       <div class="heros-infos">
         <span class="puce-info">${ic('livre')}p. ${o.de} → ${o.a}</span>
-        <span class="puce-info">${ic('horloge')}${pluriel(o.reste, 'page')} · ≈ ${formaterDuree(o.reste * plan.vitesse)}</span>
+        <span class="puce-info">${ic('horloge')}${pluriel(o.reste, 'page')} · ≈ ${formaterDuree(o.reste * vitessePlan(e, plan))}</span>
       </div>
       <button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer · ${plan.W} min</button>
       <div class="liens-heros">
@@ -2566,7 +2716,7 @@ function herosBloc(l, plan) {
   return `<section class="carte heros" style="${styleMatiereRiche(e.matiereId)}" aria-label="À faire maintenant">
       <p class="heros-etiquette">${ic('eclair')}À faire maintenant</p>
       <button class="heros-tete" data-action="detail-echeance" data-id="${e.id}" type="button" aria-label="Détails : ${echapper(nomEcheanceLong(e))}">
-        <span><span class="heros-titre">${echapper(nomMatiere(e.matiereId))}</span><span class="heros-sous">${capitaliser(e.type)} ${quandCourt(e.date, plan.jour)}</span></span>
+        <span><span class="heros-titre">${echapper(titreEcheance(e))}</span><span class="heros-sous">${e.type === 'devoir' ? `${echapper(nomMatiere(e.matiereId))} · à rendre ${quandCourt(e.date, plan.jour)}` : `${capitaliser(e.type)} ${quandCourt(e.date, plan.jour)}`}</span></span>
         ${ic('chevron')}
       </button>
       <div class="heros-infos">
@@ -2675,8 +2825,8 @@ function bandeauxDuJour(plan) {
   for (const e of donnees.echeances.filter(x => x.date === jour && !x.terminee)) {
     h += `<div class="bandeau info-jour" style="${styleMatiereRiche(e.matiereId)}">
         ${ic('cible')}
-        <span class="texte"><strong>C'est aujourd'hui</strong> · ${echapper(nomEcheanceLong(e))}. ${estLecture(e) ? 'Dernier jour !' : 'Bonne chance !'}</span>
-        <button class="btn btn-petit" data-action="test-passe" data-id="${e.id}" type="button">${ic('check')}${estLecture(e) ? 'Finie' : 'Passé'}</button>
+        <span class="texte"><strong>C'est aujourd'hui</strong> · ${echapper(nomEcheanceLong(e))}. ${estLecture(e) ? 'Dernier jour !' : e.type === 'devoir' ? 'Pense à le rendre !' : 'Bonne chance !'}</span>
+        <button class="btn btn-petit" data-action="test-passe" data-id="${e.id}" type="button">${ic('check')}${estLecture(e) ? 'Finie' : e.type === 'devoir' ? 'Rendu' : 'Passé'}</button>
       </div>`;
   }
   for (const e of donnees.echeances.filter(x => estVeille(x, jour))) {
@@ -2783,7 +2933,7 @@ function lignePlan(l, plan) {
   for (let k = 0; k < Math.max(l.prevus, l.faits); k++) points += `<i class="${k < l.faits ? 'fait' : ''}"></i>`;
   let sous = fini
     ? (l.prevus ? "✓ Fini pour aujourd'hui" : `✓ ${pluriel(l.faits, 'bloc')} en plus`)
-    : `${capitaliser(e.type)} ${quandCourt(e.date, plan.jour)} · ${formaterDuree(restants * plan.W)}`;
+    : `${libelleQuand(e, plan.jour)} · ${formaterDuree(restants * plan.W)}`;
   if (estLecture(e)) {
     const o = objectifLecture(l, plan);
     sous = fini ? `✓ ${pluriel(o.luAujourdhui, 'page')} lue${o.luAujourdhui > 1 ? 's' : ''} aujourd'hui` : `Lecture · p. ${o.de} → ${o.a}`;
@@ -2840,11 +2990,11 @@ function carteSemaine(plan) {
 
 function detailJourSemaine(s) {
   let contenu = s.echeancesDuJour.map(e =>
-    `<span class="puce puce-ech" style="${styleMatiere(e.matiereId)}">${estLecture(e) ? `${ic('livre')}Fin de lecture : ${echapper(titreEcheance(e))}` : `${ic('cible')}${nomType(e)} ${echapper(de(nomMatiere(e.matiereId)))}`}</span>`).join('');
+    `<span class="puce puce-ech" style="${styleMatiere(e.matiereId)}">${estLecture(e) ? `${ic('livre')}Fin de lecture : ${echapper(titreEcheance(e))}` : e.type === 'devoir' ? `${ic('note')}À rendre : ${echapper(titreEcheance(e))}` : `${ic('cible')}${nomType(e)} ${echapper(de(nomMatiere(e.matiereId)))}`}</span>`).join('');
   contenu += s.items.map(x => {
     const e = x.info.echeance;
     const doublon = s.items.filter(y => y.info.echeance.matiereId === e.matiereId).length > 1;
-    if (estLecture(e)) return `<span class="puce" style="${styleMatiere(e.matiereId)}">${echapper(titreEcheance(e))} · ≈ ${pluriel(Math.round(x.blocs * donnees.reglages.travail / vitesseLecture()), 'page')}</span>`;
+    if (estLecture(e)) return `<span class="puce" style="${styleMatiere(e.matiereId)}">${echapper(titreEcheance(e))} · ≈ ${pluriel(Math.round(x.blocs * donnees.reglages.travail / vitesseLivre(e)), 'page')}</span>`;
     return `<span class="puce" style="${styleMatiere(e.matiereId)}">${echapper(nomMatiere(e.matiereId))}${doublon ? ` (${e.type})` : ''} · ${pluriel(x.blocs, 'bloc')}</span>`;
   }).join('');
   const special = jourSpecial(s.jour);
@@ -2897,6 +3047,7 @@ function afficherEcheances() {
       </section>`;
   }
   h += aVenir.map(e => carteEcheance(e, plan)).join('');
+  h += carteQuestions();
   if (historique.length) {
     h += `<details class="passees"${passeesOuvertes ? ' open' : ''}><summary>Historique (${historique.length})${ic('chevronBas', 'chevron-bas')}</summary>
         ${historique.map(e => carteEcheance(e, plan)).join('')}
@@ -2910,7 +3061,7 @@ function afficherEcheances() {
 function badgesEcheance(e) {
   let h = `<span class="badge badge-${e.type}">${nomType(e)}</span>`;
   if (e.travail && e.travail !== 'mixte') h += `<span class="badge badge-travail">${nomTravail(e)}</span>`;
-  if (e.terminee) h += `<span class="badge badge-passe">${estLecture(e) ? '✓ Finie' : '✓ Passé'}</span>`;
+  if (e.terminee) h += `<span class="badge badge-passe">${estLecture(e) ? '✓ Finie' : e.type === 'devoir' ? '✓ Rendu' : '✓ Passé'}</span>`;
   return `<span class="badges">${h}</span>`;
 }
 
@@ -2925,7 +3076,7 @@ function carteEcheance(e, plan) {
         data-action="detail-echeance" data-id="${e.id}" role="button" tabindex="0" aria-label="Voir ${echapper(nomEcheanceLong(e))}, ${pourcent} % fait">
       <div class="ech-corps">
         <div class="ech-haut"><span class="ech-matiere">${echapper(titreEcheance(e))}</span><span class="badge badge-${e.type}">${nomType(e)}</span></div>
-        <div class="ech-date">${lecture ? `${echapper(nomMatiere(e.matiereId))} · à finir ${quandCourt(e.date, plan.jour)}` : `${capitaliser(dateCourte(e.date))} · ${delai(e.date, plan.jour)}`}</div>
+        <div class="ech-date">${lecture ? `${echapper(nomMatiere(e.matiereId))} · à finir ${quandCourt(e.date, plan.jour)}` : e.type === 'devoir' ? `${echapper(nomMatiere(e.matiereId))} · à rendre ${quandCourt(e.date, plan.jour)}` : `${capitaliser(dateCourte(e.date))} · ${delai(e.date, plan.jour)}`}</div>
         <div class="ech-puces">${pucesStatut(e, plan)}</div>
       </div>
       ${anneau(ratio, { taille: 58, epaisseur: 6, contenu: centre, classe: pourcent >= 100 ? 'complet' : '' })}
@@ -2941,7 +3092,7 @@ function pucesStatut(e, plan) {
     if (lues >= pagesTotal(e)) return puce('ok', 'check', 'Livre fini !');
   }
   if (e.terminee) {
-    let h = puce('ok', 'check', lecture ? 'Finie' : 'Passé');
+    let h = puce('ok', 'check', lecture ? 'Finie' : e.type === 'devoir' ? 'Rendu' : 'Passé');
     if (lecture) return h + puce('', 'livre', `${Math.min(pagesTotal(e), pagesLues(e))}/${pluriel(pagesTotal(e), 'page')}`);
     if (e.resultat) h += puce('', 'cible', formaterNote(e.resultat.note, e.resultat.sur) + (e.resultat.objectif !== null && e.resultat.note >= e.resultat.objectif ? ' 🎯' : ''));
     return h;
@@ -2952,6 +3103,11 @@ function pucesStatut(e, plan) {
   if (estVeille(e, plan.jour)) {
     const { liste, coches } = avancementChecklist(e);
     h += puce('veille-puce', 'lune', `Veille · ${coches}/${liste.length}`);
+  }
+  if (e.chapitresListe && e.chapitresListe.length) {   // V5 : chapitres (ou étapes) cochés
+    const n = e.chapitresListe.length;
+    const faits = e.chapitresListe.filter(c => c.fait).length;
+    h += puce(faits === n ? 'ok' : '', 'check', `${faits}/${n} ${e.type === 'devoir' ? 'étape' : 'chapitre'}${n > 1 ? 's' : ''}`);
   }
   const i = plan.parId[e.id];
   if (!i) return h;
@@ -2999,7 +3155,7 @@ function statutEcheance(e, plan) {
   }
   if (resteAujourdhui > 0) return `<div class="ech-statut">📅 Aujourd'hui : ${pluriel(resteAujourdhui, 'bloc')} à faire</div>`;
   const prochain = Object.keys(i.futur).filter(j => i.futur[j] > 0).sort()[0];
-  if (prochain && estLecture(e)) return `<div class="ech-statut">📅 Prochaine séance : ${quandCourt(prochain, plan.jour)} (≈ ${pluriel(Math.round(i.futur[prochain] * plan.W / plan.vitesse), 'page')})</div>`;
+  if (prochain && estLecture(e)) return `<div class="ech-statut">📅 Prochaine séance : ${quandCourt(prochain, plan.jour)} (≈ ${pluriel(Math.round(i.futur[prochain] * plan.W / vitessePlan(e, plan)), 'page')})</div>`;
   if (prochain) return `<div class="ech-statut">📅 Prochaine séance : ${quandCourt(prochain, plan.jour)} (${pluriel(i.futur[prochain], 'bloc')})</div>`;
   if (i.total > 0) return `<div class="ech-statut ech-ok">✓ Révisions terminées, bravo !</div>`;
   return '';
@@ -3073,7 +3229,7 @@ function chronoAuRepos() {
 
   const options = ordre.map(e => {
     const n = reste(e);
-    let details = `${capitaliser(e.type)} ${quandCourt(e.date, jour)}`;
+    let details = libelleQuand(e, jour);
     if (estLecture(e)) {
       const ligne = plan.lignesDuJour.find(l => l.info.echeance.id === e.id);
       const o = ligne ? objectifLecture(ligne, plan) : null;
@@ -3096,6 +3252,7 @@ function chronoAuRepos() {
         ${dureesPossibles().map(m => `<button type="button" data-action="duree-bloc" data-minutes="${m}" aria-pressed="${m === dureeBlocChoisie()}">${m} min</button>`).join('')}
       </div>
       <button class="btn btn-principal btn-geant" data-action="demarrer" type="button">${ICONES.lecture} Démarrer · ${dureeBlocChoisie()} min</button>
+      ${possibles.some(e => e.type === 'test' || e.type === 'examen') ? `<div class="liens-heros"><button class="lien" data-action="examen-blanc" type="button">Examen blanc (sans pause)</button></div>` : ''}
       <fieldset class="choix-sujet"><legend>Je travaille sur…</legend>${options}</fieldset>
       <p class="aide">Travail ${r.travail} min → petite pause ${r.pauseCourte} min. Grande pause de ${r.pauseLongue} min tous les ${r.blocsAvantPauseLongue} blocs.</p>
       ${possibles.length ? '' : `<p class="aide">Astuce : ajoute une échéance pour que tes blocs comptent dans ton plan.</p>`}
@@ -3117,14 +3274,16 @@ function chronoActif(c) {
   } else {
     info = `Ensuite : bloc n°${c.blocsSerie + 1}`;
   }
+  if (c.examenBlanc && c.phase === 'travail') info = `Examen blanc de ${formaterDuree(Math.round(c.dureeMs / 60000))}, sans pause.<br>Pas de cours, pas de téléphone : comme le jour J !`;
   const e = c.echeanceId ? trouverEcheance(c.echeanceId) : null;
   const ligne = e ? planActuel().lignesDuJour.find(l => l.info.echeance.id === e.id) : null;
   const lecture = estLecture(e) && c.phase === 'travail';
   if (lecture && ligne && ligne.prevus) {
     const o = objectifLecture(ligne, planActuel());
     if (o.reste > 0) info += `<br>Objectif : lire jusqu'à la page ${o.a} (${pluriel(o.reste, 'page')})`;
-  } else if (ligne && ligne.prevus) info += `<br>Pour cette échéance aujourd'hui : ${ligne.faits} fait${ligne.faits > 1 ? 's' : ''} sur ${ligne.prevus}`;
-  const derniere = e && c.phase === 'travail' ? derniereNote(e.id) : null;
+  } else if (ligne && ligne.prevus && !c.examenBlanc) info += `<br>Pour cette échéance aujourd'hui : ${ligne.faits} fait${ligne.faits > 1 ? 's' : ''} sur ${ligne.prevus}`;
+  const derniere = e && c.phase === 'travail' && !c.examenBlanc ? derniereNote(e.id) : null;
+  const conseil = c.phase === 'travail' && donnees.reglages.conseils ? conseilMethode(c, e) : '';
 
   // Les points sous le temps : où tu en es avant la grande pause.
   const n = r.blocsAvantPauseLongue;
@@ -3164,12 +3323,14 @@ function chronoActif(c) {
         <div class="anneau-centre">
           <span class="chrono-phase">${p.libelle}</span>
           <div class="chrono-temps" id="chrono-temps" role="timer" aria-live="off"></div>
-          <span class="serie-points" aria-label="${pluriel(faitsCycle, 'bloc')} sur ${n} avant la grande pause">${points}</span>
+          ${c.examenBlanc ? '' : `<span class="serie-points" aria-label="${pluriel(faitsCycle, 'bloc')} sur ${n} avant la grande pause">${points}</span>`}
         </div>
       </div>
       ${derniere ? `<p class="derniere-note">${ic('note')}<span>La dernière fois : « ${echapper(derniere.note)} »</span></p>` : ''}
       <p class="chrono-info">${info}</p>
       ${boutons}
+      ${lecture ? `<div class="liens-heros"><button class="lien" data-action="fiche-lecture" data-id="${e.id}" type="button">Noter dans ma fiche de lecture</button></div>` : ''}
+      ${conseil ? `<p class="conseil">${ic('etincelles')}<span><strong>Conseil :</strong> ${echapper(conseil)}</span></p>` : ''}
     </section>`;
 }
 
@@ -3184,7 +3345,7 @@ function resumeBlocsDuJour() {
     const ressenti = b.ressenti ? ` · ${RESSENTIS[b.ressenti].emoji} ${RESSENTIS[b.ressenti].nom}` : '';
     const note = b.note ? ` · « ${echapper(b.note)} »` : '';
     const pages = b.pages !== undefined ? ` · 📖 +${pluriel(b.pages, 'page')}` : '';
-    const duree = b.manuel ? `≈ ${b.minutes} min (sans chrono)` : `${b.minutes} min`;
+    const duree = b.manuel ? `≈ ${b.minutes} min (sans chrono)` : b.examenBlanc ? `📝 examen blanc de ${formaterDuree(b.minutes)}` : `${b.minutes} min`;
     return `<li style="${styleCouleur(b.matiereId ? couleurMatiere(b.matiereId) : '#b0abff')}">
         <span class="rond"></span>
         <span class="texte">${echapper(nom)}<small>${b.manuel ? '' : heure(b.debut) + ' · '}${duree}${pages}${ressenti}${note}</small></span>
@@ -3305,6 +3466,7 @@ function carteCalendrier(plan) {
         <span><i class="cal-ech" style="--couleur:var(--texte-2)"></i>test</span>
         <span><i class="cal-ech examen" style="--couleur:var(--texte-2)"></i>examen</span>
         <span><i class="cal-ech lecture" style="--couleur:var(--texte-2)"></i>lecture</span>
+        <span><i class="cal-ech devoir" style="--couleur:var(--texte-2)"></i>devoir</span>
         <span><span class="cal-barre"><i style="flex:1;--couleur:var(--texte-2)"></i></span>blocs prévus (ou faits)</span>
       </div>
     </section>
@@ -3325,7 +3487,7 @@ function detailJourCalendrier(j, plan) {
   for (const e of echs) {
     h += `<button class="ligne-cal" data-action="detail-echeance" data-id="${e.id}" type="button" style="${styleMatiere(e.matiereId)}">
         ${ic('cible')}
-        <span class="texte">${estLecture(e) ? `Fin de lecture : ${echapper(titreEcheance(e))}${e.terminee ? ' (finie)' : ''}` : `${nomType(e)} ${echapper(de(nomMatiere(e.matiereId)))}${e.terminee ? ' (passé)' : ''}`}</span>
+        <span class="texte">${estLecture(e) ? `Fin de lecture : ${echapper(titreEcheance(e))}${e.terminee ? ' (finie)' : ''}` : e.type === 'devoir' ? `À rendre : ${echapper(titreEcheance(e))}${e.terminee ? ' (rendu)' : ''}` : `${nomType(e)} ${echapper(de(nomMatiere(e.matiereId)))}${e.terminee ? ' (passé)' : ''}`}</span>
         ${ic('chevron', 'chevron')}
       </button>`;
   }
@@ -3334,7 +3496,7 @@ function detailJourCalendrier(j, plan) {
       .map(i => ({ i, n: j === plan.jour ? i.prevuAujourdhui : (i.futur[j] || 0) }))
       .filter(x => x.n > 0);
     h += prevus.length
-      ? `<p class="aide">Prévu :</p><div class="puces" style="margin-top:6px">${prevus.map(x => `<span class="puce" style="${styleMatiere(x.i.echeance.matiereId)}">${estLecture(x.i.echeance) ? `${echapper(titreEcheance(x.i.echeance))} · ≈ ${pluriel(Math.round(x.n * plan.W / plan.vitesse), 'page')}` : `${echapper(nomMatiere(x.i.echeance.matiereId))} (${x.i.echeance.type}) · ${pluriel(x.n, 'bloc')}`}</span>`).join('')}</div>`
+      ? `<p class="aide">Prévu :</p><div class="puces" style="margin-top:6px">${prevus.map(x => `<span class="puce" style="${styleMatiere(x.i.echeance.matiereId)}">${estLecture(x.i.echeance) ? `${echapper(titreEcheance(x.i.echeance))} · ≈ ${pluriel(Math.round(x.n * plan.W / vitessePlan(x.i.echeance, plan)), 'page')}` : `${echapper(nomMatiere(x.i.echeance.matiereId))} (${x.i.echeance.type}) · ${pluriel(x.n, 'bloc')}`}</span>`).join('')}</div>`
       : `<p class="aide">Rien de prévu ce jour-là.</p>`;
   }
   if (j <= plan.jour) {
@@ -3818,6 +3980,7 @@ function afficherReglages() {
       ${ligneInterrupteur('son', 'Son', 'sur iPhone : pas en mode silencieux')}
       ${ligneInterrupteur('vibration', 'Vibration', 'Android seulement (pas possible sur iPhone)')}
       ${ligneInterrupteur('ecranAllume', "Garder l'écran allumé", 'pendant un bloc, si le téléphone le permet')}
+      ${ligneInterrupteur('conseils', 'Conseils de méthode', 'une astuce pendant chaque bloc')}
       <div class="pile"><button class="btn btn-plein" data-action="tester-alerte" type="button">${ic('son')} Tester le son et la vibration</button></div>
     </section>`;
 
@@ -3844,6 +4007,7 @@ function afficherReglages() {
         <h3>Planification</h3>
         ${ligneReglage('joursAvant.test', 'Un test', 'commence au plus tôt', 1, 1, 30, 'avant')}
         ${ligneReglage('joursAvant.examen', 'Un examen', 'commence au plus tôt', 1, 1, 60, 'avant')}
+        ${ligneReglage('joursAvant.devoir', 'Un devoir', 'commence au plus tôt', 1, 1, 60, 'avant')}
         ${ligneReglage('progression', 'Montée en puissance', 'la veille vs le 1er jour', 0.5, 1, 10, 'fois')}
         ${ligneReglage('joursEnPlusParCoeur', 'Par cœur', 'commence plus tôt de', 1, 0, 30, 'plusjours')}
         ${ligneReglage('blocsParSession', 'Exercices', "blocs d'affilée minimum", 1, 1, 4, 'blocs')}
@@ -3869,7 +4033,7 @@ function afficherReglages() {
         <button class="btn btn-plein btn-danger" data-action="tout-effacer" type="button">Tout effacer</button>
       </div>
     </section>
-    <p class="aide centre version">Plan d'étude · V4</p>`;
+    <p class="aide centre version">Plan d'étude · V5</p>`;
 
   document.getElementById('vue-reglages').innerHTML = h;
 }
@@ -4109,7 +4273,8 @@ function ouvrirDetailEcheance(id) {
   if (!e) return;
   if (estLecture(e)) return ouvrirDetailLecture(e);
   const plan = planActuel();
-  const coef = coefMatiere(e.matiereId);
+  const devoir = e.type === 'devoir';
+  const coef = devoir ? 1 : coefMatiere(e.matiereId);
   const total = tempsEcheance(e);
   const fait = minutesFaites(e.id);
   const ratio = total > 0 ? Math.min(1, fait / total) : 1;
@@ -4118,17 +4283,17 @@ function ouvrirDetailEcheance(id) {
   const blocs = blocsDe(e.id);
   const notes = blocs.length
     ? `<ul class="liste-notes">${blocs.map(b => `<li>
-          <span class="quand">${capitaliser(dateCourte(b.date))} · ${b.minutes} min${b.ressenti ? ` · ${RESSENTIS[b.ressenti].emoji} ${RESSENTIS[b.ressenti].nom}` : ''}</span>
+          <span class="quand">${b.examenBlanc ? '📝 Examen blanc · ' : ''}${capitaliser(dateCourte(b.date))} · ${b.examenBlanc ? formaterDuree(b.minutes) : `${b.minutes} min`}${b.ressenti ? ` · ${RESSENTIS[b.ressenti].emoji} ${RESSENTIS[b.ressenti].nom}` : ''}${b.compris ? ' · ✓ compris' : ''}</span>
           ${b.note ? `<span class="texte-note">« ${echapper(b.note)} »</span>` : ''}
         </li>`).join('')}</ul>`
     : `<p class="aide">Aucun bloc pour l'instant.</p>`;
 
-  ouvrirFeuille(`<div class="detail" style="${styleMatiereRiche(e.matiereId)}">
+  ouvrirFeuille(`<div class="detail" data-echeance="${e.id}" style="${styleMatiereRiche(e.matiereId)}">
       <div class="detail-tete">
         <span class="pastille-matiere" aria-hidden="true"></span>
         <div class="detail-tete-texte">
-          <h2 class="detail-titre">${echapper(nomMatiere(e.matiereId))}</h2>
-          <p class="detail-date">${capitaliser(dateLongue(e.date))} · ${delai(e.date, plan.jour)}</p>
+          <h2 class="detail-titre">${echapper(titreEcheance(e))}</h2>
+          <p class="detail-date">${devoir ? `${echapper(nomMatiere(e.matiereId))} · à rendre le ${dateLongue(e.date)}` : capitaliser(dateLongue(e.date))} · ${delai(e.date, plan.jour)}</p>
         </div>
         ${badgesEcheance(e)}
       </div>
@@ -4139,23 +4304,27 @@ function ouvrirDetailEcheance(id) {
           <div><strong>≈ ${formaterDuree(total)}</strong><span>d'étude${coef !== 1 ? ` (dont difficulté perso × ${formaterDecimal(coef)})` : ''}</span></div>
         </div>
       </div>
-      <div class="puces-infos">
-        <span class="puce-info">${ic('cible')}Niveau ${e.niveau} (${NIVEAUX[e.niveau]})</span>
+      <div class="puces-infos">${devoir
+        ? `<span class="puce-info">${ic('horloge')}Temps prévu : ${formaterDuree(e.minutesEstimees || 60)}</span>`
+        : `<span class="puce-info">${ic('cible')}Niveau ${e.niveau} (${NIVEAUX[e.niveau]})</span>
         <span class="puce-info">${ic('livre')}${pluriel(e.chapitres, 'chapitre')}</span>
-        <span class="puce-info">${ic('eclair')}${nomTravail(e)}</span>
+        <span class="puce-info">${ic('eclair')}${nomTravail(e)}</span>`}
       </div>
       ${e.note ? `<p class="ech-note">${ic('note')}<span>${echapper(e.note)}</span></p>` : ''}
       ${statutEcheance(e, plan)}
       ${estVeille(e, plan.jour) ? blocChecklist(e) : ''}
       ${e.terminee ? blocResultat(e) : ''}
       ${active ? `<div class="pile" style="margin-top:16px"><button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer un bloc</button>
-        ${reportPossible(e, plan) ? `<button class="btn btn-plein" data-action="pas-aujourdhui" data-id="${e.id}" type="button">${ic('calendrier')} Pas aujourd'hui (reporter)</button>` : ''}</div>` : ''}
+        ${reportPossible(e, plan) ? `<button class="btn btn-plein" data-action="pas-aujourdhui" data-id="${e.id}" type="button">${ic('calendrier')} Pas aujourd'hui (reporter)</button>` : ''}
+        ${devoir ? '' : `<button class="btn btn-plein" data-action="examen-blanc" data-id="${e.id}" type="button">${ic('horloge')} Faire un examen blanc</button>`}</div>` : ''}
+      ${blocChapitres(e)}
+      ${blocQuestionsMatiere(e.matiereId)}
       <h3>Mes blocs et mes notes</h3>
       ${notes}
       <div class="pile" style="margin-top:18px">
         ${e.terminee
           ? `<button class="btn btn-plein" data-action="remettre" data-id="${e.id}" type="button">↩ Remettre dans le plan</button>`
-          : `<button class="btn btn-plein${active ? '' : ' btn-principal'}" data-action="test-passe" data-id="${e.id}" type="button">✓ ${e.type === 'examen' ? 'Examen' : 'Test'} passé</button>`}
+          : `<button class="btn btn-plein${active ? '' : ' btn-principal'}" data-action="test-passe" data-id="${e.id}" type="button">${devoir ? '✓ Devoir rendu' : `✓ ${e.type === 'examen' ? 'Examen' : 'Test'} passé`}</button>`}
         <button class="btn btn-plein" data-action="modifier-echeance" data-id="${e.id}" type="button">Modifier</button>
         <button class="btn btn-plein btn-danger" data-action="supprimer-echeance" data-id="${e.id}" type="button">Supprimer</button>
         <button class="btn btn-plein" data-action="fermer" type="button">Fermer</button>
@@ -4171,7 +4340,7 @@ function ouvrirDetailLecture(e) {
   const ratio = total ? lues / total : 1;
   const pourcent = Math.round(ratio * 100);
   const reste = total - lues;
-  const vitesse = vitesseLecture();
+  const vitesse = vitesseLivre(e);
   const active = !e.terminee && e.date >= plan.jour;
   const seances = blocsDe(e.id);
   const liste = seances.length
@@ -4202,7 +4371,7 @@ function ouvrirDetailLecture(e) {
       </div>
       <div class="puces-infos">
         <span class="puce-info">${ic('livre')}Pages ${e.pageDebut} à ${e.pageFin}</span>
-        <span class="puce-info">${ic('horloge')}${formaterDecimal(vitesse)} min par page${vitesseMesuree() ? ' (ta vitesse)' : ''}</span>
+        <span class="puce-info">${ic('horloge')}${formaterDecimal(vitesse)} min par page${precisionVitesse(e)}</span>
       </div>
       ${e.note ? `<p class="ech-note">${ic('note')}<span>${echapper(e.note)}</span></p>` : ''}
       ${statutEcheance(e, plan)}
@@ -4212,6 +4381,9 @@ function ouvrirDetailLecture(e) {
           <button class="btn btn-plein" data-action="j-ai-lu" data-id="${e.id}" type="button">${ic('livre')} J'ai lu sans chrono</button>
           ${reportPossible(e, plan) ? `<button class="btn btn-plein" data-action="pas-aujourdhui" data-id="${e.id}" type="button">${ic('calendrier')} Pas aujourd'hui (reporter)</button>` : ''}
         </div>` : ''}
+      <h3>Ma fiche de lecture</h3>
+      ${apercuFiche(e)}
+      <div class="pile"><button class="btn btn-plein" data-action="fiche-lecture" data-id="${e.id}" data-retour="detail" type="button">${ic('note')} ${e.fiche ? 'Compléter ma fiche' : 'Commencer ma fiche'}</button></div>
       <h3>Mes séances de lecture</h3>
       ${liste}
       <div class="pile" style="margin-top:18px">
@@ -4315,7 +4487,7 @@ function ouvrirFormLecture(id) {
       <label class="champ">Note <span class="facultatif">(facultatif)</span>
         <input type="text" name="note" maxlength="120" placeholder="ex : chapitre 4, le renard" autocomplete="off">
       </label>
-      <div class="estimation" id="apercu-lecture"><div class="aide">Ces pages comptent dans ton plan, ta série et tes stats (avec un temps estimé à ${formaterDecimal(vitesseLecture())} min par page).</div></div>
+      <div class="estimation" id="apercu-lecture"><div class="aide">Ces pages comptent dans ton plan, ta série et tes stats (avec un temps estimé à ${formaterDecimal(vitesseLivre(e))} min par page).</div></div>
       <p class="erreur" id="erreur-form" hidden></p>
       <div class="pile">
         <button type="submit" class="btn btn-principal btn-geant">${ic('check')} Enregistrer</button>
@@ -4334,7 +4506,7 @@ function majApercuLecture() {
   const zone = document.getElementById('apercu-lecture');
   if (!Number.isInteger(page) || page <= avant || page > e.pageFin) return;
   const pages = page - avant;
-  zone.innerHTML = `<strong>+${pluriel(pages, 'page')}</strong> · ≈ ${formaterDuree(pages * vitesseLecture())} de lecture comptées
+  zone.innerHTML = `<strong>+${pluriel(pages, 'page')}</strong> · ≈ ${formaterDuree(pages * vitesseLivre(e))} de lecture comptées
     <div class="aide">${page === e.pageFin ? 'Et le livre est fini ! 🎉' : `Encore ${pluriel(e.pageFin - page, 'page')} ensuite.`}</div>`;
 }
 
@@ -4360,7 +4532,7 @@ function enregistrerLecture(form) {
   } else {
     donnees.blocs.push({
       id: nouvelId(), echeanceId: e.id, matiereId: e.matiereId, date: jour, debut: Date.now(),
-      minutes: Math.max(1, Math.round(pages * vitesseLecture())), ressenti: null, note, pages, page, manuel: true,
+      minutes: Math.max(1, Math.round(pages * vitesseLivre(e))), ressenti: null, note, pages, page, manuel: true,
     });
   }
   sauvegarder();
@@ -4469,7 +4641,7 @@ function ouvrirFormResultat(id, justePasse = false) {
   const propose = r ? null : objectifPropose(e.matiereId, sur, e.id);
   const objectif = r ? r.objectif : propose;
   ouvrirFeuille(`<form id="form-resultat" data-id="${e.id}" data-propose="${propose === null ? '' : propose}" novalidate style="${styleMatiere(e.matiereId)}">
-      <h2>Ta note ${echapper(e.type === 'examen' ? "à l'examen" : 'au test')} ${echapper(de(nomMatiere(e.matiereId)))}</h2>
+      <h2>Ta note ${echapper(e.type === 'examen' ? "à l'examen" : e.type === 'devoir' ? 'au devoir' : 'au test')} ${echapper(de(nomMatiere(e.matiereId)))}</h2>
       <p class="aide" style="margin:-6px 0 16px">${justePasse ? `✓ Rangé dans l'historique. ` : ''}${capitaliser(dateLongue(e.date))}.
         Pas encore ta note ? Touche « Plus tard » : tu pourras l'entrer depuis l'historique.</p>
       <fieldset>
@@ -4610,15 +4782,21 @@ function ouvrirFormEcheance(id, preselection = {}) {
   const v = e || {
     matiereId: preselection.matiereId || (donnees.matieres.length === 1 ? donnees.matieres[0].id : ''),
     type: preselection.type || 'test',
-    date: ajouterJours(aujourdhui(), preselection.type === 'lecture' ? 14 : 7),
+    date: ajouterJours(aujourdhui(), preselection.type === 'lecture' || preselection.type === 'devoir' ? 14 : 7),
     niveau: 2,
     chapitres: 2,
     note: '',
     travail: 'mixte',
+    minutesEstimees: 120,
   };
+  const minutesDevoir = v.type === 'devoir' && v.minutesEstimees ? v.minutesEstimees : 120;
+  // Une lecture ou un devoir n'a pas de niveau ni de chapitres : si on le change en test, on part des valeurs habituelles.
+  const sansNiveau = v.type === 'lecture' || v.type === 'devoir';
+  const niveauForm = sansNiveau ? 2 : v.niveau;
+  const chapitresForm = sansNiveau ? 2 : v.chapitres;
   const matieres = [...donnees.matieres].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
 
-  ouvrirFeuille(`<form id="form-echeance" data-id="${e ? e.id : ''}" data-genre="${v.type === 'lecture' ? 'lecture' : 'etude'}" novalidate>
+  ouvrirFeuille(`<form id="form-echeance" data-id="${e ? e.id : ''}" data-genre="${genreFormulaire(v.type)}" novalidate>
       <h2>${e ? "Modifier l'échéance" : 'Nouvelle échéance'}</h2>
       <fieldset>
         <legend>Matière</legend>
@@ -4632,23 +4810,45 @@ function ouvrirFormEcheance(id, preselection = {}) {
           <label><input type="radio" name="type" value="test"${v.type === 'test' ? ' checked' : ''}><span>Test</span></label>
           <label><input type="radio" name="type" value="examen"${v.type === 'examen' ? ' checked' : ''}><span>Examen</span></label>
           <label><input type="radio" name="type" value="lecture"${v.type === 'lecture' ? ' checked' : ''}><span>Lecture</span></label>
+          <label><input type="radio" name="type" value="devoir"${v.type === 'devoir' ? ' checked' : ''}><span>Devoir</span></label>
         </div>
       </fieldset>
       <div class="seulement-lecture">
         <label class="champ">Titre du livre <span class="facultatif">(facultatif)</span>
-          <input type="text" name="titre" maxlength="80" value="${echapper(v.titre || '')}" placeholder="ex : Le Petit Prince" autocomplete="off">
+          <input type="text" name="titre" maxlength="80" value="${echapper(v.type === 'lecture' ? v.titre || '' : '')}" placeholder="ex : Le Petit Prince" autocomplete="off">
         </label>
         <div class="deux-champs">
           <label class="champ">De la page<input type="number" name="pageDebut" value="${v.pageDebut || 1}" min="1" max="9999" inputmode="numeric"></label>
           <label class="champ">À la page<input type="number" name="pageFin" value="${v.pageFin || ''}" min="1" max="9999" inputmode="numeric" placeholder="ex : 180"></label>
         </div>
+        <fieldset>
+          <legend>Ce livre se lit…</legend>
+          <div class="segments">
+            ${[['facile', 'Facilement', 'BD, simple'], ['normal', 'Normalement', ''], ['difficile', 'Difficilement', 'classique']].map(([cle, nom, ex]) =>
+              `<label><input type="radio" name="difficulteLecture" value="${cle}"${(v.difficulteLecture || 'normal') === cle ? ' checked' : ''}><span>${nom}${ex ? `<small>${ex}</small>` : ''}</span></label>`).join('')}
+          </div>
+        </fieldset>
       </div>
-      <label class="champ"><span class="seulement-etude">Date</span><span class="seulement-lecture">À finir pour le</span><input type="date" name="date" value="${v.date}" required></label>
+      <div class="seulement-devoir">
+        <label class="champ">Titre du devoir <span class="facultatif">(facultatif)</span>
+          <input type="text" name="titreDevoir" maxlength="80" value="${echapper(v.type === 'devoir' ? v.titre || '' : '')}" placeholder="ex : Exposé sur les volcans" autocomplete="off">
+        </label>
+        <div class="champ-ligne">
+          <span>Temps de travail<small>pour tout le devoir (à peu près)</small></span>
+          <div class="stepper">
+            <button type="button" data-action="temps-moins" aria-label="Moins de temps">−</button>
+            <input type="hidden" name="minutesEstimees" value="${minutesDevoir}">
+            <span class="valeur-stepper" id="temps-devoir">${formaterDuree(minutesDevoir)}</span>
+            <button type="button" data-action="temps-plus" aria-label="Plus de temps">+</button>
+          </div>
+        </div>
+      </div>
+      <label class="champ"><span class="seulement-etude">Date</span><span class="seulement-lecture">À finir pour le</span><span class="seulement-devoir">À rendre le</span><input type="date" name="date" value="${v.date}" required></label>
       <div class="seulement-etude">
       <fieldset>
         <legend>Niveau d'étude</legend>
         <div class="segments">
-          ${[1, 2, 3, 4].map(n => `<label><input type="radio" name="niveau" value="${n}"${v.niveau === n ? ' checked' : ''}><span>${n}<small>${NIVEAUX[n]}</small></span></label>`).join('')}
+          ${[1, 2, 3, 4].map(n => `<label><input type="radio" name="niveau" value="${n}"${niveauForm === n ? ' checked' : ''}><span>${n}<small>${NIVEAUX[n]}</small></span></label>`).join('')}
         </div>
       </fieldset>
       <fieldset>
@@ -4661,7 +4861,7 @@ function ouvrirFormEcheance(id, preselection = {}) {
         <span>Nombre de chapitres</span>
         <div class="stepper">
           <button type="button" data-action="chapitres-moins" aria-label="Un chapitre de moins">−</button>
-          <input type="number" name="chapitres" value="${v.chapitres}" min="1" max="99" inputmode="numeric" aria-label="Nombre de chapitres">
+          <input type="number" name="chapitres" value="${chapitresForm}" min="1" max="99" inputmode="numeric" aria-label="Nombre de chapitres">
           <button type="button" data-action="chapitres-plus" aria-label="Un chapitre de plus">+</button>
         </div>
       </div>
@@ -4686,9 +4886,13 @@ function majEstimation() {
   if (!form) return;
   const f = new FormData(form);
   const r = donnees.reglages;
-  form.dataset.genre = f.get('type') === 'lecture' ? 'lecture' : 'etude';
+  form.dataset.genre = genreFormulaire(f.get('type'));
   if (f.get('type') === 'lecture') {
     document.getElementById('estimation').innerHTML = estimationLecture(f);
+    return;
+  }
+  if (f.get('type') === 'devoir') {
+    document.getElementById('estimation').innerHTML = estimationDevoir(f);
     return;
   }
   const e = {
@@ -4720,9 +4924,14 @@ function estimationLecture(f) {
   const fin = parseInt(f.get('pageFin'), 10);
   if (!(fin >= debut)) return `<div class="aide">Indique les pages à lire (ex : de la page 1 à la page 180) : l'appli les répartit sur les jours qui restent.</div>`;
   const pages = fin - debut + 1;
-  const vitesse = vitesseLecture();
+  const form = document.getElementById('form-echeance');
+  const existant = form && form.dataset.id ? trouverEcheance(form.dataset.id) : null;
+  const livre = { id: existant ? existant.id : '', difficulteLecture: f.get('difficulteLecture') };
+  const vitesse = vitesseLivre(livre);
+  const pourquoi = vitesseLivreMesuree(livre) ? ' (mesurée sur ce livre)'
+    : `${vitesseMesuree() ? ' (ta vitesse mesurée' : ' (environ ' + Math.round(60 / vitesse) + ' pages par heure'}${livre.difficulteLecture === 'facile' ? ', livre facile' : livre.difficulteLecture === 'difficile' ? ', livre difficile' : ''})`;
   let texte = `<strong>${pluriel(pages, 'page')}</strong> · ≈ <strong>${formaterDuree(pages * vitesse)}</strong> de lecture
-    <div class="aide">À ${formaterDecimal(vitesse)} min par page${vitesseMesuree() ? ' (ta vitesse mesurée)' : ' (environ ' + Math.round(60 / vitesse) + ' pages par heure)'}.</div>`;
+    <div class="aide">À ${formaterDecimal(vitesse)} min par page${pourquoi}.</div>`;
   const date = f.get('date');
   if (estCleDate(date)) {
     const jours = ecartJours(aujourdhui(), date);
@@ -4730,6 +4939,36 @@ function estimationLecture(f) {
     else texte += `<div class="aide">Environ <strong>${pluriel(Math.ceil(pages / jours), 'page')} par jour</strong> dès aujourd'hui, jusqu'à la veille (si ton temps dispo le permet).</div>`;
   }
   return texte;
+}
+
+// Devoir : le temps de travail prévu, et quand il sera réparti.
+function estimationDevoir(f) {
+  const r = donnees.reglages;
+  const minutes = borner(parseInt(f.get('minutesEstimees'), 10) || 120, 15, 6000);
+  let texte = `Temps de travail prévu : <strong>${formaterDuree(minutes)}</strong> (${pluriel(blocsPour(minutes, r.travail), 'bloc')} de ${r.travail} min)`;
+  texte += `<div class="aide">Après l'avoir enregistré, découpe-le en étapes (recherches, plan, rédaction…) dans son détail.</div>`;
+  const date = f.get('date');
+  if (estCleDate(date)) {
+    const jour = aujourdhui();
+    const debut = ajouterJours(date, -dureeFenetre({ type: 'devoir', travail: 'mixte' }, r));
+    if (date <= jour) texte += `<div class="aide">⚠️ Cette date est aujourd'hui ou déjà passée : rien ne sera planifié.</div>`;
+    else texte += `<div class="aide">Travail ${debut > jour ? `à partir du ${dateLongue(debut)}` : "dès aujourd'hui"}, jusqu'à la veille de la remise.</div>`;
+  }
+  return texte;
+}
+function genreFormulaire(type) {
+  return type === 'lecture' ? 'lecture' : type === 'devoir' ? 'devoir' : 'etude';
+}
+// Devoir : + / − sur le temps prévu (par 15 min, puis par 30 min au-delà de 2 h).
+function changerTempsDevoir(sens) {
+  const champ = document.querySelector('#form-echeance input[name="minutesEstimees"]');
+  if (!champ) return;
+  const actuel = parseInt(champ.value, 10) || 120;
+  const pas = (sens > 0 ? actuel >= 120 : actuel > 120) ? 30 : 15;
+  champ.value = borner(actuel + sens * pas, 15, 6000);
+  const zone = document.getElementById('temps-devoir');
+  if (zone) zone.textContent = formaterDuree(Number(champ.value));
+  majEstimation();
 }
 
 function changerChapitres(sens) {
@@ -4744,7 +4983,8 @@ function enregistrerEcheance(form) {
   const matiereId = f.get('matiere');
   const date = f.get('date');
   const lecture = f.get('type') === 'lecture';
-  const chapitres = lecture ? 1 : parseInt(f.get('chapitres'), 10);
+  const devoir = f.get('type') === 'devoir';
+  const chapitres = lecture || devoir ? 1 : parseInt(f.get('chapitres'), 10);
   if (!matiereId) return erreurForm('Choisis une matière.');
   let livre = null;
   if (lecture) {
@@ -4754,29 +4994,38 @@ function enregistrerEcheance(form) {
     if (!f.get('pageFin')) return erreurForm('Indique la dernière page à lire.');
     if (!(Number.isInteger(fin) && fin >= debut && fin <= 9999)) return erreurForm(`La dernière page doit être un nombre entier, au moins ${debut}.`);
     livre = { titre: String(f.get('titre') || '').trim().replace(/\s+/g, ' ').slice(0, 80), pageDebut: debut, pageFin: fin };
+    if (['facile', 'difficile'].includes(f.get('difficulteLecture'))) livre.difficulteLecture = f.get('difficulteLecture');
+  }
+  if (devoir) {
+    livre = {
+      titre: String(f.get('titreDevoir') || '').trim().replace(/\s+/g, ' ').slice(0, 80),
+      minutesEstimees: borner(parseInt(f.get('minutesEstimees'), 10) || 120, 15, 6000),
+    };
   }
   if (!estCleDate(date)) return erreurForm('Choisis une date.');
   if (!(chapitres >= 1 && chapitres <= 99)) return erreurForm('Le nombre de chapitres doit être entre 1 et 99.');
 
   const valeurs = {
     matiereId,
-    type: lecture ? 'lecture' : (f.get('type') === 'examen' ? 'examen' : 'test'),
+    type: lecture ? 'lecture' : devoir ? 'devoir' : (f.get('type') === 'examen' ? 'examen' : 'test'),
     date,
-    niveau: lecture ? 1 : borner(Number(f.get('niveau')) || 2, 1, 4),
+    niveau: lecture || devoir ? 1 : borner(Number(f.get('niveau')) || 2, 1, 4),
     chapitres,
     note: String(f.get('note') || '').trim(),
-    travail: lecture ? 'mixte' : (Object.keys(TRAVAUX).includes(f.get('travail')) ? f.get('travail') : 'mixte'),
+    travail: lecture || devoir ? 'mixte' : (Object.keys(TRAVAUX).includes(f.get('travail')) ? f.get('travail') : 'mixte'),
   };
   const id = form.dataset.id;
   if (id) {
     const e = trouverEcheance(id);
     // Si ce qui compte pour le plan change, on repart d'un rythme neuf (pas de faux retard).
     const change = ['matiereId', 'type', 'date', 'niveau', 'chapitres', 'travail'].some(cle => e[cle] !== valeurs[cle])
-      || (livre !== null && (e.pageDebut !== livre.pageDebut || e.pageFin !== livre.pageFin));
+      || (lecture && (e.pageDebut !== livre.pageDebut || e.pageFin !== livre.pageFin || e.difficulteLecture !== livre.difficulteLecture))
+      || (devoir && e.minutesEstimees !== livre.minutesEstimees);
     if (e.date !== valeurs.date) e.checklist = {};   // nouvelle date : nouvelle veille
     Object.assign(e, valeurs);
+    // Les champs propres à un type (livre, devoir) partent si le type change.
+    for (const cle of ['titre', 'pageDebut', 'pageFin', 'difficulteLecture', 'minutesEstimees']) delete e[cle];
     if (livre) Object.assign(e, livre);
-    else { delete e.titre; delete e.pageDebut; delete e.pageFin; }
     if (change) e.rythme = null;
   } else {
     donnees.echeances.push(Object.assign({ id: nouvelId(), ...valeurs, terminee: false, termineeLe: null, rythme: null, resultat: null, checklist: {} }, livre || {}));
@@ -4784,7 +5033,7 @@ function enregistrerEcheance(form) {
   sauvegarder();
   fermerFeuille();
   rafraichir();
-  afficherToast(date <= aujourdhui() ? 'Enregistré (attention : date passée)' : (id ? 'Échéance modifiée ✓' : (lecture ? '📖 Lecture ajoutée ✓' : 'Échéance ajoutée ✓')));
+  afficherToast(date <= aujourdhui() ? 'Enregistré (attention : date passée)' : (id ? 'Échéance modifiée ✓' : (lecture ? '📖 Lecture ajoutée ✓' : devoir ? '📝 Devoir ajouté ✓ Découpe-le en étapes dans son détail' : 'Échéance ajoutée ✓')));
 }
 
 async function supprimerEcheance(id) {
@@ -5154,6 +5403,7 @@ function contenuExport() {
     planJours: donnees.planJours,   // V3 : blocs prévus chaque jour (pour "prévu / fait")
     joursSpeciaux: donnees.joursSpeciaux,   // V4 : jours pas dispo, vacances…
     reportes: donnees.reportes,             // V4 : "Pas aujourd'hui"
+    questions: donnees.questions,           // V5 : questions pour le prof
   };
 }
 
@@ -5238,7 +5488,7 @@ function restantMs(c) {
 function infosPhase(c) {
   if (c.phase === 'attente') return { libelle: 'Pause terminée', couleur: 'var(--accent)' };
   if (!c.debut) return { libelle: 'En pause', couleur: 'var(--texte-2)' };
-  if (c.phase === 'travail') return { libelle: 'Travail', couleur: 'var(--travail)' };
+  if (c.phase === 'travail') return { libelle: c.examenBlanc ? 'Examen blanc' : 'Travail', couleur: 'var(--travail)' };
   if (c.phase === 'pauseLongue') return { libelle: 'Grande pause', couleur: 'var(--pause-longue)' };
   return { libelle: 'Petite pause', couleur: 'var(--pause)' };
 }
@@ -5313,7 +5563,7 @@ async function arreter() {
     const minutes = Math.floor(ecouleMs(c) / 60000);
     if (minutes >= 1) {
       const lectureEnCours = estLecture(trouverEcheance(c.echeanceId));
-      const choix = await choisir(lectureEnCours ? `Tu as lu ${minutes} min. On les garde ? (tu noteras ensuite ta page)` : `Tu as travaillé ${minutes} min sur ce bloc. On les garde ?`, [
+      const choix = await choisir(lectureEnCours ? `Tu as lu ${minutes} min. On les garde ? (tu noteras ensuite ta page)` : c.examenBlanc ? `Tu as fait ${formaterDuree(minutes)} d'examen blanc. On les garde ?` : `Tu as travaillé ${minutes} min sur ce bloc. On les garde ?`, [
         { valeur: 'garder', texte: lectureEnCours ? 'Garder et noter ma page' : 'Garder ces minutes et arrêter', style: 'principal' },
         { valeur: 'jeter', texte: lectureEnCours ? 'Arrêter sans rien compter' : 'Arrêter sans les garder', style: 'danger' },
         { valeur: null, texte: 'Continuer le bloc' },
@@ -5401,6 +5651,7 @@ function enregistrerBloc(c, minutes) {
     ressenti: null,
     note: '',
   };
+  if (c.examenBlanc) bloc.examenBlanc = true;   // V5
   donnees.blocs.push(bloc);
   donnees.aEvaluer = bloc.id;
   brouillonNote = '';
@@ -5429,6 +5680,7 @@ function noterBloc(valeur, bouton) {
   const apres = b.matiereId ? coefMatiere(b.matiereId) : 1;
   let message = b.ressenti ? `Noté : ${RESSENTIS[b.ressenti].nom} ${RESSENTIS[b.ressenti].emoji}` : (note ? 'Note enregistrée ✓' : 'OK, sans ressenti');
   if (apres !== avant) message += ` · ${nomMatiere(b.matiereId)} : difficulté × ${formaterDecimal(apres)}`;
+  if (blocEstQuestion(b)) message += ' · ajouté à tes questions pour le prof';
   afficherToast(message);
 }
 
@@ -5442,8 +5694,27 @@ function verifierChrono(silencieux = false) {
   let fin = null;
   let blocsEnregistres = 0;
   let securite = 0;
+  // Examen blanc : on prévient 15 minutes avant la fin (une seule fois).
+  if (c.examenBlanc && c.debut && c.phase === 'travail' && !c.alerte15 && c.dureeMs >= 30 * 60000) {
+    const reste = c.dureeMs - ecouleMs(c);
+    if (reste > 0 && reste <= 15 * 60000) {
+      c.alerte15 = true;
+      sauvegarder();
+      if (!silencieux) {
+        vibrer([150, 100, 150]);
+        afficherToast('⏰ Plus que 15 minutes ! Garde du temps pour relire.');
+      }
+    }
+  }
   while (c.debut && c.phase !== 'attente' && ecouleMs(c) >= c.dureeMs && securite++ < 10) {
     const momentFin = c.debut + (c.dureeMs - c.dejaEcouleMs);  // l'heure exacte où la phase s'est finie
+    if (c.phase === 'travail' && c.examenBlanc) {   // examen blanc : pas de pause, c'est fini
+      enregistrerBloc(c, Math.round(c.dureeMs / 60000));
+      blocsEnregistres++;
+      donnees.chrono = null;
+      fin = 'examen';
+      break;
+    }
     if (c.phase === 'travail') {
       enregistrerBloc(c, Math.round(c.dureeMs / 60000));
       blocsEnregistres++;
@@ -5465,9 +5736,11 @@ function verifierChrono(silencieux = false) {
   }
   if (!fin) return;
   sauvegarder();
-  if (fin === 'travail') quitterConcentration();   // pour répondre "Facile / Ok / Dur"
-  if (!silencieux) alerter(fin);
-  if (fin === 'travail') {
+  if (fin === 'travail' || fin === 'examen') quitterConcentration();   // pour répondre "Facile / Ok / Dur"
+  if (!silencieux) alerter(fin === 'examen' ? 'travail' : fin);
+  if (fin === 'examen') {
+    afficherToast('📝 Examen blanc terminé ! Pose ton stylo.');
+  } else if (fin === 'travail') {
     afficherToast(`✓ Bloc enregistré ! ${c.phase === 'pauseLongue' ? 'Grande pause' : 'Petite pause'} de ${Math.round(c.dureeMs / 60000)} min`);
   } else if (blocsEnregistres) {
     afficherToast('✓ Bloc enregistré · la pause est finie aussi');
@@ -5598,6 +5871,421 @@ async function majVerrouEcran() {
 }
 
 
+/* ---------- Lot 2 : chapitres à cocher (étapes d'un devoir) ---------- */
+function trouverChapitre(e, chapitreId) {
+  return e && e.chapitresListe ? e.chapitresListe.find(c => c.id === chapitreId) || null : null;
+}
+// La liste dans le détail d'un test, d'un examen ou d'un devoir.
+function blocChapitres(e) {
+  if (!e || e.terminee || estLecture(e)) return '';
+  const devoir = e.type === 'devoir';
+  const liste = e.chapitresListe || [];
+  const n = liste.length;
+  const faits = liste.filter(c => c.fait).length;
+  let h = `<div class="bloc-chapitres" id="bloc-chapitres">
+      <h3>${devoir ? 'Étapes du devoir' : 'Chapitres à réviser'}${n ? `<span class="titre-compte">${faits}/${n}</span>` : ''}</h3>`;
+  if (n) {
+    h += `<ul class="liste-chapitres">${liste.map(c => `<li>
+          <label><input type="checkbox" data-chapitre="${c.id}" data-id="${e.id}"${c.fait ? ' checked' : ''}><span>${echapper(c.nom)}</span></label>
+          <button class="supprimer-bloc" data-action="supprimer-chapitre" data-id="${e.id}" data-chapitre="${c.id}" type="button" aria-label="Retirer « ${echapper(c.nom)} »">${ic('fermer')}</button>
+        </li>`).join('')}</ul>`;
+  } else {
+    h += `<p class="aide">${devoir ? 'Découpe ton devoir en petites étapes et coche-les au fur et à mesure.' : 'Écris tes chapitres et coche-les quand ils sont révisés : tu verras ce qui reste.'}</p>`;
+  }
+  if (n < 40) {
+    h += `<form class="form-ligne" id="form-chapitre" data-id="${e.id}" novalidate>
+        <input type="text" name="nom" maxlength="60" placeholder="${devoir ? 'ex : Faire le plan' : 'ex : Les fractions'}" autocomplete="off" enterkeyhint="done" aria-label="${devoir ? 'Nouvelle étape' : 'Nouveau chapitre'}">
+        <button class="btn btn-petit" type="submit">${ic('plus')}Ajouter</button>
+      </form>`;
+  }
+  if (devoir && !n) h += `<button class="lien" data-action="etapes-devoir" data-id="${e.id}" type="button">Proposer des étapes</button>`;
+  if (!devoir && n && n !== e.chapitres) {
+    h += `<p class="aide aide-sync">Ta liste a ${pluriel(n, 'chapitre')}, ton échéance en compte ${e.chapitres}.
+        <button class="lien" data-action="sync-chapitres" data-id="${e.id}" type="button">Compter ${pluriel(n, 'chapitre')} pour le temps d'étude</button></p>`;
+  }
+  return h + '</div>';
+}
+// Redessine la liste dans la feuille ouverte (sans la refermer) et l'écran derrière.
+function majBlocChapitres(e) {
+  const zone = document.getElementById('bloc-chapitres');
+  if (zone) zone.outerHTML = blocChapitres(e);
+  rafraichir();
+}
+function cocherChapitre(id, chapitreId, coche) {
+  const e = trouverEcheance(id);
+  const c = trouverChapitre(e, chapitreId);
+  if (!c) return;
+  c.fait = coche;
+  sauvegarder();
+  majBlocChapitres(e);
+  if (coche && e.chapitresListe.every(x => x.fait)) afficherToast(e.type === 'devoir' ? 'Toutes les étapes sont faites 🎉' : 'Tous les chapitres sont révisés 🎉');
+}
+function ajouterChapitre(form) {
+  const e = trouverEcheance(form.dataset.id);
+  if (!e) return;
+  const champ = form.querySelector('input[name="nom"]');
+  const nom = String(champ.value || '').trim().replace(/\s+/g, ' ').slice(0, 60);
+  if (!nom) {
+    champ.focus();
+    return;
+  }
+  if (!e.chapitresListe) e.chapitresListe = [];
+  if (e.chapitresListe.length >= 40) return;
+  e.chapitresListe.push({ id: nouvelId(), nom, fait: false });
+  sauvegarder();
+  majBlocChapitres(e);
+  const nouveau = document.querySelector('#form-chapitre input[name="nom"]');
+  if (nouveau) nouveau.focus();   // pour en taper un autre tout de suite
+}
+function supprimerChapitre(id, chapitreId) {
+  const e = trouverEcheance(id);
+  const c = trouverChapitre(e, chapitreId);
+  if (!c) return;
+  const index = e.chapitresListe.indexOf(c);
+  e.chapitresListe.splice(index, 1);
+  if (!e.chapitresListe.length) delete e.chapitresListe;
+  sauvegarder();
+  majBlocChapitres(e);
+  proposerAnnulation(`« ${c.nom} » retiré`, () => {
+    if (!e.chapitresListe) e.chapitresListe = [];
+    e.chapitresListe.splice(Math.min(index, e.chapitresListe.length), 0, c);
+    const zone = document.getElementById('bloc-chapitres');
+    if (zone) zone.outerHTML = blocChapitres(e);
+  });
+}
+// La liste compte N chapitres mais l'échéance en dit un autre nombre : on aligne (le temps d'étude suit).
+function synchroniserChapitres(id) {
+  const e = trouverEcheance(id);
+  if (!e || !e.chapitresListe || !e.chapitresListe.length) return;
+  const avant = { chapitres: e.chapitres, rythme: e.rythme };
+  e.chapitres = borner(e.chapitresListe.length, 1, 99);
+  e.rythme = null;
+  sauvegarder();
+  rafraichir();
+  ouvrirDetailEcheance(id);
+  proposerAnnulation(`${pluriel(e.chapitres, 'chapitre')} comptés · temps d'étude recalculé`, () => {
+    Object.assign(e, avant);
+    if (!document.getElementById('fond-feuille').hidden && document.querySelector(`#feuille .detail[data-echeance="${e.id}"]`)) ouvrirDetailEcheance(e.id);
+  });
+}
+function proposerEtapes(id) {
+  const e = trouverEcheance(id);
+  if (!e || (e.chapitresListe && e.chapitresListe.length)) return;
+  e.chapitresListe = ['Relire la consigne', 'Chercher les infos', 'Faire le plan', 'Rédiger', 'Relire et mettre au propre']
+    .map((nom, k) => ({ id: nouvelId() + k, nom, fait: false }));
+  sauvegarder();
+  majBlocChapitres(e);
+  afficherToast('Étapes ajoutées : modifie-les comme tu veux');
+}
+// Sur la carte "Comment c'était ?" : cocher en un geste le chapitre qu'on vient de finir.
+function chapitresRessenti(e) {
+  if (!e || e.terminee || !e.chapitresListe) return '';
+  const restants = e.chapitresListe.filter(c => !c.fait);
+  if (!restants.length) return '';
+  return `<div class="chapitres-ressenti"><p class="aide">${e.type === 'devoir' ? 'Une étape finie ?' : 'Un chapitre révisé ?'} Touche-le pour le cocher :</p>
+      <div class="puces">${restants.slice(0, 6).map(c => `<button class="puce-bouton" data-action="chapitre-ressenti" data-id="${e.id}" data-chapitre="${c.id}" type="button">${ic('check')}${echapper(c.nom)}</button>`).join('')}</div>
+    </div>`;
+}
+function cocherChapitreRessenti(id, chapitreId) {
+  const e = trouverEcheance(id);
+  const c = trouverChapitre(e, chapitreId);
+  if (!c || c.fait) return;
+  c.fait = true;
+  sauvegarder();
+  rafraichir();
+  proposerAnnulation(`✓ « ${c.nom} » coché`, () => { c.fait = false; });
+}
+
+/* ---------- Lot 2 : questions pour le prof ----------
+   Un bloc noté « Dur » avec une note = un point à demander au prof (tant que le test n'est pas passé).
+   On peut aussi ajouter une question à la main. « Compris » la range. */
+function blocEstQuestion(b, d = donnees, jour = aujourdhui()) {
+  if (!b || b.ressenti !== 'dur' || !String(b.note || '').trim() || b.compris) return false;
+  if (!b.echeanceId) return b.date >= ajouterJours(jour, -30);
+  const e = d.echeances.find(x => x.id === b.echeanceId);
+  return Boolean(e) && !e.terminee && e.date >= jour;
+}
+function questionsOuvertes(d = donnees) {
+  const jour = aujourdhui();
+  const liste = d.blocs.filter(b => blocEstQuestion(b, d, jour)).map(b => {
+    const e = b.echeanceId ? d.echeances.find(x => x.id === b.echeanceId) : null;
+    return { source: 'bloc', id: b.id, matiereId: e ? e.matiereId : b.matiereId, texte: b.note.trim(), date: b.date, origine: e ? `bloc « Dur » · ${nomEcheanceCourt(e, jour)}` : 'bloc « Dur »' };
+  });
+  for (const q of d.questions) {
+    if (!q.resolue) liste.push({ source: 'question', id: q.id, matiereId: q.matiereId, texte: q.texte, date: q.date, origine: 'ta question' });
+  }
+  return liste.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+}
+function ligneQuestion(q) {
+  return `<li>
+      <span class="texte">${echapper(q.texte)}<small>${capitaliser(dateCourte(q.date))} · ${echapper(q.origine)}</small></span>
+      <button class="btn btn-petit" data-action="question-comprise" data-id="${q.id}" data-source="${q.source}" type="button">${ic('check')}Compris</button>
+    </li>`;
+}
+// Sur l'écran Échéances : une carte s'il y a des questions, sinon un petit lien pour en noter une.
+function carteQuestions() {
+  const liste = questionsOuvertes();
+  if (!liste.length) return `<button class="lien" data-action="ajouter-question" type="button">Une question pour le prof ? Note-la ici</button>`;
+  return `<button class="carte carte-questions" data-action="questions" type="button">
+      <span class="illu-petite">${ic('cerveau')}</span>
+      <span class="texte"><strong>Questions pour le prof (${liste.length})</strong><small>${liste.slice(0, 2).map(q => `« ${echapper(raccourcir(q.texte, 60))} »`).join(' · ')}</small></span>
+      ${ic('chevron')}
+    </button>`;
+}
+function ouvrirQuestions() {
+  const liste = questionsOuvertes();
+  const groupes = new Map();
+  for (const q of liste) {
+    const cle = q.matiereId && trouverMatiere(q.matiereId) ? q.matiereId : '';
+    if (!groupes.has(cle)) groupes.set(cle, []);
+    groupes.get(cle).push(q);
+  }
+  const ordre = [...groupes.keys()].sort((a, b) => (a === '' ? 1 : b === '' ? -1 : nomMatiere(a).localeCompare(nomMatiere(b), 'fr')));
+  let h = `<div class="detail feuille-questions">
+      <h2>Questions pour le prof</h2>
+      <p class="aide" style="margin:-6px 0 8px">Ce qui t'a paru « Dur » (avec une note) et tes questions. Pose-les en classe, puis touche « Compris ».</p>`;
+  if (!liste.length) h += `<p class="aide">Rien pour l'instant 👍 Quand un bloc est « Dur », écris ce qui bloque dans la note : ça arrive ici.</p>`;
+  for (const cle of ordre) {
+    h += `<section class="groupe-questions" style="${cle ? styleMatiere(cle) : styleCouleur('#b0abff')}">
+        <h3><span class="rond"></span>${echapper(cle ? nomMatiere(cle) : 'Sans matière')}</h3>
+        <ul class="liste-questions">${groupes.get(cle).map(ligneQuestion).join('')}</ul>
+      </section>`;
+  }
+  h += `<div class="pile" style="margin-top:18px">
+      <button class="btn btn-principal btn-plein" data-action="ajouter-question" type="button">${ic('plus')} Ajouter une question</button>
+      <button class="btn btn-plein" data-action="fermer" type="button">Fermer</button>
+    </div>
+  </div>`;
+  ouvrirFeuille(h);
+}
+// Dans le détail d'une échéance : les questions de cette matière.
+function blocQuestionsMatiere(matiereId) {
+  const liste = questionsOuvertes().filter(q => q.matiereId === matiereId);
+  if (!liste.length) return '';
+  return `<section class="groupe-questions">
+      <h3>Questions pour le prof</h3>
+      <ul class="liste-questions">${liste.map(ligneQuestion).join('')}</ul>
+    </section>`;
+}
+function marquerQuestionComprise(id, source, bouton) {
+  let defaire;
+  if (source === 'bloc') {
+    const b = donnees.blocs.find(x => x.id === id);
+    if (!b) return;
+    b.compris = aujourdhui();
+    defaire = () => { delete b.compris; };
+  } else {
+    const q = donnees.questions.find(x => x.id === id);
+    if (!q) return;
+    q.resolue = aujourdhui();
+    defaire = () => { q.resolue = null; };
+  }
+  sauvegarder();
+  // On retire juste la ligne (la feuille reste où elle est).
+  const ligne = bouton && bouton.closest('li');
+  const groupe = ligne && ligne.closest('.groupe-questions');
+  if (ligne) ligne.remove();
+  if (groupe && !groupe.querySelector('li')) groupe.remove();
+  rafraichir();
+  proposerAnnulation('✓ Compris ! Question rangée', () => {
+    defaire();
+    if (document.getElementById('fond-feuille').hidden) return;
+    const detail = document.querySelector('#feuille .detail[data-echeance]');
+    if (document.querySelector('#feuille .feuille-questions')) ouvrirQuestions();
+    else if (detail) ouvrirDetailEcheance(detail.dataset.echeance);
+  });
+}
+function ouvrirFormQuestion(matiereId = '') {
+  const matieres = [...donnees.matieres].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+  if (!matieres.length) return ouvrirFormMatiere(null);
+  const choix = matiereId || (matieres.length === 1 ? matieres[0].id : '');
+  ouvrirFeuille(`<form id="form-question" novalidate>
+      <h2>Une question pour le prof</h2>
+      <fieldset>
+        <legend>Matière</legend>
+        <div class="choix-puces">
+          ${matieres.map(m => `<label class="puce-choix" style="${styleCouleur(m.couleur)}"><input type="radio" name="matiere" value="${m.id}"${m.id === choix ? ' checked' : ''}><span>${echapper(m.nom)}</span></label>`).join('')}
+        </div>
+      </fieldset>
+      <label class="champ">Ta question
+        <input type="text" name="texte" maxlength="200" placeholder="ex : comment on trouve le pH ?" autocomplete="off" enterkeyhint="done">
+      </label>
+      <p class="erreur" id="erreur-form" hidden></p>
+      <div class="pile">
+        <button type="submit" class="btn btn-principal btn-geant">${ic('plus')} Ajouter</button>
+        <button type="button" class="btn btn-plein" data-action="questions">Voir mes questions</button>
+      </div>
+    </form>`);
+}
+function enregistrerQuestion(form) {
+  const f = new FormData(form);
+  const matiereId = f.get('matiere');
+  const texte = String(f.get('texte') || '').trim().replace(/\s+/g, ' ').slice(0, 200);
+  if (!matiereId) return erreurForm('Choisis une matière.');
+  if (!texte) return erreurForm('Écris ta question.');
+  donnees.questions.push({ id: nouvelId(), matiereId, texte, date: aujourdhui(), resolue: null });
+  sauvegarder();
+  rafraichir();
+  ouvrirQuestions();
+  afficherToast('Question ajoutée ✓');
+}
+
+/* ---------- Lot 2 : conseils de méthode (pendant un bloc) ---------- */
+const CONSEILS = {
+  parcoeur: [
+    'Lis une fois, cache, récite à voix haute, puis vérifie.',
+    "Fais des cartes : la question d'un côté, la réponse de l'autre.",
+    'Commence par ce que tu ne sais pas encore, pas par ce que tu connais déjà.',
+    "Récite en l'écrivant de mémoire : ça marque plus que relire.",
+  ],
+  exercices: [
+    "Refais d'abord un exercice corrigé sans regarder la correction.",
+    'Bloqué plus de 5 minutes ? Relis la méthode dans ton cours, puis réessaie.',
+    "Écris toutes les étapes : c'est là que tu trouves tes erreurs.",
+    'À la fin, vérifie ta réponse : unités, signe, ordre de grandeur.',
+  ],
+  mixte: [
+    'Relis le résumé, puis teste-toi sans regarder.',
+    'Explique la matière à voix haute, comme si tu étais le prof.',
+    'Fais un petit schéma ou une liste des idées principales.',
+    'Termine en inventant 2 ou 3 questions que le prof pourrait poser.',
+  ],
+  lecture: [
+    'Note les noms des personnages au fur et à mesure.',
+    "À la fin, résume dans ta tête ce qui s'est passé en 2 phrases.",
+    'Un passage important ? Note la page dans ta fiche de lecture.',
+    'Lis dans un endroit calme, téléphone face cachée.',
+  ],
+  devoir: [
+    "Relis la consigne : qu'est-ce qu'on te demande exactement ?",
+    'Fais le plan avant de rédiger, puis avance partie par partie.',
+    'Une étape à la fois : coche-la dans ta liste quand elle est finie.',
+    "Garde du temps pour relire : orthographe, sources, présentation.",
+  ],
+};
+function conseilMethode(c, e) {
+  if (c.examenBlanc) return "Lis d'abord toutes les questions, commence par celles que tu sais faire, et garde 10 minutes pour relire.";
+  const genre = !e ? 'mixte' : estLecture(e) ? 'lecture' : e.type === 'devoir' ? 'devoir' : (CONSEILS[e.travail] ? e.travail : 'mixte');
+  const liste = CONSEILS[genre];
+  const n = e ? blocsDe(e.id).length : donnees.blocs.filter(b => b.date === aujourdhui()).length;
+  return liste[n % liste.length];   // un conseil différent à chaque bloc
+}
+
+/* ---------- Lot 2 : examen blanc (la durée de l'épreuve, d'un coup, sans pause) ---------- */
+function ouvrirFormExamenBlanc(id) {
+  const jour = aujourdhui();
+  const possibles = donnees.echeances.filter(e => !e.terminee && e.date >= jour && (e.type === 'test' || e.type === 'examen')).sort(comparerPriorite);
+  if (!possibles.length) {
+    afficherToast("Ajoute d'abord un test ou un examen 📅");
+    return;
+  }
+  const choisie = (id && possibles.find(e => e.id === id)) || possibles[0];
+  const duree = choisie.type === 'examen' ? 120 : 60;
+  ouvrirFeuille(`<form id="form-examen-blanc" novalidate>
+      <h2>Examen blanc</h2>
+      <p class="aide" style="margin:-6px 0 16px">Comme le jour J : toute la durée de l'épreuve d'un coup, sans pause, sans cours ni téléphone. Le temps compte dans tes révisions.</p>
+      <fieldset>
+        <legend>Pour</legend>
+        <div class="choix-puces">
+          ${possibles.map(e => `<label class="puce-choix" style="${styleMatiere(e.matiereId)}"><input type="radio" name="echeance" value="${e.id}"${e.id === choisie.id ? ' checked' : ''}><span>${echapper(nomEcheanceCourt(e, jour))}</span></label>`).join('')}
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Durée de l'épreuve</legend>
+        <div class="choix-puces">
+          ${[30, 60, 90, 120, 180, 240].map(m => `<label class="puce-choix sans-rond"><input type="radio" name="minutes" value="${m}"${m === duree ? ' checked' : ''}><span>${formaterDuree(m)}</span></label>`).join('')}
+        </div>
+      </fieldset>
+      <p class="aide">⏰ Je te préviens 15 minutes avant la fin.</p>
+      <div class="pile">
+        <button type="submit" class="btn btn-principal btn-geant">${ICONES.lecture} Commencer l'examen blanc</button>
+        <button type="button" class="btn btn-plein" data-action="fermer">Annuler</button>
+      </div>
+    </form>`);
+}
+function demarrerExamenBlanc(echeanceId, minutes) {
+  const e = trouverEcheance(echeanceId);
+  if (!e || !(minutes >= 15)) return;
+  fermerFeuille();
+  const c = donnees.chrono;
+  if (c && c.phase !== 'attente') {
+    afficherToast('Un bloc est déjà en cours ⏱');
+    afficherVue('chrono');
+    return;
+  }
+  preparerSon();
+  const maintenant = Date.now();
+  donnees.chrono = {
+    phase: 'travail',
+    echeanceId: e.id,
+    matiereId: e.matiereId,
+    dureeMs: minutes * 60000,
+    dureeTravail: null,
+    debut: maintenant,
+    dejaEcouleMs: 0,
+    debutBloc: maintenant,
+    blocsSerie: 0,
+    examenBlanc: true,   // V5 : pas de pause à la fin, alerte 15 min avant
+  };
+  choixChrono = e.id;
+  sauvegarder();
+  vibrer(30);
+  majVerrouEcran();
+  afficherVue('chrono');
+  afficherToast('📝 Examen blanc lancé · bonne chance !');
+}
+
+/* ---------- Lot 2 : fiche de lecture ---------- */
+const CHAMPS_FICHE = [
+  ['personnages', 'Personnages', 'qui est qui ?', "ex : Le renard : il apprend au petit prince ce qu'est un ami"],
+  ['resume', 'Résumé', 'ce qui se passe', 'ex : Chap. 1 : le narrateur raconte son dessin de serpent…'],
+  ['citations', 'Citations', 'avec la page', "ex : « On ne voit bien qu'avec le cœur » (p. 72)"],
+  ['avis', 'Mon avis', "ce que j'ai aimé ou pas, et pourquoi", "ex : J'ai aimé le renard parce que…"],
+];
+let brouillonFiche = null;   // la fiche en cours d'écriture (gardée si la feuille se ferme par erreur)
+function apercuFiche(e) {
+  if (!e.fiche) return `<p class="aide">Personnages, résumé, citations, ton avis : note-les pendant que tu lis. Tu les retrouveras la veille.</p>`;
+  return CHAMPS_FICHE.filter(([cle]) => e.fiche[cle] && e.fiche[cle].trim())
+    .map(([cle, nom]) => `<div class="fiche-champ"><strong>${nom}</strong><p>${echapper(e.fiche[cle].trim())}</p></div>`).join('');
+}
+function ouvrirFormFiche(id, retour = '') {
+  const e = trouverEcheance(id);
+  if (!estLecture(e)) return;
+  const valeurs = brouillonFiche && brouillonFiche.id === e.id ? brouillonFiche.valeurs : (e.fiche || {});
+  ouvrirFeuille(`<form id="form-fiche" data-id="${e.id}" data-retour="${retour === 'detail' ? 'detail' : ''}" novalidate style="${styleMatiereRiche(e.matiereId)}">
+      <h2>Fiche de lecture</h2>
+      <p class="aide" style="margin:-6px 0 16px">${echapper(titreEcheance(e))} · note au fur et à mesure, tu la retrouveras la veille.</p>
+      ${CHAMPS_FICHE.map(([cle, nom, aide, exemple]) => `<label class="champ">${nom} <span class="facultatif">(${aide})</span>
+          <textarea name="${cle}" rows="4" maxlength="4000" placeholder="${echapper(exemple)}">${echapper(valeurs[cle] || '')}</textarea>
+        </label>`).join('')}
+      <div class="pile">
+        <button type="submit" class="btn btn-principal btn-geant">${ic('check')} Enregistrer ma fiche</button>
+        <button type="button" class="btn btn-plein" data-action="annuler-fiche" data-id="${e.id}" data-retour="${retour === 'detail' ? 'detail' : ''}">Annuler</button>
+      </div>
+    </form>`);
+}
+function majBrouillonFiche(form) {
+  const f = new FormData(form);
+  const valeurs = {};
+  for (const [cle] of CHAMPS_FICHE) valeurs[cle] = String(f.get(cle) || '');
+  brouillonFiche = { id: form.dataset.id, valeurs };
+}
+function enregistrerFiche(form) {
+  const e = trouverEcheance(form.dataset.id);
+  if (!estLecture(e)) return fermerFeuille();
+  const f = new FormData(form);
+  const fiche = {};
+  for (const [cle] of CHAMPS_FICHE) fiche[cle] = String(f.get(cle) || '').slice(0, 4000);
+  if (Object.values(fiche).some(v => v.trim())) e.fiche = fiche;
+  else delete e.fiche;
+  brouillonFiche = null;
+  sauvegarder();
+  rafraichir();
+  if (form.dataset.retour === 'detail') ouvrirDetailEcheance(e.id);
+  else fermerFeuille();
+  afficherToast(e.fiche ? 'Fiche de lecture enregistrée ✓' : 'Fiche vide : rien à garder');
+}
+
 /* =====================================================================
    8. CLICS, ÉVÉNEMENTS ET DÉMARRAGE
    Chaque bouton a un attribut data-action="..." qui dit ce qu'il fait.
@@ -5695,6 +6383,27 @@ const ACTIONS = {
   'passer-lecture': (id, bouton) => passerLecture(bouton),
   'supprimer-seance': id => supprimerSeance(id),
   'effacer-note': id => effacerNote(id),
+  // V5
+  'temps-moins': () => changerTempsDevoir(-1),
+  'temps-plus': () => changerTempsDevoir(1),
+  'supprimer-chapitre': (id, bouton) => supprimerChapitre(id, bouton.dataset.chapitre),
+  'sync-chapitres': id => synchroniserChapitres(id),
+  'etapes-devoir': id => proposerEtapes(id),
+  'chapitre-ressenti': (id, bouton) => cocherChapitreRessenti(id, bouton.dataset.chapitre),
+  'questions': () => ouvrirQuestions(),
+  'ajouter-question': () => ouvrirFormQuestion(),
+  'question-comprise': (id, bouton) => marquerQuestionComprise(id, bouton.dataset.source, bouton),
+  'examen-blanc': id => {
+    // Depuis le chrono au repos : pour le sujet coché à ce moment-là.
+    const coche = document.querySelector('#chrono-repos input[name="sujet-chrono"]:checked');
+    ouvrirFormExamenBlanc(id || (coche ? coche.value : ''));
+  },
+  'fiche-lecture': (id, bouton) => ouvrirFormFiche(id, bouton.dataset.retour),
+  'annuler-fiche': (id, bouton) => {
+    brouillonFiche = null;
+    if (bouton.dataset.retour === 'detail') ouvrirDetailEcheance(id);
+    else fermerFeuille();
+  },
 };
 
 document.addEventListener('click', ev => {
@@ -5735,6 +6444,13 @@ document.addEventListener('submit', ev => {
   if (ev.target.id === 'form-resultat') enregistrerResultat(ev.target);
   if (ev.target.id === 'form-lecture') enregistrerLecture(ev.target);
   if (ev.target.id === 'form-special') enregistrerSpecial(ev.target);
+  if (ev.target.id === 'form-chapitre') ajouterChapitre(ev.target);
+  if (ev.target.id === 'form-question') enregistrerQuestion(ev.target);
+  if (ev.target.id === 'form-fiche') enregistrerFiche(ev.target);
+  if (ev.target.id === 'form-examen-blanc') {
+    const f = new FormData(ev.target);
+    demarrerExamenBlanc(f.get('echeance'), borner(Number(f.get('minutes')) || 60, 15, 300));
+  }
 });
 
 // Changements dans les formulaires et les réglages.
@@ -5745,6 +6461,7 @@ document.addEventListener('input', ev => {
   if (ev.target.closest('#form-special')) majApercuSpecial();
   if (ev.target.classList.contains('page-lecture')) brouillonPage = ev.target.value;
   if (ev.target.classList.contains('note-bloc')) brouillonNote = ev.target.value;
+  if (ev.target.closest('#form-fiche')) majBrouillonFiche(ev.target.closest('#form-fiche'));
 });
 document.addEventListener('change', ev => {
   const t = ev.target;
@@ -5754,6 +6471,7 @@ document.addEventListener('change', ev => {
     majApercuResultat();
   }
   if (t.dataset.checklist) cocherChecklist(t.dataset.id, t.dataset.checklist, t.checked);
+  if (t.dataset.chapitre && t.type === 'checkbox') cocherChapitre(t.dataset.id, t.dataset.chapitre, t.checked);
   if (t.closest('#form-special')) majApercuSpecial();
   if (t.hasAttribute('data-jourparjour')) {
     const r = donnees.reglages;
