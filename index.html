@@ -303,7 +303,8 @@ h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte
 }
 button.bandeau:active, details.bandeau summary:active { transform: scale(0.985); }
 .bandeau > .ic, .bandeau summary > .ic:first-child { color: var(--couleur, var(--alerte)); }
-.bandeau .texte { flex: 1; min-width: 0; }
+.bandeau .texte { flex: 1 1 140px; min-width: 0; overflow-wrap: anywhere; }
+.bandeau, details.bandeau summary { flex-wrap: wrap; }
 .bandeau .texte small { display: block; color: var(--texte-2); font-size: 13px; }
 .bandeau .compte { flex: none; padding: 3px 10px; border-radius: 999px; background: var(--couleur-fond); color: var(--couleur); font-weight: 800; font-variant-numeric: tabular-nums; }
 .bandeau .chevron, .bandeau .chevron-bas { color: var(--texte-3); }
@@ -692,6 +693,21 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .conc-note { max-width: 32ch; color: #6c717c; font-size: 16px; font-style: italic; overflow-wrap: anywhere; }
 .conc-quitter { position: absolute; left: 50%; bottom: calc(24px + var(--bas)); transform: translateX(-50%); padding: 12px 20px; border: 1px solid #2a2d33; border-radius: 999px; background: none; color: #7d828c; font-weight: 600; white-space: nowrap; }
 
+/* ---------- Jours spéciaux, reports, blocs courts (V4) ---------- */
+#form-special[data-genre="off"] .seulement-temps { display: none; }
+.liste-speciaux { list-style: none; margin: 4px 0 0; padding: 0; }
+.liste-speciaux li { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--bord); }
+.liste-speciaux li:first-child { border-top: 0; }
+.ligne-special { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; min-height: 50px; padding: 6px 0; border: 0; background: none; text-align: left; font-weight: 650; overflow-wrap: anywhere; }
+.ligne-special .ic { color: var(--accent-clair); }
+.cal-jour.indispo, .jour-col.indispo { background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0 4px, transparent 4px 9px), var(--carte-2); }
+.cal-jour.special { box-shadow: inset 0 -3px 0 var(--accent-clair); }
+.jour-col.indispo .jc-charge { color: var(--texte-3); }
+.special-puce { --couleur: var(--accent-clair); --couleur-fond: var(--accent-fond); }
+.liens-heros { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 18px; }
+.liens-heros .lien { margin: 6px 0 0; }
+.durees { margin: 0 0 12px; }
+
 /* ---------- Lectures (livres) ---------- */
 #form-echeance[data-genre="lecture"] .seulement-etude, #form-echeance[data-genre="etude"] .seulement-lecture { display: none; }
 .liste-livres { list-style: none; margin: 0; padding: 0; }
@@ -767,12 +783,15 @@ legend { margin-bottom: 8px; padding: 0; font-size: 15px; font-weight: 650; }
 
 .toast {
   position: fixed; left: 50%; bottom: calc(92px + var(--bas)); z-index: 80;
-  max-width: calc(100% - 32px); padding: 12px 18px; border: 1px solid var(--bord-fort); border-radius: 18px;
+  width: max-content; max-width: calc(100vw - 32px); padding: 12px 18px; border: 1px solid var(--bord-fort); border-radius: 18px;
   background: rgba(34, 40, 58, 0.97); color: var(--texte); font-weight: 650; text-align: center;
   box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.75);
   opacity: 0; transform: translate(-50%, 16px) scale(0.98); transition: opacity 0.25s, transform 0.3s var(--anim); pointer-events: none;
 }
 .toast.visible { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.toast.avec-bouton { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; text-align: left; }
+.toast.avec-bouton.visible { pointer-events: auto; }
+.toast-bouton { flex: none; min-height: 40px; padding: 8px 14px; border: 0; border-radius: 12px; background: var(--accent-fond); color: var(--accent-clair); font-weight: 800; }
 .flash { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0; }
 .flash.actif { animation: flash 1.4s ease-out; }
 @keyframes flash { 0%, 25% { opacity: 0.22; } 100% { opacity: 0; } }
@@ -884,7 +903,7 @@ legend { margin-bottom: 8px; padding: 0; font-size: 15px; font-weight: 650; }
 const CLE_STOCKAGE = 'plan-etude-v1';
 // Version du format des données. V1 = 1 ; V2 = 2 (type de travail, ressentis, historique, rythme) ;
 // V3 = 3 (notes et objectifs, checklist de la veille, badges, blocs prévus jour par jour).
-const VERSION_DONNEES = 3;
+const VERSION_DONNEES = 4;   // V4 : jours spéciaux, temps dispo jour par jour, reports, rappel de sauvegarde
 // Copie de secours des données d'avant la mise à jour (faite une seule fois).
 // La copie d'avant la V2 ("plan-etude-copie-avant-v2") reste aussi en place.
 const CLE_SECOURS = 'plan-etude-copie-avant-v' + VERSION_DONNEES;
@@ -946,6 +965,7 @@ const BADGES = [
 const REGLAGES_DEFAUT = {
   dispoSemaine: 60,          // temps dispo du lundi au vendredi
   dispoWeekend: 180,         // temps dispo le samedi et le dimanche
+  dispoParJour: null,        // V4 : temps dispo jour par jour [dim, lun, …, sam] (null = semaine / week-end)
   travail: 25,               // un bloc de travail Pomodoro
   pauseCourte: 5,            // petite pause après chaque bloc
   pauseLongue: 15,           // grande pause…
@@ -986,6 +1006,9 @@ function donneesVides() {
     badges: {},     // badges gagnés et leur date : { "serie-7": "2026-11-30" }
     planJours: {},  // blocs prévus chaque jour (pour comparer prévu / fait) : { "2026-11-23": 3 }
     resumeFerme: null,  // lundi de la semaine dont tu as fermé le résumé
+    joursSpeciaux: [],  // V4 : { id, debut, fin, minutes (0 = pas dispo), motif }
+    reportes: {},       // V4 : échéances reportées un jour donné ("Pas aujourd'hui") : { "AAAA-MM-JJ": [id, …] }
+    sauvegarde: { derniere: null, rappelMasque: null },  // V4 : dernière sauvegarde (export) et rappel masqué jusqu'au…
   };
 }
 
@@ -1101,6 +1124,27 @@ function normaliser(lu) {
     }
   }
   if (estCleDate(lu.resumeFerme)) d.resumeFerme = lu.resumeFerme;
+  // Nouveau en V4 : jours spéciaux, reports "Pas aujourd'hui", rappel de sauvegarde.
+  if (Array.isArray(lu.joursSpeciaux)) {
+    d.joursSpeciaux = lu.joursSpeciaux
+      .filter(x => x && estCleDate(x.debut) && estCleDate(x.fin) && x.fin >= x.debut && Number.isFinite(Number(x.minutes)))
+      .map(x => ({
+        id: idPropre(x.id) || nouvelId(),
+        debut: x.debut,
+        fin: x.fin,
+        minutes: borner(Math.round(Number(x.minutes)), 0, 720),
+        motif: String(x.motif || '').trim().slice(0, 40),
+      }));
+  }
+  if (lu.reportes && typeof lu.reportes === 'object') {
+    for (const [jour, ids] of Object.entries(lu.reportes)) {
+      if (estCleDate(jour) && Array.isArray(ids)) d.reportes[jour] = ids.map(idPropre).filter(Boolean);
+    }
+  }
+  if (lu.sauvegarde && typeof lu.sauvegarde === 'object') {
+    if (estCleDate(lu.sauvegarde.derniere)) d.sauvegarde.derniere = lu.sauvegarde.derniere;
+    if (estCleDate(lu.sauvegarde.rappelMasque)) d.sauvegarde.rappelMasque = lu.sauvegarde.rappelMasque;
+  }
   return d;
 }
 
@@ -1170,6 +1214,8 @@ function completerReglages(lus) {
     }
   }
   if (![10, 20, 100].includes(r.echelleNote)) r.echelleNote = 20;
+  if (!(Array.isArray(r.dispoParJour) && r.dispoParJour.length === 7 && r.dispoParJour.every(v => Number.isFinite(v) && v >= 0 && v <= 720))) r.dispoParJour = null;
+  else r.dispoParJour = [...r.dispoParJour];
   return r;
 }
 
@@ -1587,9 +1633,26 @@ function blocsDansDuree(minutes, r) {
   return nb;
 }
 
-// Nombre de blocs possibles un jour donné (semaine ou week-end).
-function capaciteDuJour(cle, r = donnees.reglages) {
-  return blocsDansDuree(estWeekend(cle) ? r.dispoWeekend : r.dispoSemaine, r);
+// Le jour spécial qui tombe ce jour-là (le plus récent ajouté gagne), ou null.
+function jourSpecial(cle, speciaux = donnees.joursSpeciaux) {
+  if (!Array.isArray(speciaux)) return null;
+  for (let k = speciaux.length - 1; k >= 0; k--) {
+    if (speciaux[k].debut <= cle && cle <= speciaux[k].fin) return speciaux[k];
+  }
+  return null;
+}
+
+// Temps dispo (minutes) un jour donné : jour spécial d'abord, puis jour par jour, sinon semaine / week-end.
+function minutesDispo(cle, r = donnees.reglages, speciaux = donnees.joursSpeciaux) {
+  const special = jourSpecial(cle, speciaux);
+  if (special) return special.minutes;
+  if (Array.isArray(r.dispoParJour)) return r.dispoParJour[dateDepuisCle(cle).getDay()];
+  return estWeekend(cle) ? r.dispoWeekend : r.dispoSemaine;
+}
+
+// Nombre de blocs possibles un jour donné.
+function capaciteDuJour(cle, r = donnees.reglages, speciaux = donnees.joursSpeciaux) {
+  return blocsDansDuree(minutesDispo(cle, r, speciaux), r);
 }
 
 // Combien de jours avant la date on peut commencer à réviser.
@@ -1681,13 +1744,16 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
   // c) Nombre de blocs possibles chaque jour, d'aujourd'hui jusqu'à la dernière veille.
   const capacites = {};
   const dernierJour = infos.reduce((max, i) => (i.veille > max ? i.veille : max), jour);
-  for (let j = jour; j <= dernierJour; j = ajouterJours(j, 1)) capacites[j] = capaciteDuJour(j, r);
+  const speciaux = d.joursSpeciaux || [];
+  for (let j = jour; j <= dernierJour; j = ajouterJours(j, 1)) capacites[j] = capaciteDuJour(j, r, speciaux);
 
   // La "demande" d'une échéance : combien de blocs, sur quels jours, avec quels poids, et comment.
+  const reportees = (d.reportes && d.reportes[jour]) || [];
   function demande(info, aPartirDe, blocs) {
     const jours = [];
     const poids = [];
-    const debut = info.premierJour > aPartirDe ? info.premierJour : aPartirDe;
+    let debut = info.premierJour > aPartirDe ? info.premierJour : aPartirDe;
+    if (debut === jour && reportees.includes(info.echeance.id)) debut = demain;   // reportée : rien aujourd'hui
     for (let j = debut; j <= info.veille; j = ajouterJours(j, 1)) {
       jours.push(j);
       poids.push(poidsDuJour(j, info.echeance, r));
@@ -1769,7 +1835,7 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
     const items = infos.filter(i => i.futur[j] > 0).map(i => ({ info: i, blocs: i.futur[j] }));
     semaine.push({
       jour: j,
-      capacite: capacites[j] !== undefined ? capacites[j] : capaciteDuJour(j, r),
+      capacite: capacites[j] !== undefined ? capacites[j] : capaciteDuJour(j, r, speciaux),
       total: items.reduce((somme, x) => somme + x.blocs, 0),
       items,
       echeancesDuJour: d.echeances.filter(e => e.date === j && !e.terminee).sort(comparerPriorite),
@@ -1998,7 +2064,7 @@ function series(d, jour = aujourdhui()) {
       courant++;
       res.record = Math.max(res.record, courant);
       for (const n of [3, 7, 30]) if (courant >= n && !res.atteint[n]) res.atteint[n] = j;
-    } else if (j !== jour && capaciteDuJour(j, d.reglages) > 0) {
+    } else if (j !== jour && capaciteDuJour(j, d.reglages, d.joursSpeciaux || []) > 0) {
       courant = 0;
     }
   }
@@ -2483,7 +2549,10 @@ function herosLecture(l, plan) {
         <span class="puce-info">${ic('horloge')}${pluriel(o.reste, 'page')} · ≈ ${formaterDuree(o.reste * plan.vitesse)}</span>
       </div>
       <button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer · ${plan.W} min</button>
-      <button class="lien" data-action="j-ai-lu" data-id="${e.id}" type="button">J'ai lu sans chrono</button>
+      <div class="liens-heros">
+        <button class="lien" data-action="j-ai-lu" data-id="${e.id}" type="button">J'ai lu sans chrono</button>
+        ${reportPossible(e, plan) ? `<button class="lien" data-action="pas-aujourdhui" data-id="${e.id}" type="button">Pas aujourd'hui</button>` : ''}
+      </div>
     </section>`;
 }
 
@@ -2505,6 +2574,7 @@ function herosBloc(l, plan) {
         <span class="puce-info">${ic('horloge')}${formaterDuree(restants * plan.W)}${affilee}</span>
       </div>
       <button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer · ${plan.W} min</button>
+      ${reportPossible(e, plan) ? `<div class="liens-heros"><button class="lien" data-action="pas-aujourdhui" data-id="${e.id}" type="button">Pas aujourd'hui</button></div>` : ''}
     </section>`;
 }
 
@@ -2529,7 +2599,7 @@ function herosAttente(c) {
       <h2 class="heros-titre">Prêt pour le bloc suivant ?</h2>
       <span class="heros-sous">${echapper(sujetChrono(c))} · ${pluriel(c.blocsSerie, 'bloc')} dans cette série</span>
       <div class="pile" style="margin-top:18px">
-        <button class="btn btn-principal btn-geant" data-action="bloc-suivant" type="button">${ICONES.lecture} Bloc suivant · ${donnees.reglages.travail} min</button>
+        <button class="btn btn-principal btn-geant" data-action="bloc-suivant" type="button">${ICONES.lecture} Bloc suivant · ${c.dureeTravail || donnees.reglages.travail} min</button>
         <button class="btn btn-plein" data-action="terminer" type="button">Terminer pour l'instant</button>
       </div>
     </section>`;
@@ -2576,6 +2646,19 @@ function herosRepos(plan) {
       </section>`;
   }
   const prochaine = texteProchaineSeance(plan);
+  const special = jourSpecial(plan.jour);
+  if (special && special.minutes === 0) {
+    const seulAujourdhui = special.debut === plan.jour && special.fin === plan.jour;
+    return `<section class="carte heros heros-repos etat-vide" aria-label="Pas dispo aujourd'hui">
+        <div class="illu">${ic('lune')}</div>
+        <h2>Pas dispo aujourd'hui</h2>
+        <p>${special.motif ? `${echapper(capitaliser(special.motif))}. ` : ''}Ton plan s'est organisé autour, sans retard.${prochaine ? ' ' + prochaine : ''}</p>
+        ${seulAujourdhui
+          ? `<button class="btn btn-plein" data-action="supprimer-special" data-id="${special.id}" type="button">Finalement, je suis dispo</button>`
+          : `<button class="btn btn-plein" data-onglet="reglages" type="button">Voir mes jours spéciaux</button>`}
+        ${liensJaiLu(plan)}
+      </section>`;
+  }
   return `<section class="carte heros heros-repos etat-vide" aria-label="Repos">
       <div class="illu">${ic('lune')}</div>
       <h2>Repos aujourd'hui 😌</h2>
@@ -2610,6 +2693,25 @@ function bandeauxDuJour(plan) {
         <summary>${ic(a.type === 'retard' ? 'sablier' : 'alerte')}<span class="texte">${texteAlerteCourt(a, jour)}</span>${ic('chevronBas', 'chevron-bas')}</summary>
         <p class="bandeau-detail">${texteAlerte(a, jour)} ${conseilAlerte(a)}</p>
       </details>`;
+  }
+  // Reporté aujourd'hui ("Pas aujourd'hui") : on peut le remettre au programme.
+  for (const id of donnees.reportes[jour] || []) {
+    const e = trouverEcheance(id);
+    if (!e || e.terminee) continue;
+    h += `<div class="bandeau info-jour" style="${styleMatiereRiche(e.matiereId)}">
+        ${ic('calendrier')}
+        <span class="texte"><strong>Reporté</strong> · ${echapper(titreEcheance(e))}<small>Ses blocs sont répartis sur les jours suivants.</small></span>
+        <button class="btn btn-petit" data-action="annuler-report" data-id="${e.id}" type="button">Remettre</button>
+      </div>`;
+  }
+  // Rappel de sauvegarde (discret, une fois par semaine au plus).
+  if (rappelSauvegardeDu(jour)) {
+    h += `<div class="bandeau info-jour rappel-sauvegarde" style="${styleRiche('#60a5fa')}">
+        ${ic('telecharger')}
+        <span class="texte"><strong>Pense à sauvegarder</strong><small>Dernière sauvegarde : ${texteDerniereSauvegarde(jour)}</small></span>
+        <button class="btn btn-petit" data-action="sauvegarder-rappel" type="button">Sauvegarder</button>
+        <button class="fermer-x" data-action="plus-tard-sauvegarde" type="button" aria-label="Me le rappeler dans 3 jours">${ic('fermer')}</button>
+      </div>`;
   }
   return h ? `<div class="bandeaux">${h}</div>` : '';
 }
@@ -2663,7 +2765,7 @@ function carteAussiAujourdhui(plan) {
   const enAvant = donnees.chrono ? null : aFaire[0];
   const autres = plan.lignesDuJour.filter(l => l !== enAvant);
   const r = donnees.reglages;
-  const dispo = estWeekend(plan.jour) ? r.dispoWeekend : r.dispoSemaine;
+  const dispo = minutesDispo(plan.jour);
   const capacite = `<p class="note-capacite">Temps dispo aujourd'hui : ${formaterDuree(dispo)}, soit ${pluriel(plan.capaciteAujourdhui, 'bloc')} max (pauses comprises).</p>`;
   if (!autres.length) return '';
   const tries = [...autres.filter(l => l.prevus > l.faits), ...autres.filter(l => l.prevus <= l.faits)];
@@ -2720,7 +2822,8 @@ function carteSemaine(plan) {
     const morceaux = s.items.map(x => `<i style="--couleur:${couleurMatiere(x.info.echeance.matiereId)};height:${n1(x.blocs / echelle * 100)}%"></i>`).join('');
     const marques = s.echeancesDuJour.map(e => `<i style="--couleur:${couleurMatiere(e.matiereId)}"></i>`).join('');
     const etiquette = `${capitaliser(dateLongue(s.jour))} : ${pluriel(s.total, 'bloc')} prévu${s.total > 1 ? 's' : ''} sur ${s.capacite}${s.echeancesDuJour.length ? ', ' + s.echeancesDuJour.map(e => nomEcheanceLong(e)).join(', ') : ''}`;
-    return `<button class="jour-col${s === choisi ? ' choisi' : ''}" data-action="jour-semaine" data-jour="${s.jour}" type="button" aria-pressed="${s === choisi}" aria-label="${echapper(etiquette)}">
+    const special = jourSpecial(s.jour);
+    return `<button class="jour-col${s === choisi ? ' choisi' : ''}${special && special.minutes === 0 ? ' indispo' : ''}" data-action="jour-semaine" data-jour="${s.jour}" type="button" aria-pressed="${s === choisi}" aria-label="${echapper(etiquette)}">
         <span class="jc-nom">${JOURS_COURTS[d.getDay()].replace('.', '')}</span>
         <span class="jc-num">${d.getDate()}</span>
         <span class="jc-barre" aria-hidden="true">${morceaux}</span>
@@ -2744,6 +2847,8 @@ function detailJourSemaine(s) {
     if (estLecture(e)) return `<span class="puce" style="${styleMatiere(e.matiereId)}">${echapper(titreEcheance(e))} · ≈ ${pluriel(Math.round(x.blocs * donnees.reglages.travail / vitesseLecture()), 'page')}</span>`;
     return `<span class="puce" style="${styleMatiere(e.matiereId)}">${echapper(nomMatiere(e.matiereId))}${doublon ? ` (${e.type})` : ''} · ${pluriel(x.blocs, 'bloc')}</span>`;
   }).join('');
+  const special = jourSpecial(s.jour);
+  if (special) contenu = `<span class="puce puce-ech special-puce">${ic('lune')}${special.minutes === 0 ? 'Pas dispo' : `Jour spécial : ${formaterDuree(special.minutes)}`}${special.motif ? ` · ${echapper(special.motif)}` : ''}</span>` + contenu;
   if (!contenu) contenu = `<span class="repos">Rien de prévu : repos 😌</span>`;
   return `<div class="jour-detail">
       <div class="jour-detail-titre">${capitaliser(dateLongue(s.jour))}<span>${s.total}/${s.capacite} blocs</span></div>
@@ -2940,6 +3045,16 @@ function optionSujet(valeur, titre, details, style, coche) {
     </label>`;
 }
 
+// Durée choisie pour le prochain bloc (par défaut : la durée réglée, 25 min).
+let dureeChoisie = null;
+function dureesPossibles() {
+  const t = donnees.reglages.travail;
+  return [t, ...[25, 15, 10, 5].filter(m => m < t)].slice(0, 4);
+}
+function dureeBlocChoisie() {
+  return dureesPossibles().includes(dureeChoisie) ? dureeChoisie : donnees.reglages.travail;
+}
+
 function chronoAuRepos() {
   const r = donnees.reglages;
   const jour = aujourdhui();
@@ -2973,11 +3088,14 @@ function chronoAuRepos() {
         <svg viewBox="0 0 120 120"><circle class="anneau-fond" cx="60" cy="60" r="54"></circle><circle class="anneau-progres" cx="60" cy="60" r="54" style="stroke-dashoffset:0"></circle></svg>
         <div class="anneau-centre">
           <span class="chrono-phase">Prêt ?</span>
-          <span class="chrono-temps">${formaterChrono(r.travail * 60000)}</span>
+          <span class="chrono-temps">${formaterChrono(dureeBlocChoisie() * 60000)}</span>
           <span class="anneau-sous" id="repos-sujet">${echapper(choisie ? titreEcheance(choisie) : 'Étude libre')}</span>
         </div>
       </div>
-      <button class="btn btn-principal btn-geant" data-action="demarrer" type="button">${ICONES.lecture} Démarrer · ${r.travail} min</button>
+      <div class="bascule durees" role="group" aria-label="Durée du bloc">
+        ${dureesPossibles().map(m => `<button type="button" data-action="duree-bloc" data-minutes="${m}" aria-pressed="${m === dureeBlocChoisie()}">${m} min</button>`).join('')}
+      </div>
+      <button class="btn btn-principal btn-geant" data-action="demarrer" type="button">${ICONES.lecture} Démarrer · ${dureeBlocChoisie()} min</button>
       <fieldset class="choix-sujet"><legend>Je travaille sur…</legend>${options}</fieldset>
       <p class="aide">Travail ${r.travail} min → petite pause ${r.pauseCourte} min. Grande pause de ${r.pauseLongue} min tous les ${r.blocsAvantPauseLongue} blocs.</p>
       ${possibles.length ? '' : `<p class="aide">Astuce : ajoute une échéance pour que tes blocs comptent dans ton plan.</p>`}
@@ -2993,7 +3111,7 @@ function chronoActif(c) {
   let info = '';
   if (c.phase === 'travail') {
     const longue = (c.blocsSerie + 1) % r.blocsAvantPauseLongue === 0;
-    info = `Bloc n°${c.blocsSerie + 1} · ensuite ${longue ? `grande pause (${r.pauseLongue} min)` : `petite pause (${r.pauseCourte} min)`}`;
+    info = `Bloc n°${c.blocsSerie + 1}${c.dureeTravail && c.dureeTravail < r.travail ? ` (court : ${c.dureeTravail} min)` : ''} · ensuite ${longue ? `grande pause (${r.pauseLongue} min)` : `petite pause (${r.pauseCourte} min)`}`;
   } else if (c.phase === 'attente') {
     info = `Bravo, ${pluriel(c.blocsSerie, 'bloc')} dans cette série 💪`;
   } else {
@@ -3017,7 +3135,7 @@ function chronoActif(c) {
   let boutons;
   if (c.phase === 'attente') {
     boutons = `<div class="pile">
-        <button class="btn btn-principal btn-geant" data-action="bloc-suivant" type="button">${ICONES.lecture} Bloc suivant (${r.travail} min)</button>
+        <button class="btn btn-principal btn-geant" data-action="bloc-suivant" type="button">${ICONES.lecture} Bloc suivant (${c.dureeTravail || r.travail} min)</button>
         <button class="btn btn-plein" data-action="terminer" type="button">Terminer pour l'instant</button>
       </div>`;
   } else {
@@ -3169,7 +3287,8 @@ function carteCalendrier(plan) {
     const barre = parts.map(p => `<i style="flex:${p.valeur};--couleur:${couleurId(p.id)}"></i>`).join('');
     const marques = echs.map(e => `<i class="cal-ech ${e.type}" style="--couleur:${couleurMatiere(e.matiereId)}"></i>`).join('');
     const etiquette = capitaliser(dateLongue(j)) + (echs.length ? ' : ' + echs.map(e => nomEcheanceLong(e)).join(', ') : '');
-    cases += `<button class="cal-jour${j >= premier && j < moisSuivant ? '' : ' hors'}${j === jour ? ' auj' : ''}${j === choisi ? ' choisi' : ''}" data-action="cal-jour" data-jour="${j}" type="button" aria-label="${echapper(etiquette)}">
+    const special = jourSpecial(j);
+    cases += `<button class="cal-jour${j >= premier && j < moisSuivant ? '' : ' hors'}${j === jour ? ' auj' : ''}${j === choisi ? ' choisi' : ''}${special ? (special.minutes === 0 ? ' indispo' : ' special') : ''}" data-action="cal-jour" data-jour="${j}" type="button" aria-label="${echapper(etiquette)}">
         <span class="cal-num">${dateDepuisCle(j).getDate()}</span>
         <span class="cal-marques">${marques}</span>
         <span class="cal-barre">${barre}</span>
@@ -3222,6 +3341,14 @@ function detailJourCalendrier(j, plan) {
     const faits = etudeParMatiere(donnees.blocs, j, j);
     if (faits.length) h += `<p class="aide">Fait : ${faits.map(x => `${echapper(nomCourtId(x.id))} ${formaterDuree(x.minutes)}`).join(' · ')}</p>`;
     else if (j < plan.jour) h += `<p class="aide">Aucun bloc fait ce jour-là.</p>`;
+  }
+  const special = jourSpecial(j);
+  if (special) {
+    h += `<button class="ligne-cal" data-action="modifier-special" data-id="${special.id}" type="button">
+        ${ic('lune')}<span class="texte">${echapper(texteSpecial(special))}</span>${ic('chevron', 'chevron')}
+      </button>`;
+  } else if (j >= plan.jour) {
+    h += `<div class="pile"><button class="btn btn-plein" data-action="special-jour" data-jour="${j}" type="button">${ic('lune')} Je ne suis pas dispo ce jour-là</button></div>`;
   }
   return h + `</section>`;
 }
@@ -3659,9 +3786,27 @@ function afficherReglages() {
 
   h += `<h2 class="titre-section">Mon temps disponible</h2>
     <section class="carte">
-      ${ligneReglage('dispoSemaine', 'En semaine', 'du lundi au vendredi', 15, 0, 720, 'duree')}
+      <label class="ligne-reglage">
+        <span class="libelle">Jour par jour<small>un temps différent pour chaque jour</small></span>
+        <span class="interrupteur"><input type="checkbox" data-jourparjour${r.dispoParJour ? ' checked' : ''}><span></span></span>
+      </label>
+      ${r.dispoParJour
+        ? [1, 2, 3, 4, 5, 6, 0].map(n => ligneReglage(`dispoParJour.${n}`, capitaliser(JOURS[n]), '', 15, 0, 720, 'duree')).join('')
+          + `<p class="aide">Pauses comprises, ça fait : ${[1, 2, 3, 4, 5, 6, 0].map(n => `<span class="insecable">${JOURS_COURTS[n].replace('.', '')} ${blocsDansDuree(r.dispoParJour[n], r)}</span>`).join(' · ')} blocs.</p>`
+        : `${ligneReglage('dispoSemaine', 'En semaine', 'du lundi au vendredi', 15, 0, 720, 'duree')}
       ${ligneReglage('dispoWeekend', 'Le week-end', 'samedi et dimanche', 15, 0, 720, 'duree')}
-      <p class="aide">Pauses comprises, ça fait <strong>${pluriel(capSemaine, 'bloc')}</strong> par jour en semaine et <strong>${pluriel(capWeekend, 'bloc')}</strong> le week-end.</p>
+      <p class="aide">Pauses comprises, ça fait <strong>${pluriel(capSemaine, 'bloc')}</strong> par jour en semaine et <strong>${pluriel(capWeekend, 'bloc')}</strong> le week-end.</p>`}
+    </section>`;
+
+  const speciaux = donnees.joursSpeciaux.filter(x => x.fin >= aujourdhui()).sort((a, b) => (a.debut < b.debut ? -1 : 1));
+  h += `<h2 class="titre-section">Jours spéciaux</h2>
+    <section class="carte">
+      <p class="aide" style="margin-top:0">Pas dispo un jour (sortie, malade…) ou des vacances ? Le plan s'organise autour, sans compter de retard.</p>
+      ${speciaux.length ? `<ul class="liste-speciaux">${speciaux.map(x => `<li>
+          <button class="ligne-special" data-action="modifier-special" data-id="${x.id}" type="button">${ic('lune')}<span>${echapper(texteSpecial(x))}</span></button>
+          <button class="supprimer-bloc" data-action="supprimer-special" data-id="${x.id}" type="button" aria-label="Supprimer ce jour spécial">${ic('fermer')}</button>
+        </li>`).join('')}</ul>` : ''}
+      <div class="pile"><button class="btn btn-plein" data-action="ajouter-special" type="button">${ic('plus')} Ajouter un jour spécial</button></div>
     </section>`;
 
   h += `<h2 class="titre-section">Chrono</h2>
@@ -3715,6 +3860,7 @@ function afficherReglages() {
   h += `<h2 class="titre-section">Mes données</h2>
     <section class="carte">
       <p class="aide" style="margin-top:0">Tout est enregistré uniquement dans ce navigateur, sur cet appareil. Exporte une sauvegarde de temps en temps, et avant de changer de téléphone.</p>
+      <p class="aide">Dernière sauvegarde : <strong>${texteDerniereSauvegarde()}</strong>.</p>
       <div class="pile">
         <button class="btn btn-principal btn-plein" data-action="exporter" type="button">${ic('telecharger')} Exporter mes données</button>
         <button class="btn btn-plein" data-action="importer" type="button">${ic('televerser')} Importer une sauvegarde</button>
@@ -3723,7 +3869,7 @@ function afficherReglages() {
         <button class="btn btn-plein btn-danger" data-action="tout-effacer" type="button">Tout effacer</button>
       </div>
     </section>
-    <p class="aide centre version">Plan d'étude · V3 · nouveau look</p>`;
+    <p class="aide centre version">Plan d'étude · V4</p>`;
 
   document.getElementById('vue-reglages').innerHTML = h;
 }
@@ -3833,12 +3979,42 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
 /* ---------- Petits messages ---------- */
 
 let minuteurToast = null;
-function afficherToast(texte) {
+// Un petit message en bas. Avec un bouton (ex : "Annuler"), il reste 7 secondes.
+function afficherToast(texte, bouton = null) {
   const t = document.getElementById('toast');
-  t.textContent = texte;
+  t.textContent = '';
+  const span = document.createElement('span');
+  span.textContent = texte;
+  t.appendChild(span);
+  if (bouton) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'toast-bouton';
+    b.dataset.action = bouton.action;
+    b.textContent = bouton.texte;
+    t.appendChild(b);
+  }
+  t.classList.toggle('avec-bouton', Boolean(bouton));
   t.classList.add('visible');
   clearTimeout(minuteurToast);
-  minuteurToast = setTimeout(() => t.classList.remove('visible'), 2800);
+  minuteurToast = setTimeout(() => t.classList.remove('visible'), bouton ? 7000 : 2800);
+}
+
+// Après une suppression : un bouton "Annuler" pendant 7 secondes.
+let annulation = null;
+function proposerAnnulation(message, defaire) {
+  annulation = { defaire, jusqua: Date.now() + 7500 };
+  afficherToast(message, { texte: 'Annuler', action: 'annuler' });
+}
+function annulerDerniere() {
+  const a = annulation;
+  annulation = null;
+  if (!a || Date.now() > a.jusqua) return;
+  a.defaire();
+  sauvegarder();
+  majVerrouEcran();
+  rafraichir();
+  afficherToast('Annulé ✓');
 }
 
 function flasher(couleur) {
@@ -3972,7 +4148,8 @@ function ouvrirDetailEcheance(id) {
       ${statutEcheance(e, plan)}
       ${estVeille(e, plan.jour) ? blocChecklist(e) : ''}
       ${e.terminee ? blocResultat(e) : ''}
-      ${active ? `<div class="pile" style="margin-top:16px"><button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer un bloc</button></div>` : ''}
+      ${active ? `<div class="pile" style="margin-top:16px"><button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer un bloc</button>
+        ${reportPossible(e, plan) ? `<button class="btn btn-plein" data-action="pas-aujourdhui" data-id="${e.id}" type="button">${ic('calendrier')} Pas aujourd'hui (reporter)</button>` : ''}</div>` : ''}
       <h3>Mes blocs et mes notes</h3>
       ${notes}
       <div class="pile" style="margin-top:18px">
@@ -4033,6 +4210,7 @@ function ouvrirDetailLecture(e) {
       ${active && reste > 0 ? `<div class="pile" style="margin-top:16px">
           <button class="btn btn-principal btn-geant" data-action="lancer" data-id="${e.id}" type="button">${ICONES.lecture} Lancer un bloc de lecture</button>
           <button class="btn btn-plein" data-action="j-ai-lu" data-id="${e.id}" type="button">${ic('livre')} J'ai lu sans chrono</button>
+          ${reportPossible(e, plan) ? `<button class="btn btn-plein" data-action="pas-aujourdhui" data-id="${e.id}" type="button">${ic('calendrier')} Pas aujourd'hui (reporter)</button>` : ''}
         </div>` : ''}
       <h3>Mes séances de lecture</h3>
       ${liste}
@@ -4255,11 +4433,16 @@ async function supprimerSeance(id) {
   if (!b) return;
   const texte = b.pages !== undefined ? `+${pluriel(b.pages, 'page')}, ${b.minutes} min` : `${b.minutes} min`;
   if (!(await confirmer(`Supprimer cette séance de lecture (${texte}) ?`, 'Supprimer', true))) return;
+  const position = donnees.blocs.indexOf(b);
   donnees.blocs = donnees.blocs.filter(x => x.id !== id);
   if (donnees.aEvaluer === id) donnees.aEvaluer = null;
   sauvegarder();
   rafraichir();
   if (b.echeanceId && trouverEcheance(b.echeanceId)) ouvrirDetailEcheance(b.echeanceId);
+  proposerAnnulation('Séance supprimée', () => {
+    if (!donnees.blocs.some(x => x.id === b.id)) donnees.blocs.splice(Math.min(position, donnees.blocs.length), 0, b);
+    if (b.echeanceId && trouverEcheance(b.echeanceId) && !document.getElementById('fond-feuille').hidden) setTimeout(() => ouvrirDetailEcheance(b.echeanceId), 0);
+  });
 }
 
 /* ---------- Ta note à un test ou un examen ---------- */
@@ -4396,11 +4579,12 @@ async function effacerNote(id) {
   const e = trouverEcheance(id);
   if (!e || !e.resultat) return;
   if (!(await confirmer(`Effacer ta note (${formaterNote(e.resultat.note, e.resultat.sur)}) ?`, 'Effacer', true))) return;
+  const ancienne = e.resultat;
   e.resultat = null;
   sauvegarder();
   fermerFeuille();
   rafraichir();
-  afficherToast('Note effacée');
+  proposerAnnulation('Note effacée', () => { if (trouverEcheance(e.id) && !e.resultat) e.resultat = ancienne; });
 }
 
 function remettreDansPlan(id) {
@@ -4608,11 +4792,14 @@ async function supprimerEcheance(id) {
   if (!e) return;
   const ok = await confirmer(`Supprimer ${nomEcheanceLong(e)} du ${dateLongue(e.date)} ?`, 'Supprimer', true);
   if (!ok) return;
+  const position = donnees.echeances.indexOf(e);
   donnees.echeances = donnees.echeances.filter(x => x.id !== id);
   sauvegarder();
   fermerFeuille();
   rafraichir();
-  afficherToast('Échéance supprimée');
+  proposerAnnulation('Échéance supprimée', () => {
+    if (!trouverEcheance(e.id)) donnees.echeances.splice(Math.min(position, donnees.echeances.length), 0, e);
+  });
 }
 
 /* ---------- Formulaire d'une matière ---------- */
@@ -4696,12 +4883,194 @@ async function supprimerMatiere(id) {
     ? `Supprimer « ${m.nom} » ? ${liees > 1 ? `Ses ${liees} échéances seront aussi supprimées.` : 'Son échéance sera aussi supprimée.'}`
     : `Supprimer la matière « ${m.nom} » ?`;
   if (!(await confirmer(message, 'Supprimer', true))) return;
+  const position = donnees.matieres.indexOf(m);
+  const echeancesLiees = donnees.echeances.filter(e => e.matiereId === id);
   donnees.matieres = donnees.matieres.filter(x => x.id !== id);
   donnees.echeances = donnees.echeances.filter(e => e.matiereId !== id);
   sauvegarder();
   fermerFeuille();
   rafraichir();
-  afficherToast('Matière supprimée');
+  proposerAnnulation('Matière supprimée', () => {
+    if (!trouverMatiere(m.id)) donnees.matieres.splice(Math.min(position, donnees.matieres.length), 0, m);
+    for (const e of echeancesLiees) if (!trouverEcheance(e.id)) donnees.echeances.push(e);
+  });
+}
+
+/* ---------- Jours spéciaux (pas dispo, vacances, autre temps) ---------- */
+
+// "Sam. 28 nov." ou "Du 21 déc. au 3 janv."
+function texteDatesSpecial(x) {
+  return x.debut === x.fin ? capitaliser(dateCourte(x.debut)) : `Du ${dateCourteSansJour(x.debut)} au ${dateCourteSansJour(x.fin)}`;
+}
+function texteSpecial(x) {
+  const temps = x.minutes === 0 ? 'Pas dispo' : `${formaterDuree(x.minutes)}${x.debut === x.fin ? ' ce jour-là' : ' par jour'}`;
+  return `${texteDatesSpecial(x)} · ${temps}${x.motif ? ` · ${x.motif}` : ''}`;
+}
+
+function ouvrirFormSpecial(id, dateProposee = null) {
+  const x = id ? donnees.joursSpeciaux.find(j => j.id === id) : null;
+  const v = x || { debut: dateProposee || aujourdhui(), fin: dateProposee || aujourdhui(), minutes: 0, motif: '' };
+  const genre = v.minutes === 0 ? 'off' : 'temps';
+  ouvrirFeuille(`<form id="form-special" data-id="${x ? x.id : ''}" data-genre="${genre}" novalidate>
+      <h2>${x ? 'Modifier le jour spécial' : 'Jour spécial'}</h2>
+      <p class="aide" style="margin:-6px 0 16px">Un jour où tu n'es pas dispo (sortie, malade…), ou des vacances avec plus de temps : le plan s'organise autour, sans compter de retard.</p>
+      <div class="deux-champs">
+        <label class="champ">Du<input type="date" name="debut" value="${v.debut}"></label>
+        <label class="champ">Au <span class="facultatif">(inclus)</span><input type="date" name="fin" value="${v.fin}"></label>
+      </div>
+      <fieldset>
+        <legend>Ces jours-là</legend>
+        <div class="segments">
+          <label><input type="radio" name="genre" value="off"${genre === 'off' ? ' checked' : ''}><span>Pas dispo</span></label>
+          <label><input type="radio" name="genre" value="temps"${genre === 'temps' ? ' checked' : ''}><span>Un autre temps</span></label>
+        </div>
+      </fieldset>
+      <div class="seulement-temps">
+        <label class="champ">Temps dispo par jour (en minutes)<input type="number" name="minutes" min="0" max="720" step="15" inputmode="numeric" value="${v.minutes || 180}"></label>
+      </div>
+      <label class="champ">Motif <span class="facultatif">(facultatif)</span>
+        <input type="text" name="motif" maxlength="40" value="${echapper(v.motif)}" placeholder="ex : anniversaire, vacances, malade" autocomplete="off">
+      </label>
+      <div class="estimation" id="apercu-special"></div>
+      <p class="erreur" id="erreur-form" hidden></p>
+      <div class="pile">
+        <button type="submit" class="btn btn-principal btn-geant">Enregistrer</button>
+        <button type="button" class="btn btn-plein" data-action="fermer">Annuler</button>
+        ${x ? `<button type="button" class="btn btn-plein btn-danger" data-action="supprimer-special" data-id="${x.id}">Supprimer ce jour spécial</button>` : ''}
+      </div>
+    </form>`);
+  majApercuSpecial();
+}
+
+// Lit le formulaire. Renvoie { debut, fin, minutes, motif, erreur }.
+function lireFormSpecial(form) {
+  const f = new FormData(form);
+  const debut = f.get('debut');
+  const fin = f.get('fin') || debut;
+  const minutes = f.get('genre') === 'off' ? 0 : Number(f.get('minutes'));
+  let erreur = null;
+  if (!estCleDate(debut)) erreur = 'Choisis la date du jour spécial.';
+  else if (!estCleDate(fin)) erreur = 'Choisis la date de fin (ou la même que le début).';
+  else if (fin < debut) erreur = 'La date de fin est avant la date de début.';
+  else if (ecartJours(debut, fin) > 120) erreur = 'Maximum 4 mois d\'affilée.';
+  else if (!(Number.isInteger(minutes) && minutes >= 0 && minutes <= 720)) erreur = 'Le temps dispo doit être un nombre de minutes entre 0 et 720 (12 h).';
+  return { debut, fin, minutes, motif: String(f.get('motif') || '').trim().slice(0, 40), erreur };
+}
+
+function majApercuSpecial() {
+  const form = document.getElementById('form-special');
+  if (!form) return;
+  form.dataset.genre = new FormData(form).get('genre') === 'temps' ? 'temps' : 'off';
+  const v = lireFormSpecial(form);
+  const zone = document.getElementById('apercu-special');
+  if (v.erreur) {
+    zone.innerHTML = `<div class="aide">${echapper(v.erreur)}</div>`;
+    return;
+  }
+  const nb = ecartJours(v.debut, v.fin) + 1;
+  zone.innerHTML = `<strong>${pluriel(nb, 'jour')}</strong> · ${v.minutes === 0 ? 'aucun bloc prévu' : `${formaterDuree(v.minutes)} = ${pluriel(blocsDansDuree(v.minutes, donnees.reglages), 'bloc')} par jour`}
+    <div class="aide">Le plan répartit le travail sur les autres jours.</div>`;
+}
+
+// Les blocs prévus ces jours-là sont oubliés dans le "rythme" : pas de faux retard.
+function oublierRythmeEntre(debut, fin) {
+  for (const e of donnees.echeances) {
+    if (!e.rythme || !e.rythme.prevu) continue;
+    for (const j of Object.keys(e.rythme.prevu)) if (j >= debut && j <= fin) delete e.rythme.prevu[j];
+  }
+}
+
+function enregistrerSpecial(form) {
+  const v = lireFormSpecial(form);
+  if (v.erreur) return erreurForm(v.erreur);
+  const id = form.dataset.id;
+  const x = id ? donnees.joursSpeciaux.find(j => j.id === id) : null;
+  if (x) Object.assign(x, { debut: v.debut, fin: v.fin, minutes: v.minutes, motif: v.motif });
+  else donnees.joursSpeciaux.push({ id: nouvelId(), debut: v.debut, fin: v.fin, minutes: v.minutes, motif: v.motif });
+  oublierRythmeEntre(v.debut, v.fin);
+  sauvegarder();
+  fermerFeuille();
+  rafraichir();
+  afficherToast(x ? 'Jour spécial modifié ✓ · plan recalculé' : 'Jour spécial ajouté ✓ · plan recalculé');
+}
+
+function supprimerSpecial(id) {
+  const x = donnees.joursSpeciaux.find(j => j.id === id);
+  if (!x) return;
+  const position = donnees.joursSpeciaux.indexOf(x);
+  donnees.joursSpeciaux = donnees.joursSpeciaux.filter(j => j.id !== id);
+  sauvegarder();
+  fermerFeuille();
+  rafraichir();
+  proposerAnnulation('Jour spécial supprimé', () => {
+    if (!donnees.joursSpeciaux.some(j => j.id === x.id)) donnees.joursSpeciaux.splice(Math.min(position, donnees.joursSpeciaux.length), 0, x);
+  });
+}
+
+/* ---------- "Pas aujourd'hui" : reporter un bloc sans compter de retard ---------- */
+
+async function pasAujourdhui(id) {
+  const e = trouverEcheance(id);
+  if (!e) return;
+  const jour = aujourdhui();
+  const dernier = e.date === ajouterJours(jour, 1);
+  const choix = await choisir(`Pas le temps aujourd'hui pour ${nomEcheanceLong(e)} ? Ses blocs seront répartis sur les jours qui restent, sans compter de retard.${dernier ? " ⚠️ C'est demain : il ne reste aucun autre jour." : ''}`, [
+    { valeur: 'un', texte: `Reporter seulement ${titreEcheance(e)}`, style: 'principal' },
+    { valeur: 'tout', texte: "Pas dispo aujourd'hui (tout reporter)" },
+    { valeur: null, texte: 'Annuler' },
+  ]);
+  if (!choix) return;
+  fermerFeuille();
+  if (choix === 'un') {
+    const liste = (donnees.reportes[jour] || []).filter(x => x !== id).concat(id);
+    donnees.reportes = { [jour]: liste };   // on ne garde que les reports d'aujourd'hui
+    if (e.rythme && e.rythme.prevu) delete e.rythme.prevu[jour];
+    sauvegarder();
+    rafraichir();
+    proposerAnnulation(`${titreEcheance(e)} : reporté à plus tard`, () => {
+      donnees.reportes[jour] = (donnees.reportes[jour] || []).filter(x => x !== id);
+    });
+  } else {
+    const special = { id: nouvelId(), debut: jour, fin: jour, minutes: 0, motif: 'pas dispo' };
+    donnees.joursSpeciaux.push(special);
+    oublierRythmeEntre(jour, jour);
+    sauvegarder();
+    rafraichir();
+    proposerAnnulation("Pas dispo aujourd'hui : tout est reporté", () => {
+      donnees.joursSpeciaux = donnees.joursSpeciaux.filter(x => x.id !== special.id);
+    });
+  }
+}
+
+function annulerReport(id) {
+  const jour = aujourdhui();
+  donnees.reportes[jour] = (donnees.reportes[jour] || []).filter(x => x !== id);
+  sauvegarder();
+  rafraichir();
+  afficherToast('Remis au programme ✓');
+}
+
+// Le bouton "Pas aujourd'hui" n'a de sens que s'il reste des blocs prévus aujourd'hui.
+function reportPossible(e, plan) {
+  const i = plan.parId[e.id];
+  return Boolean(i) && i.prevuAujourdhui > i.faitsAujourdhui;
+}
+
+/* ---------- Rappel de sauvegarde ---------- */
+
+// On le montre si rien n'a été exporté depuis 7 jours (ou jamais) et qu'il y a du nouveau à sauvegarder.
+function rappelSauvegardeDu(jour) {
+  const s = donnees.sauvegarde;
+  if (s.rappelMasque && s.rappelMasque > jour) return false;
+  if (s.derniere && ecartJours(s.derniere, jour) < 7) return false;
+  const nouveaux = donnees.blocs.filter(b => !s.derniere || b.date > s.derniere);
+  return s.derniere ? nouveaux.length > 0 : new Set(nouveaux.map(b => b.date)).size >= 3;
+}
+function texteDerniereSauvegarde(jour = aujourdhui()) {
+  const d = donnees.sauvegarde.derniere;
+  if (!d) return 'jamais';
+  const n = ecartJours(d, jour);
+  return n <= 0 ? "aujourd'hui" : n === 1 ? 'hier' : `il y a ${n} jours`;
 }
 
 /* ---------- Données : exemples, remise à zéro ---------- */
@@ -4738,29 +5107,35 @@ async function chargerExemple() {
 
 async function reglagesParDefaut() {
   if (!(await confirmer('Remettre tous les réglages par défaut ?', 'Remettre par défaut'))) return;
+  const avant = donnees.reglages;
   donnees.reglages = copie(REGLAGES_DEFAUT);
   sauvegarder();
   rafraichir();
-  afficherToast('Réglages par défaut ✓');
+  proposerAnnulation('Réglages par défaut ✓', () => { donnees.reglages = avant; });
 }
 
 async function toutEffacer() {
   if (!(await confirmer('Tout effacer ? Matières, échéances, blocs faits et réglages seront supprimés définitivement. Pense à exporter une sauvegarde avant.', 'Tout effacer', true))) return;
+  const avant = donnees;
   donnees = donneesVides();
   sauvegarder();
   majVerrouEcran();
   afficherVue('aujourdhui');
-  afficherToast('Tout a été effacé');
+  proposerAnnulation('Tout a été effacé', () => { donnees = avant; });
 }
 
 async function supprimerBloc(id) {
   const b = donnees.blocs.find(x => x.id === id);
   if (!b) return;
   if (!(await confirmer(`Supprimer ce bloc de ${b.minutes} min ? Il ne comptera plus dans ton plan.`, 'Supprimer', true))) return;
+  const position = donnees.blocs.indexOf(b);
   donnees.blocs = donnees.blocs.filter(x => x.id !== id);
   if (donnees.aEvaluer === id) donnees.aEvaluer = null;
   sauvegarder();
   rafraichir();
+  proposerAnnulation('Bloc supprimé', () => {
+    if (!donnees.blocs.some(x => x.id === b.id)) donnees.blocs.splice(Math.min(position, donnees.blocs.length), 0, b);
+  });
 }
 
 /* ---------- Sauvegarde dans un fichier : exporter / importer ---------- */
@@ -4777,6 +5152,8 @@ function contenuExport() {
     reglages: donnees.reglages,
     badges: donnees.badges,         // V3
     planJours: donnees.planJours,   // V3 : blocs prévus chaque jour (pour "prévu / fait")
+    joursSpeciaux: donnees.joursSpeciaux,   // V4 : jours pas dispo, vacances…
+    reportes: donnees.reportes,             // V4 : "Pas aujourd'hui"
   };
 }
 
@@ -4788,6 +5165,7 @@ async function exporterDonnees() {
   if (estIphone() && navigator.canShare && navigator.canShare({ files: [fichier] })) {
     try {
       await navigator.share({ files: [fichier], title: nom });
+      noterSauvegarde();
       afficherToast('Sauvegarde prête ✓');
     } catch (erreur) { /* partage annulé */ }
     return;
@@ -4800,7 +5178,16 @@ async function exporterDonnees() {
   lien.click();
   lien.remove();
   setTimeout(() => URL.revokeObjectURL(url), 30000);
+  noterSauvegarde();
   afficherToast('Sauvegarde téléchargée ✓');
+}
+
+// On retient la date de la dernière sauvegarde (pour le rappel).
+function noterSauvegarde() {
+  donnees.sauvegarde.derniere = aujourdhui();
+  donnees.sauvegarde.rappelMasque = null;
+  sauvegarder();
+  rafraichir();
 }
 
 async function importerFichier(fichier) {
@@ -4822,6 +5209,7 @@ async function importerFichier(fichier) {
   const chrono = donnees.chrono;
   donnees = normaliser(lu);   // mêmes vérifications que pour le localStorage (+ migration si c'est un vieux fichier)
   if (chrono && (!chrono.echeanceId || trouverEcheance(chrono.echeanceId))) donnees.chrono = chrono;
+  if (!isNaN(date)) donnees.sauvegarde.derniere = cleDate(date);   // ce fichier EST une sauvegarde
   sauvegarder();
   verifierBadges(true);   // un vieux fichier (V1, V2) n'a pas de badges : on les retrouve sans bruit
   majVerrouEcran();
@@ -4873,15 +5261,17 @@ function lancerDepuisPlan(echeanceId) {
   demarrerBloc(echeanceId, c ? c.blocsSerie : 0);
 }
 
-function demarrerBloc(echeanceId, blocsSerie = 0) {
+function demarrerBloc(echeanceId, blocsSerie = 0, minutes = null) {
   preparerSon();
   const e = echeanceId ? trouverEcheance(echeanceId) : null;
   const maintenant = Date.now();
+  const duree = minutes && minutes > 0 && minutes <= donnees.reglages.travail ? minutes : donnees.reglages.travail;
   donnees.chrono = {
     phase: 'travail',
     echeanceId: e ? e.id : null,
     matiereId: e ? e.matiereId : null,
-    dureeMs: donnees.reglages.travail * 60000,
+    dureeMs: duree * 60000,
+    dureeTravail: duree,   // V4 : un bloc peut être plus court (10, 15 min…)
     debut: maintenant,     // heure de départ (null quand le chrono est en pause)
     dejaEcouleMs: 0,       // temps déjà écoulé avant une pause
     debutBloc: maintenant, // pour enregistrer la date du bloc
@@ -4986,7 +5376,7 @@ function passerPause() {
   verifierChrono();
   const c = donnees.chrono;
   if (!c || c.phase === 'travail') return;
-  demarrerBloc(c.echeanceId, c.blocsSerie);
+  demarrerBloc(c.echeanceId, c.blocsSerie, c.dureeTravail);
 }
 
 function terminerSerie() {
@@ -5219,13 +5609,13 @@ const ACTIONS = {
   'aller-chrono': () => afficherVue('chrono'),
   'demarrer': () => {
     const coche = document.querySelector('input[name="sujet-chrono"]:checked');
-    demarrerBloc(coche && coche.value ? coche.value : null);
+    demarrerBloc(coche && coche.value ? coche.value : null, 0, dureeBlocChoisie());
   },
   'pause': () => mettreEnPause(),
   'reprendre': () => reprendre(),
   'arreter': () => arreter(),
   'passer-pause': () => passerPause(),
-  'bloc-suivant': () => demarrerBloc(donnees.chrono ? donnees.chrono.echeanceId : null, donnees.chrono ? donnees.chrono.blocsSerie : 0),
+  'bloc-suivant': () => demarrerBloc(donnees.chrono ? donnees.chrono.echeanceId : null, donnees.chrono ? donnees.chrono.blocsSerie : 0, donnees.chrono ? donnees.chrono.dureeTravail : null),
   'terminer': () => terminerSerie(),
   'ressenti': (id, bouton) => noterBloc(bouton.dataset.valeur, bouton),
   'ajouter-echeance': () => ouvrirFormEcheance(null),
@@ -5281,6 +5671,24 @@ const ACTIONS = {
   'quitter-concentration': () => quitterConcentration(),
   'note-resultat': id => ouvrirFormResultat(id),
   'j-ai-lu': id => ouvrirFormLecture(id),
+  'annuler': () => annulerDerniere(),
+  'ajouter-special': () => ouvrirFormSpecial(null),
+  'modifier-special': id => ouvrirFormSpecial(id),
+  'supprimer-special': id => supprimerSpecial(id),
+  'special-jour': (id, bouton) => ouvrirFormSpecial(null, bouton.dataset.jour),
+  'pas-aujourdhui': id => pasAujourdhui(id),
+  'annuler-report': id => annulerReport(id),
+  'sauvegarder-rappel': () => exporterDonnees(),
+  'plus-tard-sauvegarde': () => {
+    donnees.sauvegarde.rappelMasque = ajouterJours(aujourdhui(), 3);
+    sauvegarder();
+    rafraichir();
+    afficherToast('OK, je te le rappellerai dans 3 jours');
+  },
+  'duree-bloc': (id, bouton) => {
+    dureeChoisie = Number(bouton.dataset.minutes);
+    rafraichir();
+  },
   'fini-lecture': () => finirBlocLecture(),
   'allonger-lecture': () => allongerBlocLecture(),
   'pages-lues': (id, bouton) => enregistrerPagesLues(bouton),
@@ -5326,6 +5734,7 @@ document.addEventListener('submit', ev => {
   if (ev.target.id === 'form-matiere') enregistrerMatiere(ev.target);
   if (ev.target.id === 'form-resultat') enregistrerResultat(ev.target);
   if (ev.target.id === 'form-lecture') enregistrerLecture(ev.target);
+  if (ev.target.id === 'form-special') enregistrerSpecial(ev.target);
 });
 
 // Changements dans les formulaires et les réglages.
@@ -5333,6 +5742,7 @@ document.addEventListener('input', ev => {
   if (ev.target.closest('#form-echeance')) majEstimation();
   if (ev.target.closest('#form-resultat')) majApercuResultat();
   if (ev.target.closest('#form-lecture')) majApercuLecture();
+  if (ev.target.closest('#form-special')) majApercuSpecial();
   if (ev.target.classList.contains('page-lecture')) brouillonPage = ev.target.value;
   if (ev.target.classList.contains('note-bloc')) brouillonNote = ev.target.value;
 });
@@ -5344,6 +5754,13 @@ document.addEventListener('change', ev => {
     majApercuResultat();
   }
   if (t.dataset.checklist) cocherChecklist(t.dataset.id, t.dataset.checklist, t.checked);
+  if (t.closest('#form-special')) majApercuSpecial();
+  if (t.hasAttribute('data-jourparjour')) {
+    const r = donnees.reglages;
+    r.dispoParJour = t.checked ? [r.dispoWeekend, r.dispoSemaine, r.dispoSemaine, r.dispoSemaine, r.dispoSemaine, r.dispoSemaine, r.dispoWeekend] : null;
+    sauvegarder();
+    afficherReglages();
+  }
   if (t.name === 'sujet-chrono') {
     choixChrono = t.value;
     const zone = document.getElementById('chrono-repos');
