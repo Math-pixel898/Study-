@@ -9,10 +9,90 @@
   "display": "standalone",
   "background_color": "#0a0c13",
   "theme_color": "#121628",
-  "categories": ["education", "productivity"],
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Lancer un bloc",
+      "short_name": "Lancer un bloc",
+      "description": "Démarre le prochain bloc prévu",
+      "url": "./?action=lancer",
+      "icons": [
+        {
+          "src": "icons/raccourci-lancer-96.png",
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "icons/raccourci-lancer-192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any maskable"
+        }
+      ]
+    },
+    {
+      "name": "J'ai lu",
+      "short_name": "J'ai lu",
+      "description": "Note les pages que tu as lues",
+      "url": "./?action=j-ai-lu",
+      "icons": [
+        {
+          "src": "icons/raccourci-lu-96.png",
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "icons/raccourci-lu-192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any maskable"
+        }
+      ]
+    },
+    {
+      "name": "Ajouter une échéance",
+      "short_name": "Ajouter",
+      "description": "Un test, un examen, un livre ou un devoir",
+      "url": "./?action=ajouter",
+      "icons": [
+        {
+          "src": "icons/raccourci-ajouter-96.png",
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "icons/raccourci-ajouter-192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any maskable"
+        }
+      ]
+    }
   ]
 }

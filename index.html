@@ -762,6 +762,40 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .fiche-champ p { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .puce-choix.sans-rond { --couleur: var(--accent-clair); --couleur-fond: var(--accent-fond); }
 .puce-choix.sans-rond span::before { display: none; }
+
+/* ---------- Lot 3 : objectif de la semaine, bilan du mois, prévu / fait, moments ---------- */
+.objectif-semaine { display: block; width: 100%; margin: -6px 0 14px; padding: 8px 14px 10px; border: 1px solid var(--bord); border-radius: 18px; background: linear-gradient(180deg, var(--carte-haut), var(--carte)); text-align: left; }
+.objectif-texte { display: flex; align-items: center; gap: 8px; color: var(--texte-2); font-size: 14px; }
+.objectif-texte .ic { flex: none; width: 18px; height: 18px; color: var(--accent-clair); }
+.objectif-texte strong { color: var(--texte); }
+.objectif-texte small { margin-left: auto; color: var(--texte-3); font-size: 13px; white-space: nowrap; }
+.objectif-barre { display: block; height: 6px; margin-top: 6px; border-radius: 999px; background: var(--carte-3); overflow: hidden; }
+.objectif-barre i { display: block; height: 100%; border-radius: inherit; background: var(--degrade-accent); transition: width 0.6s var(--anim); }
+.objectif-semaine.atteint .objectif-barre i, .objectif-barre.atteint i { background: var(--ok); }
+.objectif-barre.grande { height: 12px; margin: 10px 0 0; }
+.objectif-semaine .objectif-texte { min-height: 24px; }
+.objectif-grand { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.objectif-grand strong { font-size: 30px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.objectif-grand span { color: var(--texte-2); }
+.semaines-passees { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+.semaines-passees span { min-width: 0; padding: 8px 4px; border-radius: 12px; background: var(--carte-2); text-align: center; font-size: 13px; }
+.semaines-passees small { display: block; color: var(--texte-3); font-size: 11.5px; }
+.semaines-passees strong { display: block; font-variant-numeric: tabular-nums; }
+.semaines-passees .ok strong { color: var(--ok); }
+.bilan-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.bilan-nav h2 { flex: 1; min-width: 0; text-align: center; font-size: 17px; overflow-wrap: anywhere; }
+.bilan-nav .cal-nav[disabled] { opacity: 0.3; }
+.liste-bilan { list-style: none; margin: 12px 0 0; padding: 0; }
+.liste-bilan li { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px solid var(--bord); font-size: 14px; }
+.liste-bilan li:first-child { border-top: 0; }
+.liste-bilan .ic { flex: none; width: 18px; height: 18px; margin-top: 1px; color: var(--accent-clair); }
+.liste-bilan span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.monte { color: var(--ok); font-weight: 700; }
+.baisse { color: var(--travail); font-weight: 700; }
+.legende-prevu { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0 0 8px; color: var(--texte-2); font-size: 13px; }
+.legende-prevu i { display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 3px; vertical-align: -1px; background: var(--texte-2); }
+.legende-prevu i.piste { background: rgba(255, 255, 255, 0.2); }
+.idee-pause { color: var(--texte); font-weight: 650; }
 .seance-texte { flex: 1; min-width: 0; }
 
 /* ---------- Formulaires (dans la feuille qui monte du bas) ---------- */
@@ -956,7 +990,7 @@ legend { margin-bottom: 8px; padding: 0; font-size: 15px; font-weight: 650; }
 const CLE_STOCKAGE = 'plan-etude-v1';
 // Version du format des données. V1 = 1 ; V2 = 2 (type de travail, ressentis, historique, rythme) ;
 // V3 = 3 (notes et objectifs, checklist de la veille, badges, blocs prévus jour par jour).
-const VERSION_DONNEES = 5;   // V4 : jours spéciaux, jour par jour, reports, rappel de sauvegarde · V5 : devoirs, chapitres, questions, fiches de lecture
+const VERSION_DONNEES = 6;   // V4 : jours spéciaux, jour par jour, reports, rappel de sauvegarde · V5 : devoirs, chapitres, questions, fiches de lecture · V6 : objectif de la semaine, prévu par matière, bilan du mois
 // Copie de secours des données d'avant la mise à jour (faite une seule fois).
 // La copie d'avant la V2 ("plan-etude-copie-avant-v2") reste aussi en place.
 const CLE_SECOURS = 'plan-etude-copie-avant-v' + VERSION_DONNEES;
@@ -1012,6 +1046,15 @@ const BADGES = [
   { id: 'objectif', emoji: '🎯', nom: 'Objectif de note atteint' },
   { id: 'semaine-parfaite', emoji: '⭐', nom: 'Semaine parfaite' },
   { id: 'livre-fini', emoji: '📖', nom: 'Livre terminé' },
+  // V6
+  { id: 'leve-tot', emoji: '🌅', nom: 'Lève-tôt' },
+  { id: 'heures-25', emoji: '⏳', nom: "25 h d'étude" },
+  { id: 'heures-100', emoji: '💯', nom: "100 h d'étude" },
+  { id: 'livres-5', emoji: '📚', nom: '5 livres lus' },
+  { id: 'examen-blanc', emoji: '📝', nom: 'Premier examen blanc' },
+  { id: 'objectif-semaine', emoji: '🏁', nom: 'Objectif de la semaine' },
+  { id: 'questions-5', emoji: '🙋', nom: '5 questions comprises' },
+  { id: 'tout-coche', emoji: '✅', nom: 'Tous les chapitres cochés' },
 ];
 
 // Les réglages de départ. Toutes les durées sont en minutes.
@@ -1035,6 +1078,8 @@ const REGLAGES_DEFAUT = {
   blocsParSession: 2,        // "exercices" : au moins 2 blocs d'affilée
   minutesParPage: 2,         // lecture : 2 min pour lire une page (30 pages par heure) au départ
   conseils: true,            // V5 : un conseil de méthode au début de chaque bloc
+  ideesPause: true,          // V6 : une idée pour bien te reposer pendant la pause
+  objectifSemaine: 0,        // V6 : temps d'étude visé chaque semaine, en minutes (0 = pas d'objectif)
   echelleNote: 20,           // échelle proposée pour tes notes : 10, 20 ou 100 (pour les %)
   son: true,
   vibration: true,
@@ -1064,6 +1109,8 @@ function donneesVides() {
     reportes: {},       // V4 : échéances reportées un jour donné ("Pas aujourd'hui") : { "AAAA-MM-JJ": [id, …] }
     sauvegarde: { derniere: null, rappelMasque: null },  // V4 : dernière sauvegarde (export) et rappel masqué jusqu'au…
     questions: [],      // V5 : questions pour le prof ajoutées à la main : { id, matiereId, texte, date, resolue }
+    planMatieres: {},   // V6 : blocs prévus chaque jour, par matière : { "2026-11-24": { idMatiere: 2 } }
+    bilanFerme: null,   // V6 : mois ("AAAA-MM") dont tu as fermé le bilan sur l'écran Aujourd'hui
   };
 }
 
@@ -1181,6 +1228,17 @@ function normaliser(lu) {
     }
   }
   if (estCleDate(lu.resumeFerme)) d.resumeFerme = lu.resumeFerme;
+  // Nouveau en V6 : blocs prévus par matière (pour "prévu ou fait"), bilan du mois fermé.
+  if (lu.planMatieres && typeof lu.planMatieres === 'object') {
+    for (const [jour, parMatiere] of Object.entries(lu.planMatieres)) {
+      if (!estCleDate(jour) || !parMatiere || typeof parMatiere !== 'object') continue;
+      d.planMatieres[jour] = {};
+      for (const [id, n] of Object.entries(parMatiere)) {
+        if (idPropre(id) && Number.isInteger(n) && n > 0) d.planMatieres[jour][idPropre(id)] = n;
+      }
+    }
+  }
+  if (typeof lu.bilanFerme === 'string' && /^\d{4}-\d{2}$/.test(lu.bilanFerme)) d.bilanFerme = lu.bilanFerme;
   // Nouveau en V4 : jours spéciaux, reports "Pas aujourd'hui", rappel de sauvegarde.
   if (Array.isArray(lu.joursSpeciaux)) {
     d.joursSpeciaux = lu.joursSpeciaux
@@ -2003,8 +2061,35 @@ function planActuel() {
   const plan = calculerPlan(aujourdhui(), donnees);
   const rythmeChange = memoriserRythme(plan);
   const joursChange = memoriserPlanJours(plan);
-  if (rythmeChange || joursChange) sauvegarder();
+  const matieresChange = memoriserPlanMatieres(plan);   // V6
+  if (rythmeChange || joursChange || matieresChange) sauvegarder();
   return plan;
+}
+
+// V6 : la même chose, mais matière par matière (pour voir celles que tu repousses).
+// Aujourd'hui est toujours noté (même vide) : ça dit que ce jour-là est suivi.
+function memoriserPlanMatieres(plan, d = donnees) {
+  const parJour = {};
+  const limite = ajouterJours(plan.jour, -400);
+  for (const [j, parM] of Object.entries(d.planMatieres)) if (j < plan.jour && j >= limite) parJour[j] = parM;
+  const ajouter = (j, id, n) => {
+    if (!(n > 0)) return;
+    if (!parJour[j]) parJour[j] = {};
+    parJour[j][id] = (parJour[j][id] || 0) + n;
+  };
+  parJour[plan.jour] = {};
+  for (const i of plan.infos) {
+    ajouter(plan.jour, i.echeance.matiereId, i.prevuAujourdhui);
+    for (const [j, n] of Object.entries(i.futur)) ajouter(j, i.echeance.matiereId, n);
+  }
+  const trie = {};
+  for (const j of Object.keys(parJour).sort()) {
+    trie[j] = {};
+    for (const id of Object.keys(parJour[j]).sort()) trie[j][id] = parJour[j][id];
+  }
+  if (JSON.stringify(trie) === JSON.stringify(d.planMatieres)) return false;
+  d.planMatieres = trie;
+  return true;
 }
 
 // Retient combien de blocs sont prévus chaque jour (aujourd'hui et les jours à venir).
@@ -2243,6 +2328,151 @@ function correlation(points) {
   return sxx && syy ? sxy / Math.sqrt(sxx * syy) : null;
 }
 
+/* ---------- V6 : objectif de la semaine ---------- */
+function minutesEntre(d, debut, fin) {
+  return d.blocs.filter(b => b.date >= debut && b.date <= fin).reduce((s, b) => s + b.minutes, 0);
+}
+// Où tu en es de ton objectif cette semaine (null s'il n'y a pas d'objectif).
+function etatObjectifSemaine(d, jour = aujourdhui()) {
+  const objectif = d.reglages.objectifSemaine;
+  if (!(objectif > 0)) return null;
+  const lundi = lundiDe(jour);
+  const fait = minutesEntre(d, lundi, jour);
+  return { objectif, fait, lundi, ratio: Math.min(1, fait / objectif), atteint: fait >= objectif, reste: Math.max(0, objectif - fait), joursRestants: ecartJours(jour, ajouterJours(lundi, 6)) + 1 };
+}
+// Un objectif raisonnable : ta moyenne des 4 dernières semaines (arrondie à la demi-heure), sinon 5 h.
+function objectifSemainePropose(d, jour = aujourdhui()) {
+  const lundi = lundiDe(jour);
+  const semaines = [1, 2, 3, 4].map(k => minutesEntre(d, ajouterJours(lundi, -7 * k), ajouterJours(lundi, -7 * k + 6)));
+  const avecEtude = semaines.filter(m => m > 0);
+  if (!avecEtude.length) return 300;
+  const moyenne = avecEtude.reduce((s, m) => s + m, 0) / avecEtude.length;
+  return borner(Math.round(moyenne / 30) * 30, 60, 3000);
+}
+
+/* ---------- V6 : le bilan d'un mois ---------- */
+function moisDe(cle) {
+  return cle.slice(0, 7);
+}
+function moisVoisin(mois, sens) {
+  const [a, m] = mois.split('-').map(Number);
+  const d = new Date(a, m - 1 + sens, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+function finDuMois(mois) {
+  return ajouterJours(moisVoisin(mois, 1) + '-01', -1);
+}
+function nomMois(mois) {
+  const [a, m] = mois.split('-').map(Number);
+  return `${MOIS[m - 1]}${a !== new Date().getFullYear() ? ' ' + a : ''}`;
+}
+// La date où chaque livre a été fini (pages toutes lues, ou rangé comme fini).
+function livresFinis(d, jour = aujourdhui()) {
+  const res = [];
+  for (const e of d.echeances.filter(estLecture)) {
+    const dates = [];
+    let cumul = 0;
+    for (const b of d.blocs.filter(x => x.echeanceId === e.id && x.pages > 0 && x.date <= jour).sort((x, y) => (x.date < y.date ? -1 : x.date > y.date ? 1 : (x.debut || 0) - (y.debut || 0)))) {
+      cumul += b.pages;
+      if (cumul >= pagesTotal(e)) { dates.push(b.date); break; }
+    }
+    if (e.terminee && e.termineeLe && e.termineeLe <= jour) dates.push(e.termineeLe);
+    if (dates.length) res.push({ echeance: e, date: dates.sort()[0] });
+  }
+  return res.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+}
+function moyennePourcent(liste) {
+  return liste.length ? liste.reduce((s, x) => s + x.pourcent, 0) / liste.length : null;
+}
+// Le bilan d'un mois : temps, jours, matière, prévu / fait, livres, notes (et leurs progrès), badges.
+function bilanMois(d, mois, jour = aujourdhui()) {
+  const debut = mois + '-01';
+  const fin = finDuMois(mois);
+  const finCompte = fin < jour ? fin : jour;   // mois en cours : jusqu'à aujourd'hui
+  const avant = moisVoisin(mois, -1);
+  const blocs = d.blocs.filter(b => b.date >= debut && b.date <= finCompte);
+  const total = blocs.reduce((s, b) => s + b.minutes, 0);
+  const joursSuivis = Object.keys(d.planJours).filter(j => j >= debut && j <= finCompte);
+  const notes = resultatsAvecEtude(d);
+  const duMois = notes.filter(x => moisDe(x.echeance.date) === mois);
+  const duMoisAvant = notes.filter(x => moisDe(x.echeance.date) === avant);
+  // Progrès par matière : moyenne de ce mois comparée à la moyenne de tes notes d'avant.
+  const progres = [...new Set(duMois.map(x => x.echeance.matiereId))].map(id => {
+    const maintenant = moyennePourcent(duMois.filter(x => x.echeance.matiereId === id));
+    const anciennes = notes.filter(x => x.echeance.matiereId === id && x.echeance.date < debut);
+    return { id, maintenant, avant: moyennePourcent(anciennes), nb: duMois.filter(x => x.echeance.matiereId === id).length };
+  }).sort((a, b) => nomMatiere(a.id).localeCompare(nomMatiere(b.id), 'fr'));
+  const compris = d.blocs.filter(b => b.compris && moisDe(b.compris) === mois).length + d.questions.filter(q => q.resolue && moisDe(q.resolue) === mois).length;
+  return {
+    mois,
+    enCours: fin >= jour,
+    total,
+    // mois en cours : comparé au même moment du mois d'avant (du 1er au même jour), sinon au mois entier
+    totalAvant: minutesEntre(d, avant + '-01', fin >= jour ? [ajouterJours(avant + '-01', Number(jour.slice(8, 10)) - 1), finDuMois(avant)].sort()[0] : finDuMois(avant)),
+    jours: new Set(blocs.map(b => b.date)).size,
+    blocs: blocs.length,
+    top: etudeParMatiere(d.blocs, debut, finCompte).find(x => x.id !== 'libre') || null,
+    prevus: joursSuivis.length ? joursSuivis.reduce((s, j) => s + d.planJours[j], 0) : null,
+    faits: Math.round(total / d.reglages.travail),
+    pages: blocs.reduce((s, b) => s + (b.pages > 0 ? b.pages : 0), 0),
+    livres: livresFinis(d, finCompte).filter(x => moisDe(x.date) === mois).map(x => x.echeance),
+    examensBlancs: blocs.filter(b => b.examenBlanc).length,
+    moyenne: moyennePourcent(duMois),
+    moyenneAvant: moyennePourcent(duMoisAvant),
+    nbNotes: duMois.length,
+    objectifsAtteints: duMois.filter(x => x.atteint).length,
+    objectifsFixes: duMois.filter(x => x.atteint !== null).length,
+    progres,
+    compris,
+    badges: Object.entries(d.badges).filter(([, date]) => moisDe(date) === mois).map(([id]) => id),
+  };
+}
+
+/* ---------- V6 : tes moments les plus efficaces ---------- */
+const CRENEAUX = [
+  { id: 'matin', nom: 'le matin', court: 'Matin', de: 5, a: 12 },
+  { id: 'midi', nom: 'le midi', court: 'Midi', de: 12, a: 14 },
+  { id: 'apres-midi', nom: "l'après-midi", court: 'Après-midi', de: 14, a: 18 },
+  { id: 'soir', nom: 'le soir', court: 'Soir', de: 18, a: 21 },
+  { id: 'tard', nom: 'tard le soir', court: 'Après 21 h', de: 21, a: 29 },   // jusqu'à 5 h du matin
+];
+// L'heure où un bloc a commencé (null si on ne la connaît pas vraiment : lecture notée sans chrono…).
+function heureDebutBloc(b) {
+  if (b.manuel || !(b.debut > 1e12)) return null;
+  const moment = new Date(b.debut);
+  if (cleDate(moment) !== b.date) return null;
+  return moment.getHours() + moment.getMinutes() / 60;
+}
+// Les 90 derniers jours : pour chaque moment de la journée, combien de blocs Facile / Ok / Dur.
+function momentsEfficaces(d, jour = aujourdhui()) {
+  const depuis = ajouterJours(jour, -89);
+  const res = CRENEAUX.map(c => ({ ...c, total: 0, facile: 0, ok: 0, dur: 0 }));
+  for (const b of d.blocs) {
+    if (!b.ressenti || b.date < depuis || b.date > jour) continue;
+    const h = heureDebutBloc(b);
+    if (h === null) continue;
+    const hh = h < 5 ? h + 24 : h;
+    const c = res.find(x => hh >= x.de && hh < x.a);
+    if (!c) continue;
+    c.total++;
+    c[b.ressenti]++;
+  }
+  return res;
+}
+
+/* ---------- V6 : prévu ou fait, par matière ---------- */
+// Sur les jours suivis (entre debut et fin) : minutes prévues et faites pour chaque matière.
+function prevuFaitParMatiere(d, debut, fin) {
+  const W = d.reglages.travail;
+  const jours = Object.keys(d.planMatieres).filter(j => j >= debut && j <= fin);
+  const suivis = new Set(jours);
+  const lignes = {};
+  const ligne = id => (lignes[id] = lignes[id] || { id, prevu: 0, fait: 0 });
+  for (const j of jours) for (const [id, n] of Object.entries(d.planMatieres[j])) ligne(id).prevu += n * W;
+  for (const b of d.blocs) if (b.matiereId && suivis.has(b.date)) ligne(b.matiereId).fait += b.minutes;
+  return { jours: jours.length, premier: jours[0] || null, lignes: Object.values(lignes).filter(l => l.prevu > 0 || l.fait > 0) };
+}
+
 // Les badges que tes données méritent, avec la date où ils ont été gagnés.
 function badgesMerites(d, jour = aujourdhui()) {
   const gagnes = {};
@@ -2271,6 +2501,30 @@ function badgesMerites(d, jour = aujourdhui()) {
     if (e.terminee && e.termineeLe && e.termineeLe <= jour) livres.push(e.termineeLe);
   }
   if (livres.length) gagnes['livre-fini'] = livres.sort()[0];
+  // V6 : les nouveaux badges.
+  const tot = blocs.find(b => { const h = heureDebutBloc(b); return h !== null && h >= 5 && h < 9; });
+  if (tot) gagnes['leve-tot'] = tot.date;
+  let minutesTotal = 0;
+  for (const b of blocs) {
+    minutesTotal += b.minutes;
+    if (minutesTotal >= 1500 && !gagnes['heures-25']) gagnes['heures-25'] = b.date;
+    if (minutesTotal >= 6000 && !gagnes['heures-100']) gagnes['heures-100'] = b.date;
+  }
+  const finis = livresFinis(d, jour);
+  if (finis.length >= 5) gagnes['livres-5'] = finis[4].date;
+  const blanc = blocs.find(b => b.examenBlanc);
+  if (blanc) gagnes['examen-blanc'] = blanc.date;
+  const objectif = d.reglages.objectifSemaine;
+  if (objectif > 0) {   // l'objectif d'aujourd'hui, atteint cette semaine (on ne sait pas quel était l'objectif avant)
+    let cumulSemaine = 0;
+    for (const b of blocs.filter(x => x.date >= lundiDe(jour))) {
+      cumulSemaine += b.minutes;
+      if (cumulSemaine >= objectif) { gagnes['objectif-semaine'] = b.date; break; }
+    }
+  }
+  const comprises = [...d.blocs.filter(b => b.compris).map(b => b.compris), ...d.questions.filter(q => q.resolue).map(q => q.resolue)].filter(x => x <= jour).sort();
+  if (comprises.length >= 5) gagnes['questions-5'] = comprises[4];
+  if (d.echeances.some(e => !estLecture(e) && e.chapitresListe && e.chapitresListe.length >= 2 && e.chapitresListe.every(c => c.fait))) gagnes['tout-coche'] = jour;
   // Semaine parfaite : une semaine finie, avec au moins 3 blocs prévus, et tous faits.
   for (const lundi of [...new Set(Object.keys(d.planJours).map(lundiDe))].sort()) {
     if (ajouterJours(lundi, 6) >= jour) continue;   // semaine pas encore finie
@@ -2468,6 +2722,7 @@ function animationsReduites() {
 // Petite vibration (Android), seulement si la vibration est activée dans Réglages.
 function vibrer(motif) {
   if (!donnees.reglages.vibration || !navigator.vibrate) return;
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;   // pas encore touché l'écran : le téléphone refuserait
   try { navigator.vibrate(motif); } catch (erreur) { /* pas grave */ }
 }
 
@@ -2614,17 +2869,20 @@ function afficherAujourdhui() {
       <h1 class="salut">${ic(bonjour.icone, bonjour.icone === 'lune' ? 'ic-lune' : '')}${bonjour.texte}</h1>
     </header>`;
 
+  // Un seul résumé à la fois : le bilan du mois (début de mois), sinon celui de la semaine.
+  const resume = carteBilanAujourdhui(jour) || carteResumeSemaine(jour);
   if (!donnees.echeances.length) {
-    vue.innerHTML = entete + carteRessenti() + carteResumeSemaine(jour) + carteBienvenue();
+    vue.innerHTML = entete + carteRessenti() + resume + carteBienvenue();
     return;
   }
   const plan = planActuel();
   vue.innerHTML = entete
     + tuilesDuJour(plan)
+    + barreObjectifSemaine(jour)
     + carteRessenti()
     + carteHeros(plan)
     + bandeauxDuJour(plan)
-    + carteResumeSemaine(jour)
+    + resume
     + carteAussiAujourdhui(plan)
     + carteSemaine(plan);
 }
@@ -3284,6 +3542,8 @@ function chronoActif(c) {
   } else if (ligne && ligne.prevus && !c.examenBlanc) info += `<br>Pour cette échéance aujourd'hui : ${ligne.faits} fait${ligne.faits > 1 ? 's' : ''} sur ${ligne.prevus}`;
   const derniere = e && c.phase === 'travail' && !c.examenBlanc ? derniereNote(e.id) : null;
   const conseil = c.phase === 'travail' && donnees.reglages.conseils ? conseilMethode(c, e) : '';
+  const idee = repos && donnees.reglages.ideesPause ? ideePause(c) : '';   // V6
+  if (idee) info += `<br><span class="idee-pause">${echapper(idee)}</span>`;
 
   // Les points sous le temps : où tu en es avant la grande pause.
   const n = r.blocsAvantPauseLongue;
@@ -3401,6 +3661,59 @@ function majOngletChrono() {
 /* ---------- Résumé de la semaine (le lundi, en haut de "Aujourd'hui") ---------- */
 
 // Visible à partir du lundi, jusqu'à ce que tu le fermes (×).
+// V6 : une barre fine sous les tuiles (seulement si tu t'es fixé un objectif).
+function barreObjectifSemaine(jour) {
+  const o = etatObjectifSemaine(donnees, jour);
+  if (!o) return '';
+  const texte = o.atteint
+    ? `<strong>Objectif de la semaine atteint !</strong>`
+    : `Semaine : <strong>${formaterDuree(o.fait)}</strong> / ${formaterDuree(o.objectif)}`;
+  return `<button class="objectif-semaine${o.atteint ? ' atteint' : ''}" data-action="voir-objectif" type="button" aria-label="Objectif de la semaine : ${formaterDuree(o.fait)} sur ${formaterDuree(o.objectif)}">
+      <span class="objectif-texte">${o.atteint ? '<span aria-hidden="true">🏁</span>' : ic('cible')}<span>${texte}</span><small>${o.atteint ? formaterDuree(o.fait) : `encore ${formaterDuree(o.reste)}`}</small></span>
+      <span class="objectif-barre"><i style="width:${Math.round(o.ratio * 100)}%"></i></span>
+    </button>`;
+}
+
+// V6 : les 4 chiffres du bilan d'un mois.
+function noteSurEchelle(pourcent) {
+  const sur = donnees.reglages.echelleNote || 20;
+  return formaterNote(Math.round(pourcent * sur / 10) / 10, sur);
+}
+function tuilesBilan(b) {
+  const moisAvant = MOIS[Number(moisVoisin(b.mois, -1).slice(5)) - 1];
+  const ecart = b.total - b.totalAvant;
+  const reference = b.enCours ? `au même moment en ${moisAvant}` : `en ${moisAvant}`;
+  const compare = !b.totalAvant ? `pas d'étude ${reference}`
+    : ecart === 0 ? `autant qu'${reference}` : `${ecart > 0 ? '+' : '−'}${formaterDuree(Math.abs(ecart))} par rapport ${b.enCours ? `au même moment en ${moisAvant}` : `à ${moisAvant}`}`;
+  const sur = donnees.reglages.echelleNote || 20;
+  let note = `<span class="tuile-valeur">—</span><span class="tuile-label">pas de note ce mois-ci</span>`;
+  if (b.moyenne !== null) {
+    const diff = b.moyenneAvant !== null ? Math.round((b.moyenne - b.moyenneAvant) * sur / 10) / 10 : null;
+    const delta = diff === null ? pluriel(b.nbNotes, 'note')
+      : diff === 0 ? `comme en ${moisAvant}` : `<span class="${diff > 0 ? 'monte' : 'baisse'}">${diff > 0 ? '▲ +' : '▼ −'}${formaterDecimal(Math.abs(diff))}</span> par rapport à ${moisAvant}`;
+    note = `<span class="tuile-valeur">${noteSurEchelle(b.moyenne)}</span> <span class="tuile-label">moyenne de tes notes</span> <span class="tuile-delta">${delta}</span>`;
+  }
+  return `<div class="tuiles">
+      <div class="tuile"><span class="tuile-valeur">${formaterDuree(b.total)}</span> <span class="tuile-label">d'étude</span> <span class="tuile-delta">${compare}</span></div>
+      <div class="tuile"><span class="tuile-valeur">${b.jours}</span> <span class="tuile-label">jour${b.jours > 1 ? 's' : ''} d'étude</span> <span class="tuile-delta">${pluriel(b.blocs, 'bloc')}</span></div>
+      <div class="tuile"><span class="tuile-valeur">${b.top ? echapper(nomMatiere(b.top.id)) : '—'}</span> <span class="tuile-label">${b.top ? `la plus travaillée (${formaterDuree(b.top.minutes)})` : 'matière la plus travaillée'}</span></div>
+      <div class="tuile">${note}</div>
+    </div>`;
+}
+// Sur Aujourd'hui, les 7 premiers jours du mois : le bilan du mois d'avant (jusqu'à ce que tu le fermes).
+function carteBilanAujourdhui(jour) {
+  if (Number(jour.slice(8, 10)) > 7) return '';
+  const mois = moisVoisin(moisDe(jour), -1);
+  if (donnees.bilanFerme === mois) return '';
+  const b = bilanMois(donnees, mois, jour);
+  if (!b.total && !b.nbNotes) return '';
+  return `<section class="carte resume bilan" aria-label="Bilan du mois">
+      <div class="carte-titre"><h2>${ic('trophee')}Ton bilan de ${nomMois(mois)}</h2><button class="fermer-x" data-action="fermer-bilan" data-mois="${mois}" type="button" aria-label="Fermer le bilan">${ic('fermer')}</button></div>
+      ${tuilesBilan(b)}
+      <button class="lien" data-action="voir-bilan" data-mois="${mois}" type="button">Voir le bilan complet</button>
+    </section>`;
+}
+
 function carteResumeSemaine(jour) {
   const lundiActuel = lundiDe(jour);
   if (donnees.resumeFerme === lundiActuel) return '';
@@ -3583,13 +3896,166 @@ function afficherStats() {
   }
   const L = largeurGraphique();
   h += carteSerie(jour);
+  h += carteObjectifSemaine(jour);       // V6
   h += carteParMatiere(jour, L);
+  h += cartePrevuFait(jour, L);          // V6
   h += carteLectures(jour);
   h += carte30Jours(jour, L);
+  h += carteMoments(jour, L);            // V6
   h += carteNotes(L);
   h += carteEtudeEtNotes(L);
+  h += carteBilanMois(jour);             // V6
   h += carteBadges(jour);
   vue.innerHTML = h;
+}
+
+/* ---------- V6 : objectif de la semaine ---------- */
+function carteObjectifSemaine(jour) {
+  const titre = `<div class="carte-titre"><h2>${ic('cible')}Objectif de la semaine</h2>`;
+  const o = etatObjectifSemaine(donnees, jour);
+  if (!o) {
+    return `<section class="carte" id="carte-objectif">${titre}</div>
+        <p class="aide" style="margin-top:0">Fixe-toi un temps d'étude pour la semaine : une barre se remplit à chaque bloc.</p>
+        <div class="pile"><button class="btn btn-plein" data-action="objectif-fixer" type="button">${ic('plus')} Me fixer un objectif (${formaterDuree(objectifSemainePropose(donnees, jour))})</button></div>
+      </section>`;
+  }
+  const passees = [4, 3, 2, 1].map(k => {
+    const lundi = ajouterJours(o.lundi, -7 * k);
+    return { lundi, minutes: minutesEntre(donnees, lundi, ajouterJours(lundi, 6)) };
+  });
+  const parJour = Math.ceil(o.reste / o.joursRestants / 5) * 5;
+  return `<section class="carte" id="carte-objectif">${titre}<span class="etiquette">${Math.round(o.fait / o.objectif * 100)} %</span></div>
+      <div class="objectif-grand"><strong>${formaterDuree(o.fait)}</strong> <span>sur ${formaterDuree(o.objectif)} cette semaine</span></div>
+      <span class="objectif-barre grande${o.atteint ? ' atteint' : ''}"><i style="width:${Math.round(o.ratio * 100)}%"></i></span>
+      <p class="aide">${o.atteint ? '🏁 Objectif atteint, bravo !' : `Encore ${formaterDuree(o.reste)} ${o.joursRestants > 1 ? `en ${o.joursRestants} jours (≈ ${formaterDuree(parJour)} par jour)` : "aujourd'hui"}.`}</p>
+      <div class="ligne-reglage">
+        <div class="libelle">Mon objectif<small>temps d'étude par semaine</small></div>
+        <div class="stepper">
+          <button type="button" data-action="objectif-moins" aria-label="Baisser l'objectif">−</button>
+          <output>${formaterDuree(o.objectif)}</output>
+          <button type="button" data-action="objectif-plus" aria-label="Monter l'objectif">+</button>
+        </div>
+      </div>
+      <p class="aide" style="margin-bottom:0">Les 4 semaines d'avant (✓ = objectif actuel atteint) :</p>
+      <div class="semaines-passees">${passees.map(p => `<span class="${p.minutes >= o.objectif ? 'ok' : ''}"><small>${dateCourteSansJour(p.lundi)}</small><strong>${formaterDuree(p.minutes)}${p.minutes >= o.objectif ? ' ✓' : ''}</strong></span>`).join('')}</div>
+      <button class="lien" data-action="objectif-retirer" type="button">Ne plus avoir d'objectif</button>
+    </section>`;
+}
+function changerObjectifSemaine(action) {
+  const r = donnees.reglages;
+  const avant = r.objectifSemaine;
+  if (action === 'fixer') r.objectifSemaine = objectifSemainePropose(donnees);
+  else if (action === 'plus') r.objectifSemaine = borner(avant + 30, 30, 3000);
+  else if (action === 'moins') r.objectifSemaine = borner(avant - 30, 30, 3000);
+  else r.objectifSemaine = 0;
+  sauvegarder();
+  afficherStats();
+  if (action === 'retirer') proposerAnnulation("Plus d'objectif pour la semaine", () => { r.objectifSemaine = avant; });
+  else verifierBadges();
+}
+
+/* ---------- V6 : prévu ou fait, par matière (les 30 derniers jours, jusqu'à hier) ---------- */
+function graphiquePrevuFait(lignes, L, titre) {
+  const hLigne = 34;
+  const epaisseur = 14;
+  const xBarre = Math.min(118, Math.round(L * 0.34));
+  const placeTexte = Math.min(150, 12 + 7.2 * Math.max(...lignes.map(l => l.texte.length)));
+  const largeurMax = Math.max(24, L - xBarre - placeTexte);
+  const plafond = Math.max(1, ...lignes.map(l => Math.max(l.prevu, l.fait)));
+  let svg = '';
+  lignes.forEach((l, k) => {
+    const y = k * hLigne + (hLigne - epaisseur) / 2;
+    const wPrevu = l.prevu ? Math.max(3, l.prevu / plafond * largeurMax) : 0;
+    const wFait = l.fait ? Math.max(3, l.fait / plafond * largeurMax) : 0;
+    svg += `<text class="g-nom" x="0" y="${n1(y + epaisseur / 2)}" dominant-baseline="central">${echapper(raccourcir(l.nom, Math.max(6, Math.floor((xBarre - 8) / 8))))}</text>`;
+    if (wPrevu) svg += `<path d="${barreH(xBarre, y, wPrevu, epaisseur)}" fill="${l.couleur}" fill-opacity="0.28"><title>${echapper(l.nom)} : prévu ${formaterDuree(l.prevu)}</title></path>`;
+    if (wFait) svg += `<path d="${barreH(xBarre, y + 3, wFait, epaisseur - 6)}" fill="${l.couleur}"><title>${echapper(l.nom)} : fait ${formaterDuree(l.fait)}</title></path>`;
+    svg += `<text class="g-valeur" x="${n1(xBarre + Math.max(wPrevu, wFait) + 6)}" y="${n1(y + epaisseur / 2)}" dominant-baseline="central">${echapper(l.texte)}</text>`;
+  });
+  return `<svg class="graphique" viewBox="0 0 ${L} ${lignes.length * hLigne}" width="${L}" height="${lignes.length * hLigne}" role="img" aria-label="${echapper(titre)}">${svg}</svg>`;
+}
+function cartePrevuFait(jour, L) {
+  const hier = ajouterJours(jour, -1);
+  const debut = ajouterJours(jour, -30);
+  const r = prevuFaitParMatiere(donnees, debut, hier);
+  const h = `<section class="carte" id="carte-prevu-fait"><div class="carte-titre"><h2>${ic('calendrier')}Prévu ou fait</h2><span class="etiquette">30 derniers jours</span></div>`;
+  const lignes = r.lignes.filter(l => l.prevu > 0 && trouverMatiere(l.id))
+    .map(l => ({ ...l, nom: nomMatiere(l.id), couleur: couleurMatiere(l.id), ratio: l.fait / l.prevu, texte: `${formaterDuree(l.fait)} / ${formaterDuree(l.prevu)}` }))
+    .sort((a, b) => a.ratio - b.ratio || b.prevu - a.prevu);
+  if (!lignes.length) {
+    return h + `<p class="aide" style="margin-top:0">${r.jours ? "Pas encore de blocs prévus sur les jours suivis." : "Le suivi matière par matière commence aujourd'hui : reviens dans quelques jours pour voir les matières que tu repousses."}</p></section>`;
+  }
+  const repoussee = lignes.find(l => l.prevu >= 50 && l.ratio < 0.8);
+  const depuis = r.premier && r.premier > debut ? `Suivi depuis le ${dateCourteSansJour(r.premier)}, jusqu'à hier.` : "Jusqu'à hier.";
+  return h + `<div class="legende-prevu"><span><i></i>fait</span><span><i class="piste"></i>prévu</span></div>
+      ${graphiquePrevuFait(lignes, L, 'Temps prévu et temps fait par matière')}
+      <p class="aide">${repoussee
+        ? `Tu as tendance à repousser <strong>${echapper(repoussee.nom)}</strong> : ${Math.round(repoussee.ratio * 100)} % de ce qui était prévu.`
+        : 'Bravo : tu suis ton plan dans toutes tes matières 👍'} ${depuis}</p>
+      ${tableauChiffres('prevu-fait', 'Voir les chiffres', ['Matière', 'Prévu', 'Fait', '%'], lignes.map(l => [echapper(l.nom), formaterDuree(l.prevu), formaterDuree(l.fait), `${Math.round(l.ratio * 100)} %`]))}
+    </section>`;
+}
+
+/* ---------- V6 : tes meilleurs moments de la journée ---------- */
+const MIN_BLOCS_MOMENTS = 8;
+function carteMoments(jour, L) {
+  const moments = momentsEfficaces(donnees, jour);
+  const notes = moments.reduce((s, c) => s + c.total, 0);
+  const h = `<section class="carte" id="carte-moments"><div class="carte-titre"><h2>${ic('soleil')}Tes meilleurs moments</h2><span class="etiquette">90 jours</span></div>`;
+  if (notes < MIN_BLOCS_MOMENTS) {
+    return h + `<p class="aide" style="margin-top:0">Après tes blocs, dis si c'était Facile, Ok ou Dur. Dès ${MIN_BLOCS_MOMENTS} blocs notés, tu verras à quel moment de la journée tu travailles le mieux (${notes}/${MIN_BLOCS_MOMENTS}).</p></section>`;
+  }
+  const avec = moments.filter(c => c.total > 0);
+  const assez = avec.filter(c => c.total >= 3);
+  const part = (c, cle) => c[cle] / c.total;
+  const meilleur = assez.slice().sort((a, b) => part(b, 'facile') - part(a, 'facile') || b.total - a.total)[0];
+  const pire = assez.slice().sort((a, b) => part(b, 'dur') - part(a, 'dur') || b.total - a.total)[0];
+  let message = 'Pas encore assez de blocs à un même moment pour comparer (il en faut au moins 3).';
+  if (meilleur && meilleur.facile) {
+    message = `Ton meilleur moment : <strong>${meilleur.nom}</strong> (${Math.round(part(meilleur, 'facile') * 100)} % de blocs faciles). Garde-le pour ce qui est le plus difficile !`;
+    if (pire && pire !== meilleur && part(pire, 'dur') >= 0.4) message += ` C'est plus dur ${pire.nom} (${Math.round(part(pire, 'dur') * 100)} % « Dur »).`;
+  } else if (meilleur) message = 'Aucun bloc « Facile » pour l\'instant : continue de noter ton ressenti.';
+  const lignes = avec.map(c => ({
+    nom: c.court,
+    couleur: c.total >= 3 ? '#34d399' : '#5d6478',
+    valeur: Math.round(part(c, 'facile') * 100),
+    texte: c.total >= 3 ? `${Math.round(part(c, 'facile') * 100)} % faciles` : `${pluriel(c.total, 'bloc')} (trop peu)`,
+  }));
+  return h + `<p class="aide" style="margin-top:0">Part de tes blocs « Facile », selon l'heure où ils ont commencé.</p>
+      ${graphiqueBarres(lignes, L, 'Part de blocs faciles selon le moment de la journée', 100)}
+      <p class="aide">${message}</p>
+      ${tableauChiffres('moments', 'Voir les chiffres', ['Moment', 'Blocs', 'Facile', 'Ok', 'Dur'], avec.map(c => [c.court, c.total, c.facile, c.ok, c.dur]))}
+    </section>`;
+}
+
+/* ---------- V6 : le bilan du mois (dans les stats, mois par mois) ---------- */
+let moisBilan = null;   // le mois affiché (null = le mois en cours)
+function carteBilanMois(jour) {
+  const actuel = moisDe(jour);
+  const dates = donnees.blocs.map(b => b.date).concat(resultatsAvecEtude(donnees).map(x => x.echeance.date)).filter(x => x <= jour).sort();
+  const premier = dates.length ? moisDe(dates[0]) : actuel;
+  const mois = moisBilan && moisBilan >= premier && moisBilan <= actuel ? moisBilan : actuel;
+  const b = bilanMois(donnees, mois, jour);
+  const lignes = [];
+  lignes.push([ic('cible'), b.prevus !== null ? `<strong>${b.faits} / ${b.prevus}</strong> blocs faits / prévus${b.enCours ? " (jusqu'à aujourd'hui)" : ''}` : `<strong>${pluriel(b.faits, 'bloc')}</strong> fait${b.faits > 1 ? 's' : ''}`]);
+  if (b.pages || b.livres.length) lignes.push([ic('livre'), `<strong>${pluriel(b.pages, 'page')}</strong> lue${b.pages > 1 ? 's' : ''}${b.livres.length ? ` · ${b.livres.length > 1 ? 'livres finis' : 'livre fini'} : ${b.livres.map(e => `« ${echapper(titreEcheance(e))} »`).join(', ')}` : ''}`]);
+  if (b.examensBlancs) lignes.push([ic('horloge'), `<strong>${b.examensBlancs} examen${b.examensBlancs > 1 ? 's blancs' : ' blanc'}</strong>`]);
+  if (b.objectifsFixes) lignes.push([ic('cible'), `Objectif de note atteint : <strong>${b.objectifsAtteints} / ${b.objectifsFixes}</strong>`]);
+  for (const p of b.progres) {
+    const fleche = p.avant === null ? '' : p.maintenant > p.avant + 0.5 ? ' <span class="monte">▲</span>' : p.maintenant < p.avant - 0.5 ? ' <span class="baisse">▼</span>' : ' =';
+    lignes.push([ic('graphique'), `${echapper(nomMatiere(p.id))} : <strong>${noteSurEchelle(p.maintenant)}</strong>${p.nb > 1 ? ` (moyenne de ${p.nb} notes)` : ''}${p.avant !== null ? ` · avant : ${noteSurEchelle(p.avant)}${fleche}` : ''}`]);
+  }
+  if (b.compris) lignes.push([ic('cerveau'), `<strong>${b.compris} question${b.compris > 1 ? 's comprises' : ' comprise'}</strong> grâce au prof`]);
+  if (b.badges.length) lignes.push([ic('medaille'), `Badges : ${b.badges.map(id => { const x = infoBadge(id); return `${x.emoji} ${echapper(x.nom)}`; }).join(', ')}`]);
+  return `<section class="carte" id="carte-bilan">
+      <div class="bilan-nav">
+        <button class="cal-nav" data-action="bilan-mois" data-sens="-1" type="button" aria-label="Mois précédent"${mois <= premier ? ' disabled' : ''}>${ic('chevronGauche')}</button>
+        <h2>Bilan de ${nomMois(mois)}${b.enCours ? ' <small class="aide">(en cours)</small>' : ''}</h2>
+        <button class="cal-nav" data-action="bilan-mois" data-sens="1" type="button" aria-label="Mois suivant"${mois >= actuel ? ' disabled' : ''}>${ic('chevron')}</button>
+      </div>
+      ${tuilesBilan(b)}
+      <ul class="liste-bilan">${lignes.map(([icone, texte]) => `<li>${icone}<span>${texte}</span></li>`).join('')}</ul>
+    </section>`;
 }
 
 // Série de jours d'affilée (streak) + record.
@@ -3889,6 +4355,9 @@ function carteBadges(jour) {
 const TEINTES_BADGES = {
   'premier-bloc': '#51cf66', 'serie-3': '#ff922b', 'serie-7': '#ff6b4a', 'serie-30': '#fcc419',
   'blocs-50': '#f783ac', 'heures-10': '#4dabf7', objectif: '#ff6b6b', 'semaine-parfaite': '#ffd43b',
+  // V6
+  'leve-tot': '#ffa94d', 'heures-25': '#74c0fc', 'heures-100': '#e599f7', 'livres-5': '#b197fc',
+  'examen-blanc': '#ff8787', 'objectif-semaine': '#69db7c', 'questions-5': '#66d9e8', 'tout-coche': '#8ce99a',
 };
 // Une couleur plus sombre (pour le relief des médailles).
 function assombrir(hex, f) {
@@ -3911,6 +4380,13 @@ function tuileBadge(b, date, aide, ratio = 0, idBase = '') {
 function ratioBadge(id, s) {
   if (id.startsWith('serie-')) return Math.min(1, s.actuelle / Number(id.slice(6)));
   if (id === 'blocs-50') return Math.min(1, donnees.blocs.length / 50);
+  // V6
+  const total = () => donnees.blocs.reduce((t, b) => t + b.minutes, 0);
+  if (id === 'heures-25') return Math.min(1, total() / 1500);
+  if (id === 'heures-100') return Math.min(1, total() / 6000);
+  if (id === 'livres-5') return Math.min(1, livresFinis(donnees).length / 5);
+  if (id === 'objectif-semaine') { const o = etatObjectifSemaine(donnees); return o ? o.ratio : 0; }
+  if (id === 'questions-5') return Math.min(1, (donnees.blocs.filter(b => b.compris).length + donnees.questions.filter(q => q.resolue).length) / 5);
   return 0;
 }
 
@@ -3920,6 +4396,19 @@ function progressionBadge(id, s) {
   if (id === 'blocs-50') return `${Math.min(donnees.blocs.length, 50)} / 50 blocs`;
   if (id === 'objectif') return 'Une note ≥ ton objectif';
   if (id === 'semaine-parfaite') return "Tous les blocs prévus d'une semaine";
+  // V6
+  const total = donnees.blocs.reduce((t, b) => t + b.minutes, 0);
+  if (id === 'leve-tot') return 'Un bloc commencé avant 9 h';
+  if (id === 'heures-25') return `${formaterDuree(Math.min(total, 1500))} / 25 h`;
+  if (id === 'heures-100') return `${formaterDuree(Math.min(total, 6000))} / 100 h`;
+  if (id === 'livres-5') return `${Math.min(livresFinis(donnees).length, 5)} / 5 livres`;
+  if (id === 'examen-blanc') return 'Fais un examen blanc';
+  if (id === 'objectif-semaine') {
+    const o = etatObjectifSemaine(donnees);
+    return o ? `${formaterDuree(o.fait)} / ${formaterDuree(o.objectif)} cette semaine` : 'Fixe-toi un objectif (Stats)';
+  }
+  if (id === 'questions-5') return `${Math.min(donnees.blocs.filter(b => b.compris).length + donnees.questions.filter(q => q.resolue).length, 5)} / 5 questions`;
+  if (id === 'tout-coche') return "Coche tous les chapitres d'un test";
   return '';
 }
 
@@ -3958,6 +4447,7 @@ function afficherReglages() {
         : `${ligneReglage('dispoSemaine', 'En semaine', 'du lundi au vendredi', 15, 0, 720, 'duree')}
       ${ligneReglage('dispoWeekend', 'Le week-end', 'samedi et dimanche', 15, 0, 720, 'duree')}
       <p class="aide">Pauses comprises, ça fait <strong>${pluriel(capSemaine, 'bloc')}</strong> par jour en semaine et <strong>${pluriel(capWeekend, 'bloc')}</strong> le week-end.</p>`}
+      ${ligneReglage('objectifSemaine', 'Objectif de la semaine', "temps d'étude visé (au plus bas : aucun)", 30, 0, 3000, 'objectif')}
     </section>`;
 
   const speciaux = donnees.joursSpeciaux.filter(x => x.fin >= aujourdhui()).sort((a, b) => (a.debut < b.debut ? -1 : 1));
@@ -3981,6 +4471,7 @@ function afficherReglages() {
       ${ligneInterrupteur('vibration', 'Vibration', 'Android seulement (pas possible sur iPhone)')}
       ${ligneInterrupteur('ecranAllume', "Garder l'écran allumé", 'pendant un bloc, si le téléphone le permet')}
       ${ligneInterrupteur('conseils', 'Conseils de méthode', 'une astuce pendant chaque bloc')}
+      ${ligneInterrupteur('ideesPause', 'Idées pendant la pause', "boire, s'étirer, regarder au loin…")}
       <div class="pile"><button class="btn btn-plein" data-action="tester-alerte" type="button">${ic('son')} Tester le son et la vibration</button></div>
     </section>`;
 
@@ -4033,7 +4524,7 @@ function afficherReglages() {
         <button class="btn btn-plein btn-danger" data-action="tout-effacer" type="button">Tout effacer</button>
       </div>
     </section>
-    <p class="aide centre version">Plan d'étude · V5</p>`;
+    <p class="aide centre version">Plan d'étude · V6</p>`;
 
   document.getElementById('vue-reglages').innerHTML = h;
 }
@@ -4066,6 +4557,7 @@ function formaterValeur(v, format) {
   if (format === 'plusjours') return `+${v} j`;
   if (format === 'fois') return `× ${formaterDecimal(v)}`;
   if (format === 'minpage') return `${formaterDecimal(v)} min`;
+  if (format === 'objectif') return v > 0 ? formaterDuree(v) : 'Aucun';
   return formaterDecimal(v);
 }
 
@@ -5404,6 +5896,8 @@ function contenuExport() {
     joursSpeciaux: donnees.joursSpeciaux,   // V4 : jours pas dispo, vacances…
     reportes: donnees.reportes,             // V4 : "Pas aujourd'hui"
     questions: donnees.questions,           // V5 : questions pour le prof
+    planMatieres: donnees.planMatieres,     // V6 : blocs prévus par matière (pour "prévu ou fait")
+    bilanFerme: donnees.bilanFerme,         // V6 : bilan du mois déjà fermé
   };
 }
 
@@ -6171,6 +6665,28 @@ function conseilMethode(c, e) {
   return liste[n % liste.length];   // un conseil différent à chaque bloc
 }
 
+/* ---------- Lot 3 : des idées pendant la pause ---------- */
+const IDEES_PAUSE = [
+  "💧 Bois un verre d'eau.",
+  '🙆 Lève-toi et étire-toi (bras, dos, cou).',
+  '👀 Regarde au loin : tes yeux se reposent.',
+  '🌬️ Respire lentement : 4 s inspire, 4 s expire.',
+  "🪟 Ouvre la fenêtre, fais entrer de l'air frais.",
+  '🤸 Fais 10 sauts pour te réveiller.',
+  '📵 Pas d\'écran : ton cerveau se repose mieux.',
+];
+const IDEES_GRANDE_PAUSE = [
+  '🚶 Va marcher un peu, même dans la maison.',
+  '🍎 Mange un fruit ou une petite collation.',
+  "🌳 Sors prendre l'air quelques minutes.",
+  '🎵 Écoute une chanson que tu aimes.',
+  "🧹 Bois un grand verre d'eau, range ton bureau.",
+];
+function ideePause(c) {
+  const liste = c.phase === 'pauseLongue' ? IDEES_GRANDE_PAUSE : IDEES_PAUSE;
+  return liste[(c.blocsSerie + Number(aujourdhui().slice(8, 10))) % liste.length];   // change à chaque pause, et d'un jour à l'autre
+}
+
 /* ---------- Lot 2 : examen blanc (la durée de l'épreuve, d'un coup, sans pause) ---------- */
 function ouvrirFormExamenBlanc(id) {
   const jour = aujourdhui();
@@ -6286,11 +6802,61 @@ function enregistrerFiche(form) {
   afficherToast(e.fiche ? 'Fiche de lecture enregistrée ✓' : 'Fiche vide : rien à garder');
 }
 
+/* ---------- Lot 3 : raccourcis de l'icône (appui long sur l'icône de l'appli, Android) ----------
+   Le manifeste propose « Lancer un bloc », « J'ai lu » et « Ajouter une échéance » :
+   l'appli s'ouvre alors avec ?action=… dans l'adresse. */
+function actionRaccourci() {
+  let action = null;
+  try {
+    action = new URLSearchParams(location.search).get('action');
+    if (action) history.replaceState(null, '', location.pathname + location.hash);   // pas de 2e fois si on recharge
+  } catch (erreur) { /* pas grave */ }
+  if (action === 'lancer') raccourciLancer();
+  else if (action === 'j-ai-lu') raccourciLecture();
+  else if (action === 'ajouter') ouvrirFormEcheance(null);
+}
+function raccourciLancer() {
+  const c = donnees.chrono;
+  if (c && c.phase !== 'attente') {
+    afficherVue('chrono');
+    return;
+  }
+  const plan = planActuel();
+  const suivante = plan.lignesDuJour.find(l => l.prevus > l.faits);
+  if (suivante) {
+    lancerDepuisPlan(suivante.info.echeance.id);
+    return;
+  }
+  afficherVue('chrono');
+  afficherToast("Rien de prévu maintenant : choisis ton sujet et démarre");
+}
+function raccourciLecture() {
+  const plan = planActuel();
+  const livres = donnees.echeances
+    .filter(e => estLecture(e) && !e.terminee && pagesLues(e) < pagesTotal(e))
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  const duJour = plan.lignesDuJour.map(l => l.info.echeance).find(e => livres.includes(e));
+  const livre = duJour || livres[0];
+  if (!livre) {
+    afficherVue('echeances');
+    afficherToast('Pas de livre en cours : ajoute une lecture 📖');
+    return;
+  }
+  ouvrirFormLecture(livre.id);
+}
+
 /* =====================================================================
    8. CLICS, ÉVÉNEMENTS ET DÉMARRAGE
    Chaque bouton a un attribut data-action="..." qui dit ce qu'il fait.
    Un seul "écouteur" reçoit tous les clics et lance la bonne action.
    ===================================================================== */
+
+// Ouvre les stats directement sur une carte (objectif, bilan…).
+function allerVersCarte(id) {
+  afficherVue('stats');
+  const carte = document.getElementById(id);
+  if (carte) carte.scrollIntoView({ block: 'start' });
+}
 
 const ACTIONS = {
   'lancer': id => lancerDepuisPlan(id),
@@ -6383,6 +6949,25 @@ const ACTIONS = {
   'passer-lecture': (id, bouton) => passerLecture(bouton),
   'supprimer-seance': id => supprimerSeance(id),
   'effacer-note': id => effacerNote(id),
+  // V6
+  'objectif-fixer': () => changerObjectifSemaine('fixer'),
+  'objectif-plus': () => changerObjectifSemaine('plus'),
+  'objectif-moins': () => changerObjectifSemaine('moins'),
+  'objectif-retirer': () => changerObjectifSemaine('retirer'),
+  'voir-objectif': () => allerVersCarte('carte-objectif'),
+  'fermer-bilan': (id, bouton) => {
+    donnees.bilanFerme = bouton.dataset.mois;
+    sauvegarder();
+    rafraichir();
+  },
+  'voir-bilan': (id, bouton) => {
+    moisBilan = bouton.dataset.mois || null;
+    allerVersCarte('carte-bilan');
+  },
+  'bilan-mois': (id, bouton) => {
+    moisBilan = moisVoisin(moisBilan || moisDe(aujourdhui()), Number(bouton.dataset.sens) || 0);
+    afficherStats();
+  },
   // V5
   'temps-moins': () => changerTempsDevoir(-1),
   'temps-plus': () => changerTempsDevoir(1),
@@ -6567,6 +7152,7 @@ if (migrationFaite) {
 }
 // On ouvre sur le chrono seulement si un bloc ou une pause est en cours.
 afficherVue(donnees.chrono && donnees.chrono.phase !== 'attente' ? 'chrono' : 'aujourdhui');
+actionRaccourci();   // V6 : ouverte depuis un raccourci de l'icône ?
 majVerrouEcran();
 setInterval(tic, 500);
 </script>
