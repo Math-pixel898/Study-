@@ -1777,12 +1777,12 @@ function contraste(a, b) {
   const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p);
   return (x + 0.05) / (y + 0.05);
 }
-// Une couleur de matière assez foncée pour se lire sur un fond blanc (thème clair).
+// Une couleur de matière assez foncée pour se lire sur un fond clair (thème clair).
 function encre(hex) {
   const n = parseInt(hex.slice(1), 16);
   let f = 1;
   let res = hex;
-  while (f > 0.2 && contraste(res, '#ffffff') < 4.5) {
+  while (f > 0.2 && contraste(res, '#ffffff') < 5.5) {   // 5,5 sur blanc : il reste ≥ 4,5 sur les fonds légèrement teintés
     f -= 0.05;
     res = '#' + [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => Math.round(v * f).toString(16).padStart(2, '0')).join('');
   }
