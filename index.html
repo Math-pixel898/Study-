@@ -49,7 +49,7 @@
   --bord-fort: rgba(255, 255, 255, 0.13);
   --texte: #f3f5fb;
   --texte-2: #abb2c5;
-  --texte-3: #7b8499;
+  --texte-3: #8a93a8;               /* (V7 : un peu plus clair, pour bien se lire sur les tuiles) */
   --accent: #6c5cff;                 /* LA couleur des boutons importants */
   --accent-clair: #b0abff;           /* la même en clair, pour un texte ou une icône */
   --accent-fond: rgba(108, 92, 255, 0.18);
@@ -160,7 +160,7 @@ h3 { margin: 22px 0 6px; font-size: calc(12.5px * var(--echelle-texte)); font-we
   box-shadow: 0 12px 26px -14px rgb(var(--accent-rgb) / 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 .btn-danger { background: rgba(248, 113, 113, 0.12); color: #fca5a5; }
-.btn-danger-plein { background: #ef4444; color: #fff; }
+.btn-danger-plein { background: #dc2626; color: #fff; }
 .btn-plein { width: 100%; }
 .btn-geant { width: 100%; min-height: 62px; font-size: calc(18px * var(--echelle-texte)); border-radius: 20px; }
 .btn-petit { min-height: 44px; padding: 8px 14px; font-size: calc(15px * var(--echelle-texte)); border-radius: 14px; }
@@ -975,6 +975,7 @@ legend { margin-bottom: 8px; padding: 0; font-size: calc(15px * var(--echelle-te
 :root[data-theme="clair"] .badge-lecture { background: rgba(168, 85, 247, 0.12); color: #7e22ce; }
 :root[data-theme="clair"] .badge-devoir { background: rgba(245, 158, 11, 0.15); color: #92400e; }
 :root[data-theme="clair"] .commande.danger .rond-cmd { color: #dc2626; }
+:root[data-theme="clair"] .qr-rate { color: #b91c1c; }
 :root[data-theme="clair"] .cal-jour.indispo, :root[data-theme="clair"] .jour-col.indispo { background: repeating-linear-gradient(135deg, rgba(20, 25, 50, 0.07) 0 4px, transparent 4px 9px), var(--carte-2); }
 :root[data-theme="clair"] .legende-prevu i.piste { background: rgba(20, 25, 50, 0.16); }
 :root[data-theme="clair"] .fond-feuille { background: rgba(15, 20, 40, 0.35); }
@@ -3881,7 +3882,7 @@ function majOngletChrono() {
     const p = infosPhase(c);
     texte.textContent = temps;
     bouton.classList.add('chrono-actif');
-    bouton.style.setProperty('--phase', couleurAffichee(c));
+    bouton.style.setProperty('--phase', apparenceClaire ? encre(couleurAffichee(c)) : couleurAffichee(c));   // V7 : lisible en thème clair
     if (bandeau) bandeau.textContent = temps;
     document.title = `${temps} · ${p.libelle} – Plan d'étude`;
   } else {
