@@ -924,6 +924,8 @@ legend { margin-bottom: 8px; padding: 0; font-size: calc(15px * var(--echelle-te
    V7 : THÈME CLAIR (Réglages › Apparence). Le thème sombre reste celui du dessus.
    ===================================================================== */
 :root[data-texte="grand"] { --echelle-texte: 1.15; }
+:root[data-texte="grand"] .segments:has(> label:nth-child(4)) { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }   /* 4 choix : 2 lignes de 2 */
+:root[data-texte="grand"] .segments span small { overflow-wrap: anywhere; }
 :root[data-texte="grand"] .actions-lecture { grid-template-columns: 1fr; }   /* texte grand : « J'ai fini mes pages » puis « 5 min de plus » en dessous (pas un bouton tout étroit) */
 :root[data-theme="clair"] {
   color-scheme: light;
@@ -5583,9 +5585,9 @@ function ouvrirFormEcheance(id, preselection = {}) {
           <label class="champ">À la page<input type="number" name="pageFin" value="${v.pageFin || ''}" min="1" max="9999" inputmode="numeric" placeholder="ex : 180"></label>
         </div>
         <fieldset>
-          <legend>Ce livre se lit…</legend>
+          <legend>Ce livre est…</legend>
           <div class="segments">
-            ${[['facile', 'Facilement', 'BD, simple'], ['normal', 'Normalement', ''], ['difficile', 'Difficilement', 'classique']].map(([cle, nom, ex]) =>
+            ${[['facile', 'Facile', 'BD, simple'], ['normal', 'Normal', ''], ['difficile', 'Difficile', 'classique']].map(([cle, nom, ex]) =>
               `<label><input type="radio" name="difficulteLecture" value="${cle}"${(v.difficulteLecture || 'normal') === cle ? ' checked' : ''}><span>${nom}${ex ? `<small>${ex}</small>` : ''}</span></label>`).join('')}
           </div>
         </fieldset>
