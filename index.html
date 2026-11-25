@@ -1041,6 +1041,31 @@ legend { margin-bottom: 8px; padding: 0; font-size: calc(15px * var(--echelle-te
 .ligne-matiere-qr small { display: block; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
 .ligne-matiere-qr > .ic { color: var(--texte-3); }
 @media (prefers-reduced-motion: reduce) { .carte-qr .faces { transition: none; } }
+
+/* ---------- V8 : import Smartschool ---------- */
+.etapes-ss { margin: 0 0 14px; padding-left: 22px; color: var(--texte-2); }
+.etapes-ss li { margin: 6px 0; }
+.etapes-ss strong { color: var(--texte); }
+.champ textarea.texte-ss { min-height: 150px; font-size: calc(14px * var(--echelle-texte)); }
+.jour-ss { margin: 18px 0 2px; }
+.ligne-ss { padding: 12px 0; border-top: 1px solid var(--bord); }
+.jour-ss + .ligne-ss { border-top: 0; }
+.ss-tete { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+.ss-tete input { flex: none; width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--accent); }
+.ss-tete .texte { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ss-tete strong { display: block; font-weight: 650; }
+.ss-tete small { display: block; margin-top: 2px; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
+.ss-tete .info-ss { color: var(--alerte); font-weight: 650; }
+.ligne-ss.ignoree .ss-tete .texte, .ligne-ss.ignoree .ss-choix { opacity: 0.55; }
+.ss-choix { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 8px; margin: 8px 0 0 34px; }
+.ss-choix .champ { margin: 0; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
+.ss-choix select {
+  min-height: 46px; margin-top: 4px; padding: 8px 30px 8px 10px; font-size: calc(15px * var(--echelle-texte));
+  background-image: linear-gradient(45deg, transparent 50%, var(--texte-2) 50%), linear-gradient(135deg, var(--texte-2) 50%, transparent 50%);
+  background-position: calc(100% - 17px) 52%, calc(100% - 12px) 52%; background-size: 5px 5px; background-repeat: no-repeat; text-overflow: ellipsis;
+}
+.ligne-ss.manque select[name^="matiere-"] { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2); }
+@media (max-width: 360px) { .ss-choix { grid-template-columns: minmax(0, 1fr); } }
 </style>
 </head>
 
@@ -1126,7 +1151,7 @@ legend { margin-bottom: 8px; padding: 0; font-size: calc(15px * var(--echelle-te
 const CLE_STOCKAGE = 'plan-etude-v1';
 // Version du format des données. V1 = 1 ; V2 = 2 (type de travail, ressentis, historique, rythme) ;
 // V3 = 3 (notes et objectifs, checklist de la veille, badges, blocs prévus jour par jour).
-const VERSION_DONNEES = 7;   // V4 : jours spéciaux, jour par jour, reports, rappel de sauvegarde · V5 : devoirs, chapitres, questions, fiches de lecture · V6 : objectif de la semaine, prévu par matière, bilan du mois · V7 : apparence, fond sonore, fiches question / réponse
+const VERSION_DONNEES = 8;   // V4 : jours spéciaux, jour par jour, reports, rappel de sauvegarde · V5 : devoirs, chapitres, questions, fiches de lecture · V6 : objectif de la semaine, prévu par matière, bilan du mois · V7 : apparence, fond sonore, fiches question / réponse · V8 : import Smartschool
 // Copie de secours des données d'avant la mise à jour (faite une seule fois).
 // La copie d'avant la V2 ("plan-etude-copie-avant-v2") reste aussi en place.
 const CLE_SECOURS = 'plan-etude-copie-avant-v' + VERSION_DONNEES;
@@ -1266,6 +1291,7 @@ function donneesVides() {
     planMatieres: {},   // V6 : blocs prévus chaque jour, par matière : { "2026-11-24": { idMatiere: 2 } }
     bilanFerme: null,   // V6 : mois ("AAAA-MM") dont tu as fermé le bilan sur l'écran Aujourd'hui
     fichesQR: [],       // V7 : fiches question / réponse : { id, matiereId, echeanceId, recto, verso, boite (1 à 5), prochaine, revueLe }
+    profsSmartschool: {},  // V8 : la matière de chaque prof vu dans Smartschool : { "WARTIQUE": idMatiere }
   };
 }
 
@@ -1394,6 +1420,12 @@ function normaliser(lu) {
     }
   }
   if (typeof lu.bilanFerme === 'string' && /^\d{4}-\d{2}$/.test(lu.bilanFerme)) d.bilanFerme = lu.bilanFerme;
+  // Nouveau en V8 : la matière de chaque prof (import Smartschool).
+  if (lu.profsSmartschool && typeof lu.profsSmartschool === 'object') {
+    for (const [prof, id] of Object.entries(lu.profsSmartschool)) {
+      if (/^[A-Z][A-Z' -]{1,40}$/.test(prof) && idPropre(id)) d.profsSmartschool[prof] = idPropre(id);
+    }
+  }
   // Nouveau en V7 : fiches question / réponse.
   if (Array.isArray(lu.fichesQR)) {
     d.fichesQR = lu.fichesQR
@@ -1467,6 +1499,7 @@ function normaliserExtrasEcheance(e) {
       .slice(0, 40)
       .map(c => ({ id: String(c.id || nouvelId()).replace(/[^a-zA-Z0-9_-]/g, '') || nouvelId(), nom: String(c.nom).trim().slice(0, 60), fait: c.fait === true }));
   }
+  if (typeof e.smartschool === 'string' && e.smartschool.trim()) x.smartschool = e.smartschool.trim().slice(0, 200);   // V8 : importée de Smartschool
   if (e.fiche && typeof e.fiche === 'object') {
     const f = {};
     for (const cle of ['personnages', 'resume', 'citations', 'avis']) f[cle] = String(e.fiche[cle] || '').slice(0, 4000);
@@ -3514,6 +3547,7 @@ function afficherEcheances() {
         <h2>Commence par tes matières</h2>
         <p>Ajoute les matières que tu étudies (maths, chimie, philo…). Ensuite, tes tests et tes examens.</p>
         <button class="btn btn-principal btn-plein" data-action="ajouter-matiere" type="button">+ Ajouter une matière</button>
+        <button class="btn btn-plein" data-action="smartschool" type="button" style="margin-top:10px">📥 Importer depuis Smartschool</button>
       </section>`;
     return;
   }
@@ -3533,9 +3567,11 @@ function afficherEcheances() {
         <h2>Aucun test à venir</h2>
         <p>Profites-en ! Dès que tu ajoutes un test, un examen ou un livre à lire, l'appli prépare ton plan.</p>
         <button class="btn btn-principal btn-plein" data-action="ajouter-echeance" type="button">+ Ajouter un test ou un examen</button>
+        <button class="btn btn-plein" data-action="smartschool" type="button" style="margin-top:10px">📥 Importer depuis Smartschool</button>
       </section>`;
   }
   h += aVenir.map(e => carteEcheance(e, plan)).join('');
+  if (aVenir.length) h += `<button class="lien" data-action="smartschool" type="button">📥 Importer mes tâches Smartschool</button>`;   // V8
   h += carteQuestions();
   h += carteFichesQR();   // V7
   if (historique.length) {
@@ -4787,13 +4823,14 @@ function afficherReglages() {
         <button class="btn btn-principal btn-plein" data-action="exporter" type="button">${ic('telecharger')} Exporter mes données</button>
         <button class="btn btn-plein" data-action="importer" type="button">${ic('televerser')} Importer une sauvegarde</button>
         <button class="btn btn-plein" data-action="exporter-agenda" type="button">${ic('calendrier')} Mettre mes échéances dans un agenda</button>
+        <button class="btn btn-plein" data-action="smartschool" type="button">📥 Importer mes tâches Smartschool</button>
         <button class="btn btn-plein" data-action="exemple" type="button">Ajouter des exemples (pour tester)</button>
         <button class="btn btn-plein" data-action="reglages-defaut" type="button">Remettre les réglages par défaut</button>
         <button class="btn btn-plein btn-danger" data-action="tout-effacer" type="button">Tout effacer</button>
       </div>
     </section>
     <p class="aide">Agenda : un fichier .ics avec tes tests, examens, livres et devoirs à venir. Sur Android, ouvre-le avec ton agenda. Pour Google Agenda sur ordinateur : ⚙️ Paramètres → Importer et exporter → Importer.</p>
-    <p class="aide centre version">Plan d'étude · V7</p>`;
+    <p class="aide centre version">Plan d'étude · V8</p>`;
 
   document.getElementById('vue-reglages').innerHTML = h;
   majFondSonore();   // V7 : si le volume vient de changer
@@ -6171,6 +6208,7 @@ function contenuExport() {
     planMatieres: donnees.planMatieres,     // V6 : blocs prévus par matière (pour "prévu ou fait")
     bilanFerme: donnees.bilanFerme,         // V6 : bilan du mois déjà fermé
     fichesQR: donnees.fichesQR,             // V7 : fiches question / réponse
+    profsSmartschool: donnees.profsSmartschool,   // V8 : la matière de chaque prof (import Smartschool)
   };
 }
 
@@ -7710,6 +7748,346 @@ function supprimerFicheQR(id) {
   });
 }
 
+/* ---------- V8 : importer tes tâches de Smartschool (« Mes tâches ») ----------
+   Capture d'écran de « Mes tâches » → Google Lens « Copier le texte » → coller ici.
+   Le texte de Lens est un peu en vrac : on se repère aux jours (« mercredi 25 novembre »),
+   aux heures (08:30), aux lettres de type (IF, IS, P, D), au cours (CHIMIE…) et au prof (S. BAILLY). */
+const TYPES_SS = {
+  is: 'Test',
+  if: 'Test formatif',
+  examen: 'Examen',
+  devoir: 'Devoir à rendre',
+  prepa: 'Préparation',
+};
+const LETTRES_SS = { IF: 'if', IS: 'is', P: 'prepa', D: 'devoir' };
+// Mots du cours → nom de matière (dans l'ordre : le plus précis d'abord).
+const SUJETS_SS = [
+  [/(educ\w*|ed\.?)\s*phys|\bgym|\bsport|\bedph/, 'Éducation physique'],
+  [/chim/, 'Chimie'],
+  [/phys/, 'Physique'],
+  [/\bbio/, 'Biologie'],
+  [/math/, 'Maths'],
+  [/franc|\bfr\b/, 'Français'],
+  [/relig/, 'Religion'],
+  [/morale/, 'Morale'],
+  [/philo|citoyen|\bcpc\b/, 'Philosophie'],
+  [/\bhist/, 'Histoire'],
+  [/\bgeo/, 'Géographie'],
+  [/ndls|neerl|nederl|dutch|\bnl\b/, 'Néerlandais'],
+  [/angl|engl/, 'Anglais'],
+  [/allem|deutsch/, 'Allemand'],
+  [/espag|espan/, 'Espagnol'],
+  [/latin/, 'Latin'],
+  [/\bgrec/, 'Grec'],
+  [/info/, 'Informatique'],
+  [/\beco/, 'Économie'],
+  [/musi/, 'Musique'],
+  [/\barts?\b|dessin|plasti/, 'Arts'],
+  [/scien/, 'Sciences'],
+];
+const RE_PROF_SS = /\b([A-Z][a-z]?\.)\s?([A-ZÀ-Ý][A-ZÀ-Ý'’-]{2,})\b/;
+let brouillonSS = '';   // le texte collé (gardé si on revient en arrière)
+let importSS = null;    // les tâches trouvées, en attente de vérification
+
+function normSS(t) {
+  return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+function moisSS(mot) {
+  const m = normSS(mot);
+  const t = [['janv', 0], ['fev', 1], ['mars', 2], ['avr', 3], ['mai', 4], ['juin', 5], ['juil', 6], ['aou', 7], ['sep', 8], ['oct', 9], ['nov', 10], ['dec', 11]].find(([debut]) => m.startsWith(debut));
+  return t ? t[1] : null;
+}
+// « mardi 24 novembre » : l'année est celle où le 24 novembre tombe bien un mardi (la plus proche d'aujourd'hui).
+function dateSS(jourSemaine, numero, mois, jour) {
+  const annee = dateDepuisCle(jour).getFullYear();
+  const candidats = [annee - 1, annee, annee + 1].map(a => new Date(a, mois, numero)).filter(d => d.getDate() === numero).map(cleDate);
+  const bons = candidats.filter(c => dateDepuisCle(c).getDay() === jourSemaine);
+  return (bons.length ? bons : candidats).sort((a, b) => Math.abs(ecartJours(jour, a)) - Math.abs(ecartJours(jour, b)))[0] || null;
+}
+// Le titre d'une tâche : le texte juste avant son heure (même ligne, sinon la ligne d'avant).
+function titreSS(avant) {
+  const lignes = avant.split('\n');
+  let k = lignes.length - 1;
+  let candidat = lignes[k].trim();
+  if (!candidat) {
+    k--;
+    while (k >= 0 && !lignes[k].trim()) k--;
+    candidat = k >= 0 ? lignes[k].trim() : '';
+  }
+  // Texte tout collé : on garde ce qui suit la dernière lettre de type ou le dernier type (« … Préparation IF test chap 1 »).
+  let fin = 0;
+  for (const re of [/(^|\s)(IF|IS|P|D)(?=\s|$)/g, /interrogation\s+formative|interrogation\s+sommative|pr[ée]paration|\bdevoir\b/gi]) {
+    let x;
+    while ((x = re.exec(candidat))) fin = Math.max(fin, x.index + x[0].length);
+  }
+  let titre = candidat.slice(fin).replace(/^[\s.:,;-]+/, '').trim();
+  if (!titre) titre = candidat.replace(/^(IF|IS|P|D)\s+/, '').trim();   // le titre est « Interrogation formative »
+  if (/(^|\s)[A-Z]\s?-(\s|[A-Z0-9]|$)/.test(titre) || RE_PROF_SS.test(titre)) {
+    // C'est la fin de la tâche d'avant… mais si tout est collé, le titre vient juste après ses classes (« … A - 6 G c Evaluation… »).
+    const classes = [...titre.matchAll(/[A-Z]\s?-\s?\d+\s?[A-Z]\s?[a-z]\b[.,]?/g)].pop();
+    const reste = classes ? titre.slice(classes.index + classes[0].length).replace(/^[\s.:,;-]+/, '').trim() : '';
+    titre = reste && !/(^|\s)[A-Z]\s?-(\s|[A-Z0-9]|$)/.test(reste) && !RE_PROF_SS.test(reste) ? reste : '';
+  }
+  return titre.replace(/\s+/g, ' ').slice(0, 120);
+}
+// Le cours : juste après l'heure, jusqu'au local (« A - B - 21 ») ou au prof (« S. BAILLY »).
+function coursSS(apres) {
+  const lignes = apres.split('\n');
+  let ligne = lignes[0].trim();
+  if (!ligne && lignes.length > 1) ligne = lignes.find((l, k) => k > 0 && l.trim()) || '';
+  const coupures = [ligne.search(/(^|\s)[A-Z]\s?-(?=\s|[A-Z0-9]|$)/), ligne.search(RE_PROF_SS), ligne.search(/interrogation|pr[ée]paration|\bdevoir\b/i)].filter(i => i >= 0);
+  const cours = coupures.length ? ligne.slice(0, Math.min(...coupures)) : ligne;
+  return cours.replace(/[\s.,;:-]+$/, '').trim().slice(0, 80);
+}
+// Le texte collé → la liste des tâches (sans doublon).
+function analyserSmartschool(brut, jour = aujourdhui()) {
+  const t = String(brut || '').replace(/\r/g, '').replace(/[•⚑▪●■►▶|]/g, ' ').replace(/[ \t ]+/g, ' ');
+  const reJour = /(lun|mar|mer|jeu|ven|sam|dim)[a-zé]{0,6}\.?\s+(\d{1,2})(?:er)?\s+([A-Za-zÀ-ÿ]{3,10})/gi;
+  const jours = [];
+  let m;
+  while ((m = reJour.exec(t))) {
+    const mois = moisSS(m[3]);
+    const numero = Number(m[2]);
+    if (mois === null || numero < 1 || numero > 31) continue;
+    const date = dateSS(['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'].indexOf(m[1].toLowerCase()), numero, mois, jour);
+    if (date) jours.push({ debut: m.index, fin: m.index + m[0].length, date });
+  }
+  const taches = [];
+  const vues = new Set();
+  jours.forEach((j, n) => {
+    const section = t.slice(j.fin, n + 1 < jours.length ? jours[n + 1].debut : t.length);
+    const heures = [];
+    const reHeure = /(^|[^\d:])([01]?\d|2[0-3])[:hH]([0-5]\d)(?![\d:])/g;
+    let h;
+    while ((h = reHeure.exec(section))) heures.push({ pos: h.index + h[1].length, fin: h.index + h[0].length, heure: `${h[2].padStart(2, '0')}:${h[3]}` });
+    const titres = heures.map((x, i) => titreSS(section.slice(i ? heures[i - 1].fin : 0, x.pos)));
+    heures.forEach((x, i) => {
+      const avant = section.slice(i ? heures[i - 1].fin : 0, x.pos);
+      // Ce qui suit l'heure (sans le titre de la tâche suivante)
+      let apres = section.slice(x.fin, i + 1 < heures.length ? heures[i + 1].pos : section.length);
+      if (i + 1 < heures.length && titres[i + 1]) {
+        const k = apres.lastIndexOf(titres[i + 1].slice(0, 20));
+        if (k >= 0) apres = apres.slice(0, k);
+      }
+      // Le type : la dernière lettre (IF, IS, P, D) avant l'heure, sinon les mots « Interrogation formative »…
+      let type = null;
+      const reLettre = /(^|\s)(IF|IS|P|D)(?=\s|$)/g;
+      let l;
+      while ((l = reLettre.exec(avant))) type = LETTRES_SS[l[2]];
+      if (!type) {
+        const p = normSS(apres).match(/interrogation\s+formative|interrogation\s+sommative|preparation|\bdevoir\b/);
+        type = !p ? 'is' : p[0].includes('formative') ? 'if' : p[0].includes('sommative') ? 'is' : p[0] === 'devoir' ? 'devoir' : 'prepa';
+      }
+      const prof = apres.match(RE_PROF_SS);
+      // Une vraie tâche a un local, une classe ou un prof après son heure (sinon : l'heure du téléphone en haut d'une capture…)
+      if (!prof && !/(^|\s)[A-Z]\s?-\s?[A-Z0-9]/.test(apres)) return;
+      const titre = titres[i];
+      const cle = `${j.date}|${x.heure}|${normSS(titre).replace(/[^a-z0-9]+/g, ' ').trim().slice(0, 60)}`;
+      if (vues.has(cle)) return;   // la même tâche sur deux captures
+      vues.add(cle);
+      taches.push({
+        cle,
+        date: j.date,
+        heure: x.heure,
+        titre,
+        cours: coursSS(apres),
+        prof: prof ? normSS(prof[2]).toUpperCase().replace(/[^A-Z' -]/g, '') : '',
+        profNom: prof ? `${prof[1]} ${prof[2]}` : '',
+        type,
+      });
+    });
+  });
+  return taches.sort((a, b) => (a.date + a.heure < b.date + b.heure ? -1 : a.date + a.heure > b.date + b.heure ? 1 : 0));
+}
+// Deux noms de matière « pareils » (Maths / Mathématiques, Histoire / Histoire-Géo…).
+function memeMatiereSS(a, b) {
+  const x = normSS(a).replace(/[^a-z]/g, '');
+  const y = normSS(b).replace(/[^a-z]/g, '');
+  return x === y || (x.length >= 4 && y.length >= 4 && x.slice(0, 4) === y.slice(0, 4));
+}
+// La matière d'une tâche : d'après le cours, sinon d'après le prof (retenu des fois d'avant), sinon à créer.
+function matiereSS(tache) {
+  const n = normSS(tache.cours);
+  const noms = SUJETS_SS.filter(([re]) => re.test(n)).map(([, nom]) => nom);
+  for (const nom of noms) {
+    const m = donnees.matieres.find(x => memeMatiereSS(x.nom, nom));
+    if (m) return { matiereId: m.id, nouvelle: null };
+  }
+  const compact = n.replace(/[^a-z]/g, '');
+  const direct = compact && donnees.matieres.find(x => { const k = normSS(x.nom).replace(/[^a-z]/g, ''); return k.length >= 4 && compact.includes(k.slice(0, 6)); });
+  if (direct) return { matiereId: direct.id, nouvelle: null };
+  const parProf = tache.prof && donnees.profsSmartschool[tache.prof];
+  if (parProf && trouverMatiere(parProf)) return { matiereId: parProf, nouvelle: null };
+  return { matiereId: null, nouvelle: noms[0] || null };
+}
+function genreSS(type) {
+  return type === 'devoir' || type === 'prepa' ? 'devoir' : type === 'lecture' ? 'lecture' : 'eval';
+}
+// Déjà dans ton plan ? (importée avant, ou même jour + même matière + même genre)
+function existeSS(tache, matiereId, type) {
+  return donnees.echeances.some(e => e.smartschool === tache.cle
+    || (matiereId && e.date === tache.date && e.matiereId === matiereId && genreSS(e.type) === genreSS(type)));
+}
+
+function ouvrirImportSS() {
+  ouvrirFeuille(`<form id="form-ss" novalidate>
+      <h2>Importer depuis Smartschool</h2>
+      <ol class="etapes-ss">
+        <li>Dans Smartschool, ouvre <strong>Mes tâches</strong> et fais une <strong>capture d'écran</strong> (plusieurs si besoin).</li>
+        <li>Ouvre la capture avec <strong>Google Lens</strong> (dans Google Photos : bouton Lens), touche <strong>Texte</strong>, puis <strong>Copier le texte</strong>.</li>
+        <li>Colle le texte ici. Plusieurs captures ? Colle-les à la suite.</li>
+      </ol>
+      <label class="champ">Le texte copié
+        <textarea class="texte-ss" name="texte" rows="7" placeholder="mercredi 25 novembre&#10;IF&#10;test chap 1 UAA10&#10;08:30 SCIE6, SCIENCES6: CHIMIE 2 G2…">${echapper(brouillonSS)}</textarea>
+      </label>
+      <p class="erreur" id="erreur-form" hidden></p>
+      <div class="pile">
+        <button type="button" class="btn btn-plein" data-action="ss-coller">📋 Coller le texte copié</button>
+        <button type="submit" class="btn btn-principal btn-geant">Lire le texte</button>
+        <button type="button" class="btn btn-plein" data-action="fermer">Annuler</button>
+      </div>
+    </form>`);
+}
+async function collerSS() {
+  const zone = document.querySelector('#form-ss textarea');
+  if (!zone) return;
+  try {
+    const texte = await navigator.clipboard.readText();
+    if (!texte.trim()) {
+      afficherToast('Rien à coller : copie d\'abord le texte avec Google Lens');
+      return;
+    }
+    zone.value = zone.value.trim() ? `${zone.value.trim()}\n${texte}` : texte;   // plusieurs captures : à la suite
+    brouillonSS = zone.value;
+    afficherToast('Texte collé ✓');
+  } catch (erreur) {
+    zone.focus();
+    afficherToast('Fais un appui long dans la case, puis « Coller »');
+  }
+}
+function lireSS(form) {
+  brouillonSS = String(form.elements.texte.value || '');
+  const taches = analyserSmartschool(brouillonSS);
+  if (!taches.length) return erreurForm("Je n'ai trouvé aucune tâche. Le texte doit contenir les jours (ex : « mercredi 25 novembre ») et les heures (ex : 08:30).");
+  const jour = aujourdhui();
+  importSS = {
+    taches: taches.map(t => {
+      const m = matiereSS(t);
+      const existe = existeSS(t, m.matiereId, t.type);
+      return { ...t, ...m, existe, passee: t.date < jour, garder: !existe && t.date >= jour };
+    }),
+  };
+  ouvrirVerifSS();
+}
+function ouvrirVerifSS() {
+  const taches = importSS.taches;
+  const nouvelles = [...new Set(taches.map(t => t.nouvelle).filter(nom => nom && !donnees.matieres.some(m => memeMatiereSS(m.nom, nom))))];
+  const matieres = [...donnees.matieres].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+  const options = t => `<option value="">— À choisir —</option>`
+    + matieres.map(m => `<option value="${m.id}"${t.matiereId === m.id ? ' selected' : ''}>${echapper(m.nom)}</option>`).join('')
+    + nouvelles.map(nom => `<option value="nouvelle:${echapper(nom)}"${!t.matiereId && t.nouvelle === nom ? ' selected' : ''}>➕ Nouvelle : ${echapper(nom)}</option>`).join('');
+  const existes = taches.filter(t => t.existe).length;
+  let h = `<form id="form-ss-verif" novalidate>
+      <h2>Vérifie avant d'importer</h2>
+      <p class="aide" style="margin:-6px 0 4px">${pluriel(taches.length, 'tâche')} trouvée${taches.length > 1 ? 's' : ''}${existes ? ` · ${existes} déjà dans ton plan` : ''}. Décoche ce que tu ne veux pas, et vérifie la matière.</p>`;
+  let jourCourant = '';
+  taches.forEach((t, k) => {
+    if (t.date !== jourCourant) {
+      jourCourant = t.date;
+      h += `<h3 class="jour-ss">${capitaliser(dateLongue(t.date))}</h3>`;
+    }
+    const infos = [t.heure, t.cours, t.profNom].filter(Boolean).join(' · ');
+    const remarque = t.existe ? 'déjà dans ton plan' : t.passee ? 'date passée' : '';
+    h += `<div class="ligne-ss${t.garder ? '' : ' ignoree'}" data-k="${k}">
+        <label class="ss-tete"><input type="checkbox" name="garder-${k}"${t.garder ? ' checked' : ''}>
+          <span class="texte"><strong>${echapper(t.titre || TYPES_SS[t.type])}</strong><small>${echapper(infos)}${remarque ? ` · <span class="info-ss">${remarque}</span>` : ''}</small></span>
+        </label>
+        <div class="ss-choix">
+          <label class="champ">Type<select name="type-${k}">${Object.entries(TYPES_SS).map(([cle, nom]) => `<option value="${cle}"${t.type === cle ? ' selected' : ''}>${nom}</option>`).join('')}</select></label>
+          <label class="champ">Matière<select name="matiere-${k}">${options(t)}</select></label>
+        </div>
+      </div>`;
+  });
+  h += `<p class="erreur" id="erreur-form" hidden></p>
+      <div class="pile" style="margin-top:16px">
+        <button type="submit" class="btn btn-principal btn-geant">Importer</button>
+        <button type="button" class="btn btn-plein" data-action="ss-retour">Retour au texte</button>
+      </div>
+    </form>`;
+  ouvrirFeuille(h);
+}
+// Une matière choisie pour une tâche : les autres tâches du même prof (sans matière) suivent.
+function choisirMatiereSS(select) {
+  const form = select.form;
+  const k = Number(select.name.split('-')[1]);
+  const t = importSS && importSS.taches[k];
+  if (!t) return;
+  select.closest('.ligne-ss').classList.remove('manque');
+  if (!t.prof || !select.value) return;
+  importSS.taches.forEach((autre, j) => {
+    const s = form.elements['matiere-' + j];
+    if (j !== k && autre.prof === t.prof && s && !s.value) {
+      s.value = select.value;
+      s.closest('.ligne-ss').classList.remove('manque');
+    }
+  });
+}
+function echeanceSS(t, type, matiereId) {
+  const base = { id: nouvelId(), matiereId, date: t.date, niveau: 2, chapitres: 2, note: '', travail: 'mixte', terminee: false, termineeLe: null, rythme: null, resultat: null, checklist: {}, smartschool: t.cle };
+  if (type === 'devoir' || type === 'prepa') {
+    return { ...base, type: 'devoir', niveau: 1, chapitres: 1, titre: (t.titre || TYPES_SS[type]).slice(0, 80), minutesEstimees: type === 'prepa' ? 30 : 60 };
+  }
+  const note = t.titre && !/^interrogation\s+(formative|sommative)$/i.test(t.titre) ? t.titre.slice(0, 120) : '';
+  if (type === 'examen') return { ...base, type: 'examen', niveau: 3, chapitres: 3, note };
+  return { ...base, type: 'test', niveau: type === 'if' ? 1 : 2, chapitres: type === 'if' ? 1 : 2, note };
+}
+function importerSS(form) {
+  if (!importSS) return fermerFeuille();
+  const f = new FormData(form);
+  const choisies = importSS.taches.map((t, k) => ({ t, k })).filter(({ k }) => f.get('garder-' + k) === 'on');
+  if (!choisies.length) return erreurForm('Coche au moins une tâche à importer.');
+  const sansMatiere = choisies.filter(({ k }) => !f.get('matiere-' + k));
+  form.querySelectorAll('.ligne-ss.manque').forEach(l => l.classList.remove('manque'));
+  if (sansMatiere.length) {
+    sansMatiere.forEach(({ k }) => form.querySelector(`.ligne-ss[data-k="${k}"]`).classList.add('manque'));
+    form.querySelector(`.ligne-ss[data-k="${sansMatiere[0].k}"]`).scrollIntoView({ block: 'center' });
+    return erreurForm(`Choisis la matière ${sansMatiere.length > 1 ? `de ${sansMatiere.length} tâches` : "d'une tâche"} (en rouge).`);
+  }
+  const avant = { matieres: donnees.matieres.slice(), echeances: donnees.echeances.slice(), profs: { ...donnees.profsSmartschool } };
+  const creees = {};
+  for (const { t, k } of choisies) {
+    let matiereId = f.get('matiere-' + k);
+    if (matiereId.startsWith('nouvelle:')) {
+      const nom = matiereId.slice(9);
+      const existante = donnees.matieres.find(m => memeMatiereSS(m.nom, nom));
+      if (existante) matiereId = existante.id;
+      else if (creees[nom]) matiereId = creees[nom];
+      else {
+        const prises = donnees.matieres.map(m => m.couleur);
+        const libre = PALETTE.find(c => !prises.includes(c.code));
+        matiereId = nouvelId() + Object.keys(creees).length;
+        donnees.matieres.push({ id: matiereId, nom, couleur: libre ? libre.code : PALETTE[donnees.matieres.length % PALETTE.length].code });
+        creees[nom] = matiereId;
+      }
+    }
+    if (t.prof) donnees.profsSmartschool[t.prof] = matiereId;   // la prochaine fois, ce prof = cette matière
+    donnees.echeances.push(echeanceSS(t, f.get('type-' + k), matiereId));
+  }
+  importSS = null;
+  brouillonSS = '';
+  sauvegarder();
+  fermerFeuille();
+  vueEcheances = 'liste';
+  afficherVue('echeances');
+  const nb = Object.keys(creees).length;
+  proposerAnnulation(`✓ ${pluriel(choisies.length, 'tâche')} importée${choisies.length > 1 ? 's' : ''}${nb ? ` · ${pluriel(nb, 'matière')} créée${nb > 1 ? 's' : ''}` : ''}`, () => {
+    donnees.matieres = avant.matieres;
+    donnees.echeances = avant.echeances;
+    donnees.profsSmartschool = avant.profs;
+  });
+  verifierBadges();
+}
+
 /* =====================================================================
    8. CLICS, ÉVÉNEMENTS ET DÉMARRAGE
    Chaque bouton a un attribut data-action="..." qui dit ce qu'il fait.
@@ -7814,6 +8192,10 @@ const ACTIONS = {
   'passer-lecture': (id, bouton) => passerLecture(bouton),
   'supprimer-seance': id => supprimerSeance(id),
   'effacer-note': id => effacerNote(id),
+  // V8
+  'smartschool': () => ouvrirImportSS(),
+  'ss-coller': () => collerSS(),
+  'ss-retour': () => ouvrirImportSS(),
   // V7
   'qr-depart': (id, bouton) => ouvrirDepartQR(porteeDe(bouton)),
   'qr-gerer': (id, bouton) => ouvrirGestionQR(porteeDe(bouton)),
@@ -7909,6 +8291,8 @@ document.addEventListener('submit', ev => {
   if (ev.target.id === 'form-special') enregistrerSpecial(ev.target);
   if (ev.target.id === 'form-chapitre') ajouterChapitre(ev.target);
   if (ev.target.id === 'form-qr') ajouterFicheQR(ev.target);
+  if (ev.target.id === 'form-ss') lireSS(ev.target);
+  if (ev.target.id === 'form-ss-verif') importerSS(ev.target);
   if (ev.target.id === 'form-qr-lot') ajouterLotQR(ev.target);
   if (ev.target.id === 'form-qr-modif') enregistrerModifQR(ev.target);
   if (ev.target.id === 'form-depart-qr') demarrerQuizQR(ev.target);
@@ -7929,6 +8313,7 @@ document.addEventListener('input', ev => {
   if (ev.target.classList.contains('page-lecture')) brouillonPage = ev.target.value;
   if (ev.target.classList.contains('note-bloc')) brouillonNote = ev.target.value;
   if (ev.target.closest('#form-fiche')) majBrouillonFiche(ev.target.closest('#form-fiche'));
+  if (ev.target.closest('#form-ss')) brouillonSS = ev.target.value;
 });
 document.addEventListener('change', ev => {
   const t = ev.target;
@@ -7939,6 +8324,10 @@ document.addEventListener('change', ev => {
   }
   if (t.dataset.checklist) cocherChecklist(t.dataset.id, t.dataset.checklist, t.checked);
   if (t.dataset.chapitre && t.type === 'checkbox') cocherChapitre(t.dataset.id, t.dataset.chapitre, t.checked);
+  if (t.closest('#form-ss-verif')) {   // V8
+    if (t.name.startsWith('garder-')) t.closest('.ligne-ss').classList.toggle('ignoree', !t.checked);
+    if (t.name.startsWith('matiere-')) choisirMatiereSS(t);
+  }
   if (t.closest('#form-special')) majApercuSpecial();
   if (t.hasAttribute('data-jourparjour')) {
     const r = donnees.reglages;
