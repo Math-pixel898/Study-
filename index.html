@@ -2229,6 +2229,8 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
     i.futur = passage2.alloc[i.echeance.id];    // ex : { "2026-11-24": 2, "2026-11-25": 1 }
     i.manque = passage2.manque[i.echeance.id];  // blocs qu'on n'a pas pu placer
     i.faitsAujourdhui = Math.floor(i.faitAujourdhui / W + 0.01);  // blocs entiers faits aujourd'hui
+    // Tout ce qui restait est fait (ex : un devoir de 15 min fini en un bloc de 15 min) : la part du jour est faite.
+    if (i.restant > 0 && i.faitAujourdhui > 0 && i.faitAujourdhui >= i.restant - W * 0.25) i.faitsAujourdhui = Math.max(i.faitsAujourdhui, i.prevuAujourdhui);
     i.resteAFaire = Math.max(0, i.prevuAujourdhui - i.faitsAujourdhui) + Object.values(i.futur).reduce((s, n) => s + n, 0);
   }
 
