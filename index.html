@@ -3402,7 +3402,7 @@ function texteAlerte(a, jour) {
   const e = a.info.echeance;
   const nom = echapper(nomEcheanceLong(e));
   if (a.type === 'manque') {
-    return `Pas assez de temps pour ${nom} (<span class="insecable">${quandCourt(e.date, jour)}</span>), il manque <span class="insecable">${formaterDuree(a.minutes)}</span>.`;
+    return `Pas assez de temps pour ${nom} (<span class="insecable">${quandCourt(e.date, jour)}</span>), il manque <span class="insecable">${formaterDuree(a.minutes)}</span>. C'est le total d'ici là : ce qui est plus urgent passe avant et prend ton temps dispo.`;
   }
   if (a.type === 'retard') {
     const r = a.info.retard;
@@ -3413,7 +3413,14 @@ function texteAlerte(a, jour) {
 }
 
 function conseilAlerte(a) {
-  if (a.type === 'manque') return 'Augmente ton temps dispo dans Réglages, ou fais des blocs en plus.';
+  if (a.type === 'manque') {
+    // Un report d'aujourd'hui ne crée pas de temps : ses blocs passent sur les jours suivants (et prennent leur place).
+    const reportees = ((donnees.reportes || {})[aujourdhui()] || []).map(trouverEcheance).filter(x => x && x.id !== a.info.echeance.id);
+    const report = reportees.length
+      ? `« Pas aujourd'hui » ne fait que déplacer : les blocs ${reportees.map(x => de(nomMatiere(x.matiereId))).join(' et ')} passent sur les jours suivants et y prennent la place. `
+      : '';
+    return `${report}Pour rattraper : augmente ton temps dispo dans Réglages, ou fais des blocs en plus.`;
+  }
   if (a.type === 'retard') return 'Le temps en retard est réparti sur les jours qui restent.';
   return 'Garde un peu de marge : ajoute du temps dispo dans Réglages si tu peux.';
 }
