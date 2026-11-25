@@ -15,6 +15,17 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180' width='180' height='180'%3E%3Crect width='180' height='180' rx='40' fill='%236d74f0'/%3E%3Crect x='40' y='50' width='100' height='92' rx='16' fill='none' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M40 78h100' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M68 36v24M112 36v24' stroke='%23fff' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M68 111l15 14 30-30' fill='none' stroke='%23fff' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
+<script>
+  // V7 : le thème et la taille du texte choisis sont appliqués avant même d'afficher la page.
+  (function () {
+    try {
+      var r = (JSON.parse(localStorage.getItem('plan-etude-v1')) || {}).reglages || {};
+      var clair = r.theme === 'clair' || (r.theme === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches);
+      document.documentElement.setAttribute('data-theme', clair ? 'clair' : 'sombre');
+      if (r.texte === 'grand') document.documentElement.setAttribute('data-texte', 'grand');
+    } catch (erreur) { /* pas grave : thème sombre */ }
+  })();
+</script>
 
 <style>
 /* =====================================================================
@@ -56,6 +67,8 @@
   --ombre: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 16px 36px -22px rgba(0, 0, 0, 0.9);
   --anim: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ambiance: rgba(108, 92, 255, 0.16);
+  --accent-rgb: 108 92 255;          /* V7 : la couleur d'accent en chiffres (pour les ombres et les lueurs) */
+  --echelle-texte: 1;                /* V7 : 1 = texte normal, 1.15 = texte grand */
   --haut: env(safe-area-inset-top, 0px);    /* encoche de l'iPhone */
   --bas: env(safe-area-inset-bottom, 0px);  /* barre du bas du téléphone */
 }
@@ -68,6 +81,7 @@ body {
   background: var(--fond);
   color: var(--texte);
   font: 16px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: calc(16px * var(--echelle-texte));
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
@@ -96,14 +110,14 @@ main {
 .vue.entree { animation: entree 0.3s var(--anim); }
 @keyframes entree { from { opacity: 0; transform: translateY(10px); } }
 .entete { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 14px 2px 20px; }
-.entete h1, .salut { margin: 0; font-size: 32px; line-height: 1.1; font-weight: 800; letter-spacing: -0.03em; }
-.surtitre { margin: 0 0 6px; color: var(--texte-3); font-size: 13px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em; }
-h2 { margin: 0; font-size: 18px; font-weight: 750; letter-spacing: -0.01em; line-height: 1.25; }
-h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte-3); text-transform: uppercase; letter-spacing: 0.08em; }
+.entete h1, .salut { margin: 0; font-size: calc(32px * var(--echelle-texte)); line-height: 1.1; font-weight: 800; letter-spacing: -0.03em; }
+.surtitre { margin: 0 0 6px; color: var(--texte-3); font-size: calc(13px * var(--echelle-texte)); font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em; }
+h2 { margin: 0; font-size: calc(18px * var(--echelle-texte)); font-weight: 750; letter-spacing: -0.01em; line-height: 1.25; }
+h3 { margin: 22px 0 6px; font-size: calc(12.5px * var(--echelle-texte)); font-weight: 750; color: var(--texte-3); text-transform: uppercase; letter-spacing: 0.08em; }
 .titre-section {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   margin: 28px 4px 10px; color: var(--texte-3);
-  font-size: 13px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em;
+  font-size: calc(13px * var(--echelle-texte)); font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em;
 }
 .titre-section .btn, .titre-section .etiquette { text-transform: none; letter-spacing: 0; }
 
@@ -118,11 +132,11 @@ h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte
 .carte-titre h2 { display: flex; align-items: center; gap: 9px; min-width: 0; }
 .carte-titre h2 .ic { color: var(--accent-clair); }
 .carte-liste { padding-top: 10px; padding-bottom: 10px; }
-.aide { margin: 8px 0 0; color: var(--texte-2); font-size: 14px; line-height: 1.45; }
-.aide-mini { color: var(--texte-3); font-size: 12px; font-weight: 600; text-transform: none; letter-spacing: 0; }
+.aide { margin: 8px 0 0; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); line-height: 1.45; }
+.aide-mini { color: var(--texte-3); font-size: calc(12px * var(--echelle-texte)); font-weight: 600; text-transform: none; letter-spacing: 0; }
 .centre { text-align: center; }
-.etiquette { flex: none; padding: 5px 11px; border-radius: 999px; background: var(--carte-2); color: var(--texte-2); font-size: 13px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.vide { margin: 8px 0 4px; text-align: center; font-size: 17px; color: var(--texte-2); }
+.etiquette { flex: none; padding: 5px 11px; border-radius: 999px; background: var(--carte-2); color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.vide { margin: 8px 0 4px; text-align: center; font-size: calc(17px * var(--echelle-texte)); color: var(--texte-2); }
 .pile { display: grid; gap: 10px; margin-top: 10px; }
 .rond { display: inline-block; flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--couleur, var(--accent-clair)); box-shadow: 0 0 0 3px var(--couleur-fond, rgba(176, 171, 255, 0.18)); }
 .insecable { white-space: nowrap; }
@@ -137,19 +151,19 @@ h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte
   min-height: 50px; padding: 12px 18px;
   border: 1px solid transparent; border-radius: var(--rayon-petit);
   background: var(--carte-2); color: var(--texte);
-  font-size: 16px; font-weight: 700; line-height: 1.2; text-align: center;
+  font-size: calc(16px * var(--echelle-texte)); font-weight: 700; line-height: 1.2; text-align: center;
   transition: transform 0.14s var(--anim), filter 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 .btn:active { transform: scale(0.96); filter: brightness(1.12); }
 .btn-principal {
   background: var(--degrade-accent); color: var(--sur-accent);
-  box-shadow: 0 12px 26px -14px rgba(108, 92, 255, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 26px -14px rgb(var(--accent-rgb) / 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 .btn-danger { background: rgba(248, 113, 113, 0.12); color: #fca5a5; }
 .btn-danger-plein { background: #ef4444; color: #fff; }
 .btn-plein { width: 100%; }
-.btn-geant { width: 100%; min-height: 62px; font-size: 18px; border-radius: 20px; }
-.btn-petit { min-height: 44px; padding: 8px 14px; font-size: 15px; border-radius: 14px; }
+.btn-geant { width: 100%; min-height: 62px; font-size: calc(18px * var(--echelle-texte)); border-radius: 20px; }
+.btn-petit { min-height: 44px; padding: 8px 14px; font-size: calc(15px * var(--echelle-texte)); border-radius: 14px; }
 .btn-discret { background: var(--accent-fond); color: var(--accent-clair); }
 .btn-rond {
   display: inline-grid; place-items: center; flex: none;
@@ -158,7 +172,7 @@ h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte
   transition: transform 0.14s var(--anim), filter 0.2s;
 }
 .btn-rond:active { transform: scale(0.9); filter: brightness(1.15); }
-.btn-rond.accent { border: 0; background: var(--degrade-accent); color: #fff; box-shadow: 0 10px 22px -12px rgba(108, 92, 255, 0.95); }
+.btn-rond.accent { border: 0; background: var(--degrade-accent); color: #fff; box-shadow: 0 10px 22px -12px rgb(var(--accent-rgb) / 0.95); }
 .btn-rond .icone, .btn-rond .ic { width: 22px; height: 22px; }
 .lien { display: block; margin: 10px auto 0; padding: 10px 14px; border: 0; background: none; color: var(--texte-2); font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
 
@@ -186,7 +200,7 @@ h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte
 .onglet[aria-current="page"] { color: var(--texte); background: var(--accent-fond); }
 .onglet[aria-current="page"] svg { color: var(--accent-clair); transform: translateY(-1px); }
 .onglet.chrono-actif, .onglet.chrono-actif svg { color: var(--phase, var(--accent-clair)); }
-.onglet.chrono-actif span { font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.onglet.chrono-actif span { font-variant-numeric: tabular-nums; font-size: calc(12.5px * var(--echelle-texte)); }
 
 /* ---------- Écran "Aujourd'hui" ---------- */
 .accueil { margin: 14px 2px 18px; }
@@ -200,9 +214,9 @@ h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte
   border: 1px solid var(--bord); border-radius: 20px;
   background: linear-gradient(180deg, var(--carte-haut), var(--carte)); box-shadow: var(--ombre);
 }
-.tuile-jour .chiffre { display: block; font-size: 26px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
-.tuile-jour .chiffre small { color: var(--texte-3); font-size: 16px; font-weight: 750; }
-.tuile-jour .sous { display: block; margin-top: 5px; color: var(--texte-2); font-size: 12.5px; line-height: 1.25; }
+.tuile-jour .chiffre { display: block; font-size: calc(26px * var(--echelle-texte)); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.tuile-jour .chiffre small { color: var(--texte-3); font-size: calc(16px * var(--echelle-texte)); font-weight: 750; }
+.tuile-jour .sous { display: block; margin-top: 5px; color: var(--texte-2); font-size: calc(12.5px * var(--echelle-texte)); line-height: 1.25; }
 .flamme {
   display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 15px;
   background: rgba(255, 138, 61, 0.12); color: #a77a5c;
@@ -218,7 +232,7 @@ h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte
 .anneau-mini-fond { stroke: rgba(255, 255, 255, 0.09); }
 .anneau-mini-plein { stroke: var(--couleur, var(--accent-clair)); stroke-linecap: round; transition: stroke-dashoffset 0.7s var(--anim); }
 .anneau-mini.complet .anneau-mini-plein { stroke: var(--ok); }
-.anneau-mini-centre { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 1px; font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.anneau-mini-centre { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 1px; font-size: calc(13px * var(--echelle-texte)); font-weight: 800; font-variant-numeric: tabular-nums; }
 .anneau-mini-centre small { font-size: 0.75em; color: var(--texte-2); }
 .anneau-mini-centre .ic { width: 22px; height: 22px; color: var(--ok); stroke-width: 2.6; }
 
@@ -227,36 +241,36 @@ h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte
   overflow: hidden; padding: 20px 20px 18px;
   border-color: var(--couleur-bord, var(--bord-fort));
   background:
-    radial-gradient(130% 95% at 100% 0%, var(--couleur-fond-fort, rgba(108, 92, 255, 0.24)), transparent 62%),
+    radial-gradient(130% 95% at 100% 0%, var(--couleur-fond-fort, rgb(var(--accent-rgb) / 0.24)), transparent 62%),
     linear-gradient(180deg, var(--carte-haut), var(--carte));
   animation: arrivee 0.45s var(--anim);
 }
 @keyframes arrivee { from { opacity: 0; transform: translateY(8px) scale(0.985); } }
 .heros-etiquette {
   display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 5px 11px;
-  border-radius: 999px; background: var(--couleur-fond, var(--accent-fond)); color: var(--couleur, var(--accent-clair));
-  font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em;
+  border-radius: 999px; background: var(--couleur-fond, var(--accent-fond)); color: var(--couleur-encre, var(--couleur, var(--accent-clair)));
+  font-size: calc(12px * var(--echelle-texte)); font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em;
 }
 .heros-etiquette .ic { width: 15px; height: 15px; }
 .heros-tete { display: flex; align-items: center; gap: 12px; width: 100%; padding: 0; border: 0; background: none; text-align: left; }
 .heros-tete > span:first-child { flex: 1; min-width: 0; }
 .heros-tete .ic { color: var(--texte-3); }
-.heros-titre { display: block; margin: 0; font-size: 30px; font-weight: 800; line-height: 1.1; letter-spacing: -0.025em; overflow-wrap: anywhere; }
-.heros-sous { display: block; margin: 6px 0 0; color: var(--texte-2); font-size: 15px; }
+.heros-titre { display: block; margin: 0; font-size: calc(30px * var(--echelle-texte)); font-weight: 800; line-height: 1.1; letter-spacing: -0.025em; overflow-wrap: anywhere; }
+.heros-sous { display: block; margin: 6px 0 0; color: var(--texte-2); font-size: calc(15px * var(--echelle-texte)); }
 .heros-infos { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 18px; }
 .puce-info {
   display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px;
   border-radius: 999px; background: rgba(255, 255, 255, 0.06); color: var(--texte-2);
-  font-size: 13.5px; font-weight: 650;
+  font-size: calc(13.5px * var(--echelle-texte)); font-weight: 650;
 }
-.puce-info .ic { width: 16px; height: 16px; color: var(--couleur, var(--accent-clair)); }
+.puce-info .ic { width: 16px; height: 16px; color: var(--couleur-encre, var(--couleur, var(--accent-clair))); }
 .blocs-points { display: inline-flex; flex-wrap: wrap; gap: 5px; }
 .blocs-points i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--couleur, var(--accent-clair)); }
 .blocs-points i.fait { background: var(--couleur, var(--accent-clair)); }
 .heros-chrono-ligne { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
 .heros-chrono-ligne > div { flex: 1; min-width: 0; }
-.heros-chrono-ligne .heros-titre { font-size: 22px; }
-.heros-temps { color: var(--couleur); font-size: 40px; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.heros-chrono-ligne .heros-titre { font-size: calc(22px * var(--echelle-texte)); }
+.heros-temps { color: var(--couleur-encre, var(--couleur)); font-size: calc(40px * var(--echelle-texte)); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 
 /* Journée terminée */
 .heros-fini { text-align: center; --couleur: var(--ok); --couleur-fond: rgba(52, 211, 153, 0.16); --couleur-fond-fort: rgba(52, 211, 153, 0.22); --couleur-bord: rgba(52, 211, 153, 0.35); }
@@ -280,16 +294,16 @@ h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte
 .etat-vide { padding: 30px 22px 24px; text-align: center; }
 .illu {
   display: grid; place-items: center; width: 92px; height: 92px; margin: 0 auto 18px; border-radius: 30px;
-  background: linear-gradient(150deg, rgba(108, 92, 255, 0.38), rgba(84, 104, 240, 0.08));
-  color: var(--accent-clair); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 18px 36px -20px rgba(108, 92, 255, 0.9);
+  background: linear-gradient(150deg, rgb(var(--accent-rgb) / 0.38), rgba(84, 104, 240, 0.08));
+  color: var(--accent-clair); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 18px 36px -20px rgb(var(--accent-rgb) / 0.9);
 }
 .illu .ic { width: 44px; height: 44px; stroke-width: 1.8; }
-.etat-vide h2 { font-size: 22px; }
+.etat-vide h2 { font-size: calc(22px * var(--echelle-texte)); }
 .etat-vide p { margin: 8px auto 20px; max-width: 32ch; color: var(--texte-2); }
 .etapes { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: -4px 0 20px; }
-.etapes span { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px 6px 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.05); color: var(--texte-2); font-size: 13.5px; font-weight: 650; }
-.etapes b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-fond); color: var(--accent-clair); font-size: 12px; }
-.illu-petite { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 15px; background: var(--degrade-accent); color: #fff; box-shadow: 0 10px 22px -12px rgba(108, 92, 255, 0.95); }
+.etapes span { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px 6px 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.05); color: var(--texte-2); font-size: calc(13.5px * var(--echelle-texte)); font-weight: 650; }
+.etapes b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-fond); color: var(--accent-clair); font-size: calc(12px * var(--echelle-texte)); }
+.illu-petite { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 15px; background: var(--degrade-accent); color: #fff; box-shadow: 0 10px 22px -12px rgb(var(--accent-rgb) / 0.95); }
 .illu-petite .ic { width: 22px; height: 22px; }
 
 /* Bandeaux courts (aujourd'hui, demain, retard…) */
@@ -298,15 +312,15 @@ h3 { margin: 22px 0 6px; font-size: 12.5px; font-weight: 750; color: var(--texte
   display: flex; align-items: center; gap: 10px; width: 100%; min-height: 54px; padding: 8px 10px 8px 14px;
   border: 1px solid var(--couleur-bord, var(--bord)); border-radius: 18px;
   background: linear-gradient(90deg, var(--couleur-fond, transparent), transparent 85%), var(--carte);
-  color: var(--texte); font-size: 14.5px; line-height: 1.35; text-align: left;
+  color: var(--texte); font-size: calc(14.5px * var(--echelle-texte)); line-height: 1.35; text-align: left;
   transition: transform 0.14s var(--anim);
 }
 button.bandeau:active, details.bandeau summary:active { transform: scale(0.985); }
-.bandeau > .ic, .bandeau summary > .ic:first-child { color: var(--couleur, var(--alerte)); }
+.bandeau > .ic, .bandeau summary > .ic:first-child { color: var(--couleur-encre, var(--couleur, var(--alerte))); }
 .bandeau .texte { flex: 1 1 140px; min-width: 0; overflow-wrap: anywhere; }
 .bandeau, details.bandeau summary { flex-wrap: wrap; }
-.bandeau .texte small { display: block; color: var(--texte-2); font-size: 13px; }
-.bandeau .compte { flex: none; padding: 3px 10px; border-radius: 999px; background: var(--couleur-fond); color: var(--couleur); font-weight: 800; font-variant-numeric: tabular-nums; }
+.bandeau .texte small { display: block; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
+.bandeau .compte { flex: none; padding: 3px 10px; border-radius: 999px; background: var(--couleur-fond); color: var(--couleur-encre, var(--couleur)); font-weight: 800; font-variant-numeric: tabular-nums; }
 .bandeau .chevron, .bandeau .chevron-bas { color: var(--texte-3); }
 details.bandeau { display: block; padding: 0; }
 details.bandeau summary { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 12px 8px 14px; list-style: none; cursor: pointer; transition: transform 0.14s var(--anim); }
@@ -315,7 +329,7 @@ details.bandeau summary::-webkit-details-marker { display: none; }
 .alerte-bandeau .texte strong { color: #fcd34d; }
 .chevron-bas { transition: transform 0.25s var(--anim); }
 details[open] > summary .chevron-bas { transform: rotate(180deg); }
-.bandeau-detail { margin: 0; padding: 0 14px 14px 46px; color: var(--texte-2); font-size: 14px; animation: deplie 0.28s var(--anim); }
+.bandeau-detail { margin: 0; padding: 0 14px 14px 46px; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); animation: deplie 0.28s var(--anim); }
 @keyframes deplie { from { opacity: 0; transform: translateY(-6px); } }
 
 /* Liste "Ensuite aujourd'hui" */
@@ -326,11 +340,11 @@ details[open] > summary .chevron-bas { transform: rotate(180deg); }
 .ligne-corps:active { transform: scale(0.98); }
 .barre-v { align-self: stretch; flex: none; width: 5px; border-radius: 5px; background: var(--couleur); }
 .ligne-texte { flex: 1; min-width: 0; }
-.ligne-titre { display: block; font-size: 16px; font-weight: 750; overflow-wrap: anywhere; }
-.ligne-sous { display: block; margin-top: 3px; color: var(--texte-2); font-size: 13.5px; }
+.ligne-titre { display: block; font-size: calc(16px * var(--echelle-texte)); font-weight: 750; overflow-wrap: anywhere; }
+.ligne-sous { display: block; margin-top: 3px; color: var(--texte-2); font-size: calc(13.5px * var(--echelle-texte)); }
 .ligne-plan.finie .ligne-titre { color: var(--texte-2); }
 .ligne-plan.finie .barre-v { opacity: 0.45; }
-.note-capacite { margin: 10px 4px 0; color: var(--texte-3); font-size: 13px; }
+.note-capacite { margin: 10px 4px 0; color: var(--texte-3); font-size: calc(13px * var(--echelle-texte)); }
 
 /* Les 7 prochains jours (une colonne par jour) */
 .semaine-carte, .calendrier { padding-left: 12px; padding-right: 12px; }
@@ -342,36 +356,36 @@ details[open] > summary .chevron-bas { transform: rotate(180deg); }
 }
 .jour-col:active { transform: scale(0.94); }
 .jour-col.choisi { border-color: var(--bord-fort); background: var(--carte-2); }
-.jc-nom { color: var(--texte-3); font-size: 11px; font-weight: 750; text-transform: uppercase; }
-.jc-num { font-size: 16px; font-weight: 800; line-height: 1; }
+.jc-nom { color: var(--texte-3); font-size: calc(11px * var(--echelle-texte)); font-weight: 750; text-transform: uppercase; }
+.jc-num { font-size: calc(16px * var(--echelle-texte)); font-weight: 800; line-height: 1; }
 .jc-barre { display: flex; flex-direction: column-reverse; gap: 2px; width: 12px; height: 48px; border-radius: 6px; background: var(--carte-3); overflow: hidden; }
 .jc-barre i { flex: none; width: 100%; border-radius: 3px; background: var(--couleur); }
 .jc-ech { display: flex; justify-content: center; gap: 2px; min-height: 8px; }
 .jc-ech i { width: 8px; height: 8px; border-radius: 50%; background: var(--couleur); }
-.jc-charge { color: var(--texte-3); font-size: 11px; font-weight: 750; font-variant-numeric: tabular-nums; }
+.jc-charge { color: var(--texte-3); font-size: calc(11px * var(--echelle-texte)); font-weight: 750; font-variant-numeric: tabular-nums; }
 .jc-charge.plein { color: var(--texte-2); }
 .jour-detail { margin-top: 12px; padding: 12px 14px; border-radius: 16px; background: var(--carte-2); animation: deplie 0.25s var(--anim); }
 .jour-detail-titre { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; font-weight: 750; }
-.jour-detail-titre span { color: var(--texte-3); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.jour-detail-titre span { color: var(--texte-3); font-size: calc(13px * var(--echelle-texte)); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .puces { display: flex; flex-wrap: wrap; gap: 6px; }
-.puce { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--couleur-fond); font-size: 14px; font-weight: 650; }
+.puce { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--couleur-fond); font-size: calc(14px * var(--echelle-texte)); font-weight: 650; }
 .puce::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--couleur); }
 .puce.puce-ech::before { display: none; }
-.puce.puce-ech .ic { width: 15px; height: 15px; color: var(--couleur); }
-.repos { color: var(--texte-3); font-size: 14px; }
+.puce.puce-ech .ic { width: 15px; height: 15px; color: var(--couleur-encre, var(--couleur)); }
+.repos { color: var(--texte-3); font-size: calc(14px * var(--echelle-texte)); }
 
 /* ---------- Ressenti après un bloc ---------- */
 .ressenti {
-  border-color: rgba(108, 92, 255, 0.45);
-  background: radial-gradient(110% 80% at 0% 0%, rgba(108, 92, 255, 0.24), transparent 60%), linear-gradient(180deg, var(--carte-haut), var(--carte));
+  border-color: rgb(var(--accent-rgb) / 0.45);
+  background: radial-gradient(110% 80% at 0% 0%, rgb(var(--accent-rgb) / 0.24), transparent 60%), linear-gradient(180deg, var(--carte-haut), var(--carte));
   animation: arrivee 0.45s var(--anim);
 }
 .ressenti-tete { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.ressenti-tete h2 { font-size: 18px; }
+.ressenti-tete h2 { font-size: calc(18px * var(--echelle-texte)); }
 .ressenti-tete .aide { margin-top: 2px; }
 .ressentis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.ressentis .btn { flex-direction: column; gap: 6px; min-height: 84px; padding: 10px 4px; border-radius: 18px; font-size: 15px; }
-.ressentis .emoji { font-size: 30px; line-height: 1; }
+.ressentis .btn { flex-direction: column; gap: 6px; min-height: 84px; padding: 10px 4px; border-radius: 18px; font-size: calc(15px * var(--echelle-texte)); }
+.ressentis .emoji { font-size: calc(30px * var(--echelle-texte)); line-height: 1; }
 .ressentis [data-valeur="facile"] { background: rgba(52, 211, 153, 0.12); border-color: rgba(52, 211, 153, 0.26); }
 .ressentis [data-valeur="ok"] { background: rgba(96, 165, 250, 0.12); border-color: rgba(96, 165, 250, 0.26); }
 .ressentis [data-valeur="dur"] { background: rgba(251, 146, 60, 0.13); border-color: rgba(251, 146, 60, 0.3); }
@@ -386,38 +400,38 @@ details[open] > summary .chevron-bas { transform: rotate(180deg); }
 .echeance.passee { opacity: 0.6; }
 .ech-corps { flex: 1; min-width: 0; }
 .ech-haut { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.ech-matiere { font-size: 18px; font-weight: 800; overflow-wrap: anywhere; }
-.ech-date { margin-top: 3px; color: var(--texte-2); font-size: 14px; font-weight: 600; }
+.ech-matiere { font-size: calc(18px * var(--echelle-texte)); font-weight: 800; overflow-wrap: anywhere; }
+.ech-date { margin-top: 3px; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); font-weight: 600; }
 .ech-puces { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .ech-puces:empty { display: none; }
 .puce-statut {
   display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px;
   border-radius: 999px; background: var(--carte-2); color: var(--texte-2);
-  font-size: 12.5px; font-weight: 750;
+  font-size: calc(12.5px * var(--echelle-texte)); font-weight: 750;
 }
 .puce-statut .ic { width: 14px; height: 14px; }
 .puce-statut.alerte { background: var(--alerte-fond); color: #fcd34d; }
 .puce-statut.ok { background: rgba(52, 211, 153, 0.14); color: #6ee7b7; }
 .puce-statut.veille-puce { background: var(--accent-fond); color: var(--accent-clair); }
-.puce-statut.auj { background: var(--couleur-fond); color: var(--couleur); }
+.puce-statut.auj { background: var(--couleur-fond); color: var(--couleur-encre, var(--couleur)); }
 .badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
-.badge { flex: none; padding: 3px 8px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.badge { flex: none; padding: 3px 8px; border-radius: 8px; font-size: calc(11px * var(--echelle-texte)); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
 .badge-test { background: rgba(96, 165, 250, 0.15); color: #93c5fd; }
 .badge-examen { background: rgba(248, 113, 113, 0.15); color: #fca5a5; }
 .badge-travail { background: var(--carte-3); color: var(--texte-2); }
 .badge-passe { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
 .badge-lecture { background: rgba(192, 132, 252, 0.16); color: #d8b4fe; }
 .badge-devoir { background: rgba(251, 191, 36, 0.15); color: #fcd34d; }
-.ech-note { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0 0; color: var(--texte-2); font-size: 14px; font-style: italic; overflow-wrap: anywhere; }
-.ech-note .ic { margin-top: 1px; color: var(--couleur, var(--texte-3)); }
-.ech-statut { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: var(--carte-2); font-size: 14px; font-weight: 650; }
+.ech-note { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0 0; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); font-style: italic; overflow-wrap: anywhere; }
+.ech-note .ic { margin-top: 1px; color: var(--couleur-encre, var(--couleur, var(--texte-3))); }
+.ech-statut { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: var(--carte-2); font-size: calc(14px * var(--echelle-texte)); font-weight: 650; }
 .ech-alerte { background: var(--alerte-fond); color: #fcd34d; }
 .ech-ok { color: #6ee7b7; }
 details.passees { margin: 22px 0; }
 details.passees > summary {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   min-height: 48px; padding: 8px 6px; list-style: none; cursor: pointer;
-  color: var(--texte-3); font-size: 13px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--texte-3); font-size: calc(13px * var(--echelle-texte)); font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em;
 }
 details.passees > summary::-webkit-details-marker { display: none; }
 details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
@@ -430,26 +444,26 @@ details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
 .liste-matieres li:first-child .ligne-matiere { border-top: 0; }
 .ligne-matiere .nom { flex: 1; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
 .ligne-matiere .rond { width: 14px; height: 14px; }
-.compteur { flex: none; min-width: 26px; padding: 2px 8px; border-radius: 999px; background: var(--couleur-fond); color: var(--couleur); font-size: 13px; font-weight: 800; text-align: center; }
+.compteur { flex: none; min-width: 26px; padding: 2px 8px; border-radius: 999px; background: var(--couleur-fond); color: var(--couleur-encre, var(--couleur)); font-size: calc(13px * var(--echelle-texte)); font-weight: 800; text-align: center; }
 .chevron { flex: none; color: var(--texte-3); }
 
 /* Détail d'une échéance (dans la feuille) */
 .detail-tete { display: flex; align-items: flex-start; gap: 12px; }
 .detail-tete-texte { flex: 1; min-width: 0; }
 .pastille-matiere { flex: none; width: 14px; height: 14px; margin-top: 10px; border-radius: 50%; background: var(--couleur); box-shadow: 0 0 0 4px var(--couleur-fond); }
-.feuille .detail-titre { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; overflow-wrap: anywhere; }
-.detail-date { margin: 2px 0 0; color: var(--texte-2); font-size: 14.5px; }
+.feuille .detail-titre { margin: 0; font-size: calc(26px * var(--echelle-texte)); font-weight: 800; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.detail-date { margin: 2px 0 0; color: var(--texte-2); font-size: calc(14.5px * var(--echelle-texte)); }
 .detail-progres {
   display: flex; align-items: center; gap: 18px; margin: 18px 0 12px; padding: 16px;
   border-radius: 20px; background: radial-gradient(120% 120% at 0% 50%, var(--couleur-fond), transparent 70%), var(--carte-2);
 }
 .detail-chiffres { display: grid; gap: 10px; min-width: 0; }
-.detail-chiffres strong { display: block; font-size: 20px; font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; }
-.detail-chiffres span { color: var(--texte-2); font-size: 13px; }
+.detail-chiffres strong { display: block; font-size: calc(20px * var(--echelle-texte)); font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.detail-chiffres span { color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
 .puces-infos { display: flex; flex-wrap: wrap; gap: 8px; }
 .liste-notes li { padding: 10px 0; border-top: 1px solid var(--bord); }
 .liste-notes li:first-child { border-top: 0; }
-.liste-notes .quand { display: block; color: var(--texte-2); font-size: 14px; font-weight: 600; }
+.liste-notes .quand { display: block; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); font-weight: 600; }
 .liste-notes .texte-note { display: block; margin-top: 3px; font-style: italic; overflow-wrap: anywhere; }
 
 /* ---------- Écran "Chrono" (le moment fort) ---------- */
@@ -457,7 +471,7 @@ details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
 .chrono-sujet {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px; max-width: 100%;
   padding: 9px 16px; border: 1px solid var(--bord); border-radius: 999px; background: rgba(20, 25, 39, 0.75);
-  font-size: 16px; font-weight: 700; overflow-wrap: anywhere;
+  font-size: calc(16px * var(--echelle-texte)); font-weight: 700; overflow-wrap: anywhere;
 }
 .anneau { position: relative; width: min(78vw, 310px); aspect-ratio: 1; margin: 22px auto 16px; }
 .anneau svg { width: 100%; height: 100%; overflow: visible; transform: rotate(-90deg); }
@@ -469,21 +483,21 @@ details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
   transition: stroke-dashoffset 0.5s linear, stroke 0.6s;
 }
 .anneau-centre { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
-.chrono-phase { color: var(--phase); font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.chrono-phase { color: var(--phase); font-size: calc(13px * var(--echelle-texte)); font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
 .chrono-temps { font-size: min(18vw, 74px); font-weight: 750; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .chrono-temps.petit { font-size: min(10vw, 40px); }
-.anneau-sous { max-width: 70%; color: var(--texte-2); font-size: 14px; font-weight: 700; overflow-wrap: anywhere; }
+.anneau-sous { max-width: 70%; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); font-weight: 700; overflow-wrap: anywhere; }
 .serie-points { display: flex; gap: 6px; min-height: 8px; }
 .serie-points i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); }
 .serie-points i.fait { background: var(--phase); }
 .serie-points i.en-cours { background: var(--phase); animation: clignote 1.6s ease-in-out infinite; }
 @keyframes clignote { 50% { opacity: 0.35; } }
 .actions-lecture { margin: 0 0 14px; grid-template-columns: 2fr 1fr; }
-.derniere-note { display: flex; align-items: flex-start; justify-content: center; gap: 8px; margin: 0 auto 10px; max-width: 34ch; color: var(--texte-2); font-size: 15px; font-style: italic; overflow-wrap: anywhere; }
+.derniere-note { display: flex; align-items: flex-start; justify-content: center; gap: 8px; margin: 0 auto 10px; max-width: 34ch; color: var(--texte-2); font-size: calc(15px * var(--echelle-texte)); font-style: italic; overflow-wrap: anywhere; }
 .derniere-note .ic { margin-top: 2px; color: var(--phase); }
-.chrono-info { margin: 0 0 18px; color: var(--texte-2); font-size: 14.5px; }
+.chrono-info { margin: 0 0 18px; color: var(--texte-2); font-size: calc(14.5px * var(--echelle-texte)); }
 .commandes { display: flex; align-items: flex-start; justify-content: center; gap: 16px; margin: 4px 0 14px; }
-.commande { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 72px; padding: 0; border: 0; background: none; color: var(--texte-2); font-size: 13px; font-weight: 700; }
+.commande { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 72px; padding: 0; border: 0; background: none; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); font-weight: 700; }
 .rond-cmd {
   display: grid; place-items: center; width: 60px; height: 60px; margin: 10px 0; border: 1px solid var(--bord-fort); border-radius: 50%;
   background: var(--carte-2); color: var(--texte); transition: transform 0.14s var(--anim), filter 0.2s;
@@ -491,7 +505,7 @@ details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
 .commande:active .rond-cmd { transform: scale(0.9); filter: brightness(1.15); }
 .commande .icone, .commande .ic { width: 24px; height: 24px; }
 .commande.principale { color: var(--texte); }
-.commande.principale .rond-cmd { width: 80px; height: 80px; margin: 0; border: 0; background: var(--degrade-accent); color: #fff; box-shadow: 0 16px 32px -14px rgba(108, 92, 255, 0.95); }
+.commande.principale .rond-cmd { width: 80px; height: 80px; margin: 0; border: 0; background: var(--degrade-accent); color: #fff; box-shadow: 0 16px 32px -14px rgb(var(--accent-rgb) / 0.95); }
 .commande.principale .icone { width: 32px; height: 32px; }
 .commande.danger .rond-cmd { color: #fca5a5; }
 .chrono-actif.en-pause .anneau { animation: respire 4.5s ease-in-out infinite; }
@@ -502,7 +516,7 @@ details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
 .anneau-repos .anneau-progres { opacity: 0.9; }
 .liste-faits li { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--bord); }
 .liste-faits li:first-child { border-top: 0; }
-.liste-faits .texte { flex: 1; min-width: 0; font-size: 15px; font-weight: 650; overflow-wrap: anywhere; }
+.liste-faits .texte { flex: 1; min-width: 0; font-size: calc(15px * var(--echelle-texte)); font-weight: 650; overflow-wrap: anywhere; }
 .liste-faits .texte small { display: block; color: var(--texte-3); font-weight: 500; }
 .supprimer-bloc { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--carte-2); color: var(--texte-3); }
 .supprimer-bloc .ic { width: 18px; height: 18px; }
@@ -510,7 +524,7 @@ details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
 
 /* Choix "Je travaille sur…" : une carte par échéance, le texte va à la ligne si besoin */
 .choix-sujet { display: grid; gap: 8px; margin: 22px 0 8px; text-align: left; }
-.choix-sujet legend { margin-bottom: 8px; color: var(--texte-3); font-size: 13px; font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em; }
+.choix-sujet legend { margin-bottom: 8px; color: var(--texte-3); font-size: calc(13px * var(--echelle-texte)); font-weight: 750; text-transform: uppercase; letter-spacing: 0.08em; }
 .option-sujet { position: relative; display: block; }
 .option-sujet input { position: absolute; opacity: 0; pointer-events: none; }
 .option-corps {
@@ -524,8 +538,8 @@ details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
   content: ""; position: absolute; right: 14px; top: 50%; width: 20px; height: 20px; margin-top: -10px;
   border: 2px solid var(--carte-3); border-radius: 50%; transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
-.option-corps strong { display: block; font-size: 16px; overflow-wrap: anywhere; }
-.option-corps small { display: block; margin-top: 2px; color: var(--texte-2); font-size: 14px; }
+.option-corps strong { display: block; font-size: calc(16px * var(--echelle-texte)); overflow-wrap: anywhere; }
+.option-corps small { display: block; margin-top: 2px; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); }
 .option-sujet input:checked + .option-corps { border-color: var(--couleur, var(--accent-clair)); background: var(--couleur-fond, var(--accent-fond)); }
 .option-sujet input:checked + .option-corps::after { border-color: var(--couleur, var(--accent-clair)); background: var(--couleur, var(--accent-clair)); box-shadow: inset 0 0 0 4px var(--carte); }
 .option-sujet input:focus-visible + .option-corps { outline: 3px solid var(--accent-clair); outline-offset: 2px; }
@@ -547,12 +561,12 @@ details.passees[open] > summary .chevron-bas { transform: rotate(180deg); }
 .ligne-reglage { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; padding: 8px 0; border-top: 1px solid var(--bord); }
 .carte > .ligne-reglage:first-child, .carte > h2 + .ligne-reglage, h3 + .ligne-reglage, .aide + .ligne-reglage { border-top: 0; }
 .libelle { min-width: 0; font-weight: 650; }
-.libelle small { display: block; color: var(--texte-3); font-size: 13px; font-weight: 500; }
+.libelle small { display: block; color: var(--texte-3); font-size: calc(13px * var(--echelle-texte)); font-weight: 500; }
 .stepper { display: flex; align-items: center; gap: 6px; flex: none; }
-.stepper button { width: 44px; height: 44px; border: 1px solid var(--bord); border-radius: 50%; background: var(--carte-2); font-size: 24px; font-weight: 700; line-height: 1; transition: transform 0.14s var(--anim), background-color 0.2s; }
+.stepper button { width: 44px; height: 44px; border: 1px solid var(--bord); border-radius: 50%; background: var(--carte-2); font-size: calc(24px * var(--echelle-texte)); font-weight: 700; line-height: 1; transition: transform 0.14s var(--anim), background-color 0.2s; }
 .stepper button:active { transform: scale(0.9); background: var(--carte-3); }
 .stepper output { min-width: 76px; text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; }
-.stepper input { width: 70px; min-height: 48px; border: 1px solid var(--bord); border-radius: 14px; background: var(--carte-2); text-align: center; font-size: 18px; font-weight: 750; -moz-appearance: textfield; appearance: textfield; }
+.stepper input { width: 70px; min-height: 48px; border: 1px solid var(--bord); border-radius: 14px; background: var(--carte-2); text-align: center; font-size: calc(18px * var(--echelle-texte)); font-weight: 750; -moz-appearance: textfield; appearance: textfield; }
 .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .formule { margin: 6px 0 4px; padding: 10px 12px; border-radius: 14px; background: var(--carte-2); font-weight: 700; text-align: center; }
 .interrupteur { position: relative; flex: none; width: 54px; height: 32px; }
@@ -566,28 +580,28 @@ label.ligne-reglage { cursor: pointer; }
 details.avance { padding: 0; }
 details.avance > summary { display: flex; align-items: center; gap: 14px; min-height: 76px; padding: 14px 18px; list-style: none; cursor: pointer; }
 details.avance > summary::-webkit-details-marker { display: none; }
-.avance-titre { flex: 1; min-width: 0; font-size: 17px; font-weight: 750; }
-.avance-titre small { display: block; color: var(--texte-3); font-size: 13px; font-weight: 600; }
+.avance-titre { flex: 1; min-width: 0; font-size: calc(17px * var(--echelle-texte)); font-weight: 750; }
+.avance-titre small { display: block; color: var(--texte-3); font-size: calc(13px * var(--echelle-texte)); font-weight: 600; }
 .avance-corps { padding: 0 18px 18px; border-top: 1px solid var(--bord); animation: deplie 0.3s var(--anim); }
 .avance-corps > h3:first-child { margin-top: 18px; }
 .version { margin: 24px 0 8px; color: var(--texte-3); }
 .installer ol { margin: 8px 0 0; padding-left: 22px; color: var(--texte-2); }
 .installer li { margin-bottom: 6px; }
-.installer .attention { margin-top: 10px; color: var(--alerte); font-size: 14px; }
+.installer .attention { margin-top: 10px; color: var(--alerte); font-size: calc(14px * var(--echelle-texte)); }
 
 /* ---------- Résumé de la semaine (tuiles) ---------- */
 .tuiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .tuile { min-width: 0; padding: 12px; border-radius: 16px; background: var(--carte-2); }
-.tuile-valeur { display: block; font-size: 21px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
-.tuile-label { display: block; margin-top: 2px; color: var(--texte-2); font-size: 13px; }
-.tuile-delta { display: block; margin-top: 4px; color: var(--texte-3); font-size: 12px; }
+.tuile-valeur { display: block; font-size: calc(21px * var(--echelle-texte)); font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.tuile-label { display: block; margin-top: 2px; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
+.tuile-delta { display: block; margin-top: 4px; color: var(--texte-3); font-size: calc(12px * var(--echelle-texte)); }
 .fermer-x { display: grid; place-items: center; flex: none; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: var(--carte-2); color: var(--texte-2); }
 .fermer-x .ic { width: 18px; height: 18px; }
 
 /* ---------- Bascule (Liste / Calendrier, Semaine / Mois) ---------- */
 .bascule { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; margin-bottom: 16px; padding: 4px; border: 1px solid var(--bord); border-radius: 16px; background: var(--carte); }
 .bascule button { min-height: 44px; border: 0; border-radius: 12px; background: none; color: var(--texte-2); font-weight: 750; transition: background-color 0.25s var(--anim), color 0.2s; }
-.bascule button[aria-pressed="true"] { background: var(--degrade-accent); color: var(--sur-accent); box-shadow: 0 8px 18px -12px rgba(108, 92, 255, 0.95); }
+.bascule button[aria-pressed="true"] { background: var(--degrade-accent); color: var(--sur-accent); box-shadow: 0 8px 18px -12px rgb(var(--accent-rgb) / 0.95); }
 
 /* ---------- Calendrier (onglet Échéances) ---------- */
 .cal-entete { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
@@ -595,12 +609,12 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .cal-nav { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--bord); border-radius: 50%; background: var(--carte-2); }
 .cal-nav .ic { width: 20px; height: 20px; }
 .cal-grille { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
-.cal-jsem { padding-bottom: 2px; color: var(--texte-3); font-size: 12px; font-weight: 700; text-align: center; }
+.cal-jsem { padding-bottom: 2px; color: var(--texte-3); font-size: calc(12px * var(--echelle-texte)); font-weight: 700; text-align: center; }
 .cal-jour { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; min-height: 54px; padding: 4px 2px 5px; border: 2px solid transparent; border-radius: 12px; background: var(--carte-2); transition: transform 0.14s var(--anim); }
 .cal-jour:active { transform: scale(0.93); }
 .cal-jour.hors { opacity: 0.35; }
 .cal-jour.choisi { border-color: var(--accent-clair); }
-.cal-num { min-width: 24px; padding: 1px 4px; border-radius: 999px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cal-num { min-width: 24px; padding: 1px 4px; border-radius: 999px; font-size: calc(14px * var(--echelle-texte)); font-weight: 700; font-variant-numeric: tabular-nums; }
 .cal-jour.auj .cal-num { background: var(--accent); color: var(--sur-accent); }
 .cal-marques { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; min-height: 9px; }
 .cal-ech { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--couleur); }
@@ -609,15 +623,15 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .cal-ech.devoir { width: 9px; height: 9px; border-radius: 1px; }
 .cal-barre { display: flex; gap: 2px; width: 80%; height: 4px; margin-top: auto; }
 .cal-barre i { min-width: 2px; height: 100%; border-radius: 2px; background: var(--couleur); }
-.cal-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 12px; color: var(--texte-2); font-size: 13px; }
+.cal-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 12px; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
 .cal-legende span { display: inline-flex; align-items: center; gap: 6px; }
 .cal-legende .cal-barre { width: 22px; margin: 0; }
 .ligne-cal { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 8px 4px; border: 0; border-top: 1px solid var(--bord); background: none; text-align: left; font-weight: 650; }
 .ligne-cal .texte { flex: 1; min-width: 0; }
-.ligne-cal > .ic { color: var(--couleur); }
+.ligne-cal > .ic { color: var(--couleur-encre, var(--couleur)); }
 
 /* ---------- Veille d'examen et résultat ---------- */
-.veille { margin-top: 14px; padding: 14px; border-radius: 18px; background: linear-gradient(180deg, rgba(108, 92, 255, 0.14), rgba(108, 92, 255, 0.06)); border: 1px solid rgba(108, 92, 255, 0.35); }
+.veille { margin-top: 14px; padding: 14px; border-radius: 18px; background: linear-gradient(180deg, rgb(var(--accent-rgb) / 0.14), rgb(var(--accent-rgb) / 0.06)); border: 1px solid rgb(var(--accent-rgb) / 0.35); }
 .veille-titre { display: flex; align-items: center; gap: 8px; }
 .veille-titre .ic { color: var(--accent-clair); }
 .checklist { list-style: none; margin: 8px 0 0; padding: 0; }
@@ -625,29 +639,29 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .checklist label { display: flex; align-items: flex-start; gap: 10px; min-height: 32px; font-weight: 600; cursor: pointer; }
 .checklist input { flex: none; width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--accent); }
 .checklist input:checked + span { color: var(--texte-3); text-decoration: line-through; }
-.checklist .sous { display: block; margin: 4px 0 0 32px; color: var(--texte-2); font-size: 14px; font-style: italic; overflow-wrap: anywhere; }
+.checklist .sous { display: block; margin: 4px 0 0 32px; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); font-style: italic; overflow-wrap: anywhere; }
 .resultat { margin-top: 14px; padding: 14px; border-radius: 18px; background: var(--carte-2); }
 .resultat-titre { display: flex; align-items: center; gap: 8px; }
-.resultat-titre .ic { color: var(--couleur, var(--accent-clair)); }
+.resultat-titre .ic { color: var(--couleur-encre, var(--couleur, var(--accent-clair))); }
 .deux-champs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 
 /* ---------- Écran "Stats" (graphiques dessinés en SVG) ---------- */
 .graphique { display: block; width: 100%; height: auto; overflow: visible; }
 .graphique text { font-family: inherit; }
-.graphique .g-nom { fill: var(--texte); font-size: 14px; font-weight: 600; }
-.graphique .g-valeur { fill: var(--texte-2); font-size: 13px; font-variant-numeric: tabular-nums; }
-.graphique .g-axe { fill: var(--texte-3); font-size: 11px; font-variant-numeric: tabular-nums; }
+.graphique .g-nom { fill: var(--texte); font-size: calc(14px * var(--echelle-texte)); font-weight: 600; }
+.graphique .g-valeur { fill: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); font-variant-numeric: tabular-nums; }
+.graphique .g-axe { fill: var(--texte-3); font-size: calc(11px * var(--echelle-texte)); font-variant-numeric: tabular-nums; }
 .graphique .g-grille { stroke: var(--bord-fort); stroke-width: 1; }
 .graphique .g-choisi { fill: var(--texte); opacity: 0.08; }
 .graphique .g-point { stroke: var(--carte); stroke-width: 2; }
 .graphique [data-action] { cursor: pointer; }
-.legende { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; color: var(--texte-2); font-size: 13px; }
+.legende { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
 .legende span { display: inline-flex; align-items: center; gap: 6px; }
 .legende i { width: 10px; height: 10px; border-radius: 3px; background: var(--couleur); }
 .legende i.point { border-radius: 50%; }
-.detail-graphique { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: var(--carte-2); font-size: 14px; }
-.chiffres summary { margin-top: 4px; padding: 12px 0; color: var(--texte-2); font-size: 14px; cursor: pointer; }
-.chiffres table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.detail-graphique { margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: var(--carte-2); font-size: calc(14px * var(--echelle-texte)); }
+.chiffres summary { margin-top: 4px; padding: 12px 0; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); cursor: pointer; }
+.chiffres table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: calc(13px * var(--echelle-texte)); font-variant-numeric: tabular-nums; }
 .chiffres th, .chiffres td { padding: 5px 4px; border-top: 1px solid var(--bord); text-align: left; vertical-align: top; }
 .chiffres th:last-child, .chiffres td:last-child { text-align: right; white-space: nowrap; }
 .chiffres th { color: var(--texte-2); font-weight: 650; }
@@ -659,16 +673,16 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .flamme.flamme-grande { width: 64px; height: 64px; border-radius: 22px; }
 .flamme.flamme-grande .ic { width: 34px; height: 34px; }
 .serie-num { flex: 1; min-width: 0; }
-.serie-valeur { display: block; font-size: 52px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.serie-valeur { display: block; font-size: calc(52px * var(--echelle-texte)); font-weight: 800; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .serie-record { flex: none; padding: 10px 14px; border-radius: 16px; background: rgba(255, 255, 255, 0.05); text-align: center; }
 .jours-flammes { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-top: 16px; }
-.jours-flammes span { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--texte-3); font-size: 11px; font-weight: 750; }
+.jours-flammes span { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--texte-3); font-size: calc(11px * var(--echelle-texte)); font-weight: 750; }
 .jours-flammes i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); }
 .jours-flammes .fait i { background: linear-gradient(160deg, #ffb347, #ff5f45); color: #fff; }
 .jours-flammes .ic { width: 16px; height: 16px; }
 .jours-flammes .auj small { color: var(--texte); }
 .liens-etude { list-style: none; margin: 10px 0 0; padding: 0; }
-.liens-etude li { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 14px; }
+.liens-etude li { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: calc(14px * var(--echelle-texte)); }
 .liens-etude .rond { margin-top: 5px; }
 .badges-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
 .badge-tuile { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 6px 12px; border: 1px solid var(--bord); border-radius: 18px; background: rgba(255, 255, 255, 0.03); text-align: center; }
@@ -681,18 +695,18 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .badge-tuile.verrouille .medaille { background: var(--carte-2); }
 .medaille .anneau-mini { position: absolute; inset: -4px; width: auto !important; height: auto !important; }
 .medaille .anneau-mini-plein { stroke: var(--teinte); }
-.badge-tuile .emoji { position: relative; font-size: 30px; line-height: 1; }
-.badge-tuile strong { display: block; font-size: 13px; line-height: 1.25; }
-.badge-tuile small { display: block; margin-top: 2px; color: var(--texte-3); font-size: 12px; line-height: 1.25; }
+.badge-tuile .emoji { position: relative; font-size: calc(30px * var(--echelle-texte)); line-height: 1; }
+.badge-tuile strong { display: block; font-size: calc(13px * var(--echelle-texte)); line-height: 1.25; }
+.badge-tuile small { display: block; margin-top: 2px; color: var(--texte-3); font-size: calc(12px * var(--echelle-texte)); line-height: 1.25; }
 .badge-tuile.verrouille .emoji { filter: grayscale(1); opacity: 0.35; }
 .badge-tuile.verrouille strong { color: var(--texte-2); }
 
 /* ---------- Mode concentration (plein écran noir) ---------- */
 .concentration { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: calc(24px + var(--haut)) 24px calc(90px + var(--bas)); background: #000; color: #d4d6dc; text-align: center; touch-action: none; overscroll-behavior: contain; }
-.conc-phase { color: var(--phase, var(--travail)); font-size: 14px; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.85; }
+.conc-phase { color: var(--phase, var(--travail)); font-size: calc(14px * var(--echelle-texte)); font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.85; }
 .conc-temps { font-size: min(26vw, 150px); font-weight: 700; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.conc-sujet { color: #9a9fa9; font-size: 20px; font-weight: 650; }
-.conc-note { max-width: 32ch; color: #6c717c; font-size: 16px; font-style: italic; overflow-wrap: anywhere; }
+.conc-sujet { color: #9a9fa9; font-size: calc(20px * var(--echelle-texte)); font-weight: 650; }
+.conc-note { max-width: 32ch; color: #6c717c; font-size: calc(16px * var(--echelle-texte)); font-style: italic; overflow-wrap: anywhere; }
 .conc-quitter { position: absolute; left: 50%; bottom: calc(24px + var(--bas)); transform: translateX(-50%); padding: 12px 20px; border: 1px solid #2a2d33; border-radius: 999px; background: none; color: #7d828c; font-weight: 600; white-space: nowrap; }
 
 /* ---------- Jours spéciaux, reports, blocs courts (V4) ---------- */
@@ -718,8 +732,8 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .liste-livres li { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--bord); }
 .liste-livres li:first-child { border-top: 0; padding-top: 0; }
 .liste-livres .texte { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.liste-livres .texte strong { display: block; font-size: 15px; }
-.liste-livres .texte small { display: block; color: var(--texte-2); font-size: 13px; }
+.liste-livres .texte strong { display: block; font-size: calc(15px * var(--echelle-texte)); }
+.liste-livres .texte small { display: block; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
 .liste-notes li.seance { display: flex; align-items: flex-start; gap: 10px; }
 
 /* ---------- Lot 2 : chapitres, questions, conseils, examen blanc, fiche de lecture ---------- */
@@ -731,19 +745,19 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .liste-chapitres input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--accent); }
 .liste-chapitres input:checked + span { color: var(--texte-3); text-decoration: line-through; }
 .form-ligne { display: flex; gap: 8px; margin-top: 10px; }
-.form-ligne input { flex: 1; min-width: 0; min-height: 48px; padding: 10px 14px; border: 1px solid var(--bord-fort); border-radius: 14px; background: var(--carte-2); font-size: 16px; }
+.form-ligne input { flex: 1; min-width: 0; min-height: 48px; padding: 10px 14px; border: 1px solid var(--bord-fort); border-radius: 14px; background: var(--carte-2); font-size: calc(16px * var(--echelle-texte)); }
 .form-ligne input:focus { outline: none; border-color: var(--accent-clair); box-shadow: 0 0 0 4px var(--accent-fond); }
 .form-ligne .btn { flex: none; }
 .aide-sync { margin-top: 10px; }
 .aide-sync .lien { display: inline; margin: 0; padding: 4px 0; }
 .chapitres-ressenti { margin: 0 0 14px; }
 .chapitres-ressenti .aide { margin: 0 0 8px; }
-.puce-bouton { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 12px; border: 1px solid var(--bord); border-radius: 999px; background: var(--carte-2); font-size: 14px; font-weight: 650; text-align: left; overflow-wrap: anywhere; }
+.puce-bouton { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 12px; border: 1px solid var(--bord); border-radius: 999px; background: var(--carte-2); font-size: calc(14px * var(--echelle-texte)); font-weight: 650; text-align: left; overflow-wrap: anywhere; }
 .puce-bouton .ic { width: 16px; height: 16px; color: var(--accent-clair); }
 .carte-questions { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; cursor: pointer; }
 .carte-questions .texte { flex: 1; min-width: 0; }
-.carte-questions .texte strong { display: block; font-size: 16px; }
-.carte-questions .texte small { display: block; margin-top: 2px; color: var(--texte-2); font-size: 14px; font-style: italic; overflow-wrap: anywhere; }
+.carte-questions .texte strong { display: block; font-size: calc(16px * var(--echelle-texte)); }
+.carte-questions .texte small { display: block; margin-top: 2px; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); font-style: italic; overflow-wrap: anywhere; }
 .carte-questions > .ic:last-child { color: var(--texte-3); }
 .groupe-questions h3 { display: flex; align-items: center; gap: 8px; }
 .groupe-questions h3 .rond { width: 10px; height: 10px; border-radius: 50%; background: var(--couleur); }
@@ -751,82 +765,82 @@ details.avance > summary::-webkit-details-marker { display: none; }
 .liste-questions li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--bord); }
 .liste-questions li:first-child { border-top: 0; }
 .liste-questions .texte { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.liste-questions .texte small { display: block; margin-top: 2px; color: var(--texte-3); font-size: 13px; }
+.liste-questions .texte small { display: block; margin-top: 2px; color: var(--texte-3); font-size: calc(13px * var(--echelle-texte)); }
 .liste-questions .btn { flex: none; }
-.conseil { display: flex; align-items: flex-start; gap: 8px; margin: 14px auto 0; max-width: 36ch; padding: 10px 14px; border-radius: 16px; background: var(--carte-2); color: var(--texte-2); font-size: 14px; text-align: left; overflow-wrap: anywhere; }
+.conseil { display: flex; align-items: flex-start; gap: 8px; margin: 14px auto 0; max-width: 36ch; padding: 10px 14px; border-radius: 16px; background: var(--carte-2); color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); text-align: left; overflow-wrap: anywhere; }
 .conseil .ic { flex: none; margin-top: 1px; color: var(--phase); }
 .conseil strong { color: var(--texte); }
 .chrono-repos .liens-heros .lien { margin-top: 2px; }
 .fiche-champ { margin: 10px 0 0; }
-.fiche-champ strong { display: block; color: var(--texte-2); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
+.fiche-champ strong { display: block; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); text-transform: uppercase; letter-spacing: 0.06em; }
 .fiche-champ p { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .puce-choix.sans-rond { --couleur: var(--accent-clair); --couleur-fond: var(--accent-fond); }
 .puce-choix.sans-rond span::before { display: none; }
 
 /* ---------- Lot 3 : objectif de la semaine, bilan du mois, prévu / fait, moments ---------- */
 .objectif-semaine { display: block; width: 100%; margin: -6px 0 14px; padding: 8px 14px 10px; border: 1px solid var(--bord); border-radius: 18px; background: linear-gradient(180deg, var(--carte-haut), var(--carte)); text-align: left; }
-.objectif-texte { display: flex; align-items: center; gap: 8px; color: var(--texte-2); font-size: 14px; }
+.objectif-texte { display: flex; align-items: center; gap: 8px; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); }
 .objectif-texte .ic { flex: none; width: 18px; height: 18px; color: var(--accent-clair); }
 .objectif-texte strong { color: var(--texte); }
-.objectif-texte small { margin-left: auto; color: var(--texte-3); font-size: 13px; white-space: nowrap; }
+.objectif-texte small { margin-left: auto; color: var(--texte-3); font-size: calc(13px * var(--echelle-texte)); white-space: nowrap; }
 .objectif-barre { display: block; height: 6px; margin-top: 6px; border-radius: 999px; background: var(--carte-3); overflow: hidden; }
 .objectif-barre i { display: block; height: 100%; border-radius: inherit; background: var(--degrade-accent); transition: width 0.6s var(--anim); }
 .objectif-semaine.atteint .objectif-barre i, .objectif-barre.atteint i { background: var(--ok); }
 .objectif-barre.grande { height: 12px; margin: 10px 0 0; }
 .objectif-semaine .objectif-texte { min-height: 24px; }
 .objectif-grand { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.objectif-grand strong { font-size: 30px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.objectif-grand strong { font-size: calc(30px * var(--echelle-texte)); font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .objectif-grand span { color: var(--texte-2); }
 .semaines-passees { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
-.semaines-passees span { min-width: 0; padding: 8px 4px; border-radius: 12px; background: var(--carte-2); text-align: center; font-size: 13px; }
-.semaines-passees small { display: block; color: var(--texte-3); font-size: 11.5px; }
+.semaines-passees span { min-width: 0; padding: 8px 4px; border-radius: 12px; background: var(--carte-2); text-align: center; font-size: calc(13px * var(--echelle-texte)); }
+.semaines-passees small { display: block; color: var(--texte-3); font-size: calc(11.5px * var(--echelle-texte)); }
 .semaines-passees strong { display: block; font-variant-numeric: tabular-nums; }
 .semaines-passees .ok strong { color: var(--ok); }
 .bilan-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
-.bilan-nav h2 { flex: 1; min-width: 0; text-align: center; font-size: 17px; overflow-wrap: anywhere; }
+.bilan-nav h2 { flex: 1; min-width: 0; text-align: center; font-size: calc(17px * var(--echelle-texte)); overflow-wrap: anywhere; }
 .bilan-nav .cal-nav[disabled] { opacity: 0.3; }
 .liste-bilan { list-style: none; margin: 12px 0 0; padding: 0; }
-.liste-bilan li { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px solid var(--bord); font-size: 14px; }
+.liste-bilan li { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px solid var(--bord); font-size: calc(14px * var(--echelle-texte)); }
 .liste-bilan li:first-child { border-top: 0; }
 .liste-bilan .ic { flex: none; width: 18px; height: 18px; margin-top: 1px; color: var(--accent-clair); }
 .liste-bilan span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .monte { color: var(--ok); font-weight: 700; }
 .baisse { color: var(--travail); font-weight: 700; }
-.legende-prevu { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0 0 8px; color: var(--texte-2); font-size: 13px; }
+.legende-prevu { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0 0 8px; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
 .legende-prevu i { display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 3px; vertical-align: -1px; background: var(--texte-2); }
 .legende-prevu i.piste { background: rgba(255, 255, 255, 0.2); }
 .idee-pause { color: var(--texte); font-weight: 650; }
 .seance-texte { flex: 1; min-width: 0; }
 
 /* ---------- Formulaires (dans la feuille qui monte du bas) ---------- */
-.champ { display: block; margin: 0 0 18px; font-size: 15px; font-weight: 650; }
+.champ { display: block; margin: 0 0 18px; font-size: calc(15px * var(--echelle-texte)); font-weight: 650; }
 .champ input, .champ select {
   display: block; width: 100%; margin-top: 8px; min-height: 52px; padding: 12px 14px;
   border: 1px solid var(--bord-fort); border-radius: 16px; background: var(--carte-2);
-  font-size: 17px; font-weight: 500; -webkit-appearance: none; appearance: none;
+  font-size: calc(17px * var(--echelle-texte)); font-weight: 500; -webkit-appearance: none; appearance: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .champ input:focus, .champ select:focus { border-color: var(--accent-clair); box-shadow: 0 0 0 4px var(--accent-fond); }
 .champ textarea {
   display: block; width: 100%; margin-top: 8px; min-height: 96px; padding: 12px 14px; resize: vertical;
   border: 1px solid var(--bord-fort); border-radius: 16px; background: var(--carte-2); color: inherit;
-  font: inherit; font-size: 16px; font-weight: 500; line-height: 1.45; transition: border-color 0.2s, box-shadow 0.2s;
+  font: inherit; font-size: calc(16px * var(--echelle-texte)); font-weight: 500; line-height: 1.45; transition: border-color 0.2s, box-shadow 0.2s;
 }
 .champ textarea:focus { outline: none; border-color: var(--accent-clair); box-shadow: 0 0 0 4px var(--accent-fond); }
-.champ-ligne small { display: block; color: var(--texte-3); font-size: 13px; font-weight: 500; }
-.stepper .valeur-stepper { min-width: 76px; text-align: center; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.champ-ligne small { display: block; color: var(--texte-3); font-size: calc(13px * var(--echelle-texte)); font-weight: 500; }
+.stepper .valeur-stepper { min-width: 76px; text-align: center; font-size: calc(18px * var(--echelle-texte)); font-weight: 800; font-variant-numeric: tabular-nums; }
 input[type="date"]::-webkit-date-and-time-value { text-align: left; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8); }
 .champ .facultatif { color: var(--texte-3); font-weight: 500; }
-.champ-ligne { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 18px; font-size: 15px; font-weight: 650; }
+.champ-ligne { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 18px; font-size: calc(15px * var(--echelle-texte)); font-weight: 650; }
 fieldset { margin: 0 0 18px; padding: 0; border: 0; min-width: 0; }
-legend { margin-bottom: 8px; padding: 0; font-size: 15px; font-weight: 650; }
+legend { margin-bottom: 8px; padding: 0; font-size: calc(15px * var(--echelle-texte)); font-weight: 650; }
 
 .segments { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border: 1px solid var(--bord); border-radius: 16px; background: var(--carte-2); }
 .segments label { position: relative; min-width: 0; }
 .segments input { position: absolute; opacity: 0; pointer-events: none; }
 .segments span { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px; height: 100%; padding: 6px 2px; border-radius: 12px; color: var(--texte-2); font-weight: 750; text-align: center; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
-.segments span small { font-size: 12px; font-weight: 600; }
+.segments span small { font-size: calc(12px * var(--echelle-texte)); font-weight: 600; }
 .segments input:checked + span { background: var(--degrade-accent); color: var(--sur-accent); }
 .segments input:focus-visible + span { outline: 3px solid var(--accent-clair); outline-offset: 2px; }
 
@@ -859,13 +873,13 @@ legend { margin-bottom: 8px; padding: 0; font-size: 15px; font-weight: 650; }
   transform: translateY(100%); transition: transform 0.34s var(--anim);
 }
 .fond-feuille.ouvert .feuille { transform: none; }
-.feuille h2 { margin: 4px 0 16px; font-size: 22px; }
+.feuille h2 { margin: 4px 0 16px; font-size: calc(22px * var(--echelle-texte)); }
 .feuille .detail h2.detail-titre { margin: 0; }
 .poignee { width: 42px; height: 5px; margin: 4px auto 14px; border-radius: 3px; background: var(--carte-3); }
 
 .fond-dialogue { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(3, 4, 10, 0.7); animation: fondu 0.2s ease-out; }
 .dialogue { width: 100%; max-width: 400px; padding: 22px; border: 1px solid var(--bord-fort); border-radius: 24px; background: linear-gradient(180deg, #1c2234, var(--carte)); box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.9); animation: arrivee 0.3s var(--anim); }
-.dialogue p { margin: 0 0 16px; font-size: 17px; font-weight: 650; }
+.dialogue p { margin: 0 0 16px; font-size: calc(17px * var(--echelle-texte)); font-weight: 650; }
 @keyframes fondu { from { opacity: 0; } }
 
 .toast {
@@ -889,9 +903,9 @@ legend { margin-bottom: 8px; padding: 0; font-size: 15px; font-weight: 650; }
   .tuile-jour { gap: 10px; padding: 12px; }
   .tuile-jour .flamme, .tuile-jour .anneau-mini { width: 38px !important; height: 38px !important; border-radius: 13px; }
   .tuile-jour .anneau-mini { border-radius: 0; }
-  .tuile-jour .chiffre { font-size: 23px; }
+  .tuile-jour .chiffre { font-size: calc(23px * var(--echelle-texte)); }
   .heros { padding: 18px 16px 16px; }
-  .heros-titre { font-size: 27px; }
+  .heros-titre { font-size: calc(27px * var(--echelle-texte)); }
   .commandes { gap: 10px; }
 }
 
@@ -905,6 +919,124 @@ legend { margin-bottom: 8px; padding: 0; font-size: 15px; font-weight: 650; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   .confettis { display: none; }
 }
+
+/* =====================================================================
+   V7 : THÈME CLAIR (Réglages › Apparence). Le thème sombre reste celui du dessus.
+   ===================================================================== */
+:root[data-texte="grand"] { --echelle-texte: 1.15; }
+:root[data-theme="clair"] {
+  color-scheme: light;
+  --fond: #eef0f7;
+  --carte: #ffffff;
+  --carte-haut: #ffffff;
+  --carte-2: #f0f2f8;
+  --carte-3: #e2e6f0;
+  --bord: rgba(23, 30, 60, 0.1);
+  --bord-fort: rgba(23, 30, 60, 0.17);
+  --texte: #141a2c;
+  --texte-2: #485069;
+  --texte-3: #646c87;
+  --travail: #e2483a;
+  --pause: #0f9488;
+  --pause-longue: #2563eb;
+  --alerte: #b45309;
+  --alerte-fond: rgba(245, 158, 11, 0.14);
+  --danger: #dc2626;
+  --ok: #059669;
+  --ombre: 0 1px 2px rgba(20, 25, 50, 0.06), 0 12px 30px -20px rgba(20, 25, 50, 0.35);
+}
+:root[data-theme="clair"] body::before {
+  background:
+    radial-gradient(120% 55% at 10% -8%, var(--ambiance), transparent 64%),
+    radial-gradient(80% 42% at 105% 0%, rgba(56, 189, 248, 0.08), transparent 62%),
+    linear-gradient(180deg, #f7f8fd 0%, #eef0f7 48%, #eceef6 100%);
+}
+:root[data-theme="clair"] .btn-principal { box-shadow: 0 12px 24px -14px rgb(var(--accent-rgb) / 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+:root[data-theme="clair"] .btn-danger { background: rgba(220, 38, 38, 0.09); color: #b91c1c; }
+:root[data-theme="clair"] .onglets { background: rgba(255, 255, 255, 0.92); box-shadow: 0 14px 34px -14px rgba(20, 25, 50, 0.4); }
+:root[data-theme="clair"] .salut .ic { color: #e09b0b; }
+:root[data-theme="clair"] .salut .ic.ic-lune { color: #6d5ce8; }
+:root[data-theme="clair"] .flamme { background: rgba(255, 138, 61, 0.14); color: #b4693a; }
+:root[data-theme="clair"] .anneau-mini-fond, :root[data-theme="clair"] .anneau-fond { stroke: rgba(20, 25, 50, 0.1); }
+:root[data-theme="clair"] .puce-info, :root[data-theme="clair"] .etapes span, :root[data-theme="clair"] .serie-record, :root[data-theme="clair"] .jours-flammes i { background: rgba(20, 25, 50, 0.05); }
+:root[data-theme="clair"] .jour-col, :root[data-theme="clair"] .badge-tuile { background: rgba(20, 25, 50, 0.025); }
+:root[data-theme="clair"] .jours-flammes .fait i { background: linear-gradient(160deg, #ffb347, #ff5f45); }
+:root[data-theme="clair"] .serie-points i { background: rgba(20, 25, 50, 0.16); }
+:root[data-theme="clair"] .chrono-sujet { background: rgba(255, 255, 255, 0.85); }
+:root[data-theme="clair"] .alerte-bandeau .texte strong, :root[data-theme="clair"] .puce-statut.alerte, :root[data-theme="clair"] .ech-alerte { color: #92400e; }
+:root[data-theme="clair"] .puce-statut.ok, :root[data-theme="clair"] .ech-ok { color: #047857; }
+:root[data-theme="clair"] .puce-statut.ok { background: rgba(16, 185, 129, 0.13); }
+:root[data-theme="clair"] .badge-test { background: rgba(59, 130, 246, 0.12); color: #1d4ed8; }
+:root[data-theme="clair"] .badge-examen { background: rgba(239, 68, 68, 0.11); color: #b91c1c; }
+:root[data-theme="clair"] .badge-passe { background: rgba(16, 185, 129, 0.13); color: #047857; }
+:root[data-theme="clair"] .badge-lecture { background: rgba(168, 85, 247, 0.12); color: #7e22ce; }
+:root[data-theme="clair"] .badge-devoir { background: rgba(245, 158, 11, 0.15); color: #92400e; }
+:root[data-theme="clair"] .commande.danger .rond-cmd { color: #dc2626; }
+:root[data-theme="clair"] .cal-jour.indispo, :root[data-theme="clair"] .jour-col.indispo { background: repeating-linear-gradient(135deg, rgba(20, 25, 50, 0.07) 0 4px, transparent 4px 9px), var(--carte-2); }
+:root[data-theme="clair"] .legende-prevu i.piste { background: rgba(20, 25, 50, 0.16); }
+:root[data-theme="clair"] .fond-feuille { background: rgba(15, 20, 40, 0.35); }
+:root[data-theme="clair"] .fond-dialogue { background: rgba(15, 20, 40, 0.45); }
+:root[data-theme="clair"] .feuille { background: var(--carte); box-shadow: 0 -16px 40px -20px rgba(20, 25, 50, 0.35); }
+:root[data-theme="clair"] .dialogue { background: var(--carte); }
+:root[data-theme="clair"] .toast { background: rgba(28, 33, 52, 0.96); color: #f3f5fb; }
+:root[data-theme="clair"] input[type="date"]::-webkit-calendar-picker-indicator { filter: none; }
+:root[data-theme="clair"] .ressentis [data-valeur="facile"] { background: rgba(16, 185, 129, 0.1); }
+:root[data-theme="clair"] .ressentis [data-valeur="ok"] { background: rgba(59, 130, 246, 0.09); }
+:root[data-theme="clair"] .ressentis [data-valeur="dur"] { background: rgba(249, 115, 22, 0.1); }
+
+/* ---------- V7 : réglages d'apparence ---------- */
+.choix-accents { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin: 4px 0 6px; }
+.choix-accents label { position: relative; display: grid; place-items: center; }
+.choix-accents input { position: absolute; opacity: 0; pointer-events: none; }
+.choix-accents span { display: grid; place-items: center; width: 100%; max-width: 44px; aspect-ratio: 1; border-radius: 50%; background: var(--pastille); box-shadow: 0 0 0 3px var(--carte), 0 0 0 5px transparent; cursor: pointer; transition: box-shadow 0.2s; }
+.choix-accents span .ic { width: 22px; height: 22px; color: #fff; opacity: 0; }
+.choix-accents input:checked + span { box-shadow: 0 0 0 3px var(--carte), 0 0 0 5px var(--pastille); }
+.choix-accents input:checked + span .ic { opacity: 1; }
+.choix-accents input:focus-visible + span { outline: 3px solid var(--accent-clair); outline-offset: 4px; }
+.reglage-bloc { margin: 0 0 16px; }
+.reglage-bloc legend { margin-bottom: 8px; }
+
+/* ---------- V7 : fiches question / réponse ---------- */
+.liste-qr { list-style: none; margin: 4px 0 0; padding: 0; }
+.liste-qr li { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--bord); }
+.liste-qr li:first-child { border-top: 0; }
+.ligne-qr { flex: 1; min-width: 0; min-height: 52px; padding: 8px 0; border: 0; background: none; text-align: left; overflow-wrap: anywhere; }
+.ligne-qr strong { display: block; font-weight: 650; }
+.ligne-qr small { display: block; color: var(--texte-2); font-size: calc(14px * var(--echelle-texte)); }
+.boite-qr { flex: none; display: flex; gap: 3px; }
+.boite-qr i { width: 6px; height: 6px; border-radius: 50%; background: var(--carte-3); }
+.boite-qr i.plein { background: var(--couleur-encre, var(--couleur, var(--accent-clair))); }
+.ajout-lot { margin: 4px 0 14px; }
+.ajout-lot summary { min-height: 44px; padding: 10px 0; color: var(--texte-2); font-weight: 650; cursor: pointer; }
+.quiz-tete { display: flex; align-items: center; gap: 10px; }
+.quiz-tete .texte { flex: 1; min-width: 0; color: var(--texte-2); font-weight: 650; font-variant-numeric: tabular-nums; }
+.quiz-barre { display: block; height: 6px; margin: 10px 0 0; border-radius: 999px; background: var(--carte-3); overflow: hidden; }
+.quiz-barre i { display: block; height: 100%; border-radius: inherit; background: var(--couleur, var(--accent)); transition: width 0.3s var(--anim); }
+.carte-qr { display: block; width: 100%; margin: 16px 0; padding: 0; border: 0; background: none; perspective: 1200px; text-align: center; }
+.carte-qr .faces { position: relative; display: grid; min-height: 230px; transform-style: preserve-3d; transition: transform 0.5s var(--anim); }
+.carte-qr.retournee .faces { transform: rotateY(180deg); }
+.carte-qr .face {
+  grid-area: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  padding: 26px 18px; border: 1px solid var(--couleur-bord, var(--bord-fort)); border-radius: var(--rayon);
+  background: linear-gradient(180deg, var(--carte-haut), var(--carte-2)); box-shadow: var(--ombre);
+  -webkit-backface-visibility: hidden; backface-visibility: hidden; overflow-wrap: anywhere;
+}
+.carte-qr .face.verso { transform: rotateY(180deg); background: radial-gradient(120% 90% at 50% 0%, var(--couleur-fond-fort, var(--accent-fond)), transparent 70%), linear-gradient(180deg, var(--carte-haut), var(--carte-2)); }
+.carte-qr .face small { color: var(--texte-3); font-size: calc(12px * var(--echelle-texte)); font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
+.carte-qr .face strong { font-size: calc(22px * var(--echelle-texte)); font-weight: 750; line-height: 1.3; }
+.quiz-reponses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.quiz-reponses .btn { min-height: 56px; }
+.qr-rate { color: var(--danger); }
+.resultat-qr { text-align: center; }
+.resultat-qr .gros { display: block; margin: 8px 0 4px; font-size: calc(40px * var(--echelle-texte)); font-weight: 800; font-variant-numeric: tabular-nums; }
+.carte-fiches .liste-matieres-qr { list-style: none; margin: 0; padding: 0; }
+.carte-fiches li { border-top: 1px solid var(--bord); }
+.carte-fiches li:first-child { border-top: 0; }
+.ligne-matiere-qr { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 8px 0; border: 0; background: none; text-align: left; }
+.ligne-matiere-qr .texte { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ligne-matiere-qr small { display: block; color: var(--texte-2); font-size: calc(13px * var(--echelle-texte)); }
+.ligne-matiere-qr > .ic { color: var(--texte-3); }
+@media (prefers-reduced-motion: reduce) { .carte-qr .faces { transition: none; } }
 </style>
 </head>
 
@@ -990,7 +1122,7 @@ legend { margin-bottom: 8px; padding: 0; font-size: 15px; font-weight: 650; }
 const CLE_STOCKAGE = 'plan-etude-v1';
 // Version du format des données. V1 = 1 ; V2 = 2 (type de travail, ressentis, historique, rythme) ;
 // V3 = 3 (notes et objectifs, checklist de la veille, badges, blocs prévus jour par jour).
-const VERSION_DONNEES = 6;   // V4 : jours spéciaux, jour par jour, reports, rappel de sauvegarde · V5 : devoirs, chapitres, questions, fiches de lecture · V6 : objectif de la semaine, prévu par matière, bilan du mois
+const VERSION_DONNEES = 7;   // V4 : jours spéciaux, jour par jour, reports, rappel de sauvegarde · V5 : devoirs, chapitres, questions, fiches de lecture · V6 : objectif de la semaine, prévu par matière, bilan du mois · V7 : apparence, fond sonore, fiches question / réponse
 // Copie de secours des données d'avant la mise à jour (faite une seule fois).
 // La copie d'avant la V2 ("plan-etude-copie-avant-v2") reste aussi en place.
 const CLE_SECOURS = 'plan-etude-copie-avant-v' + VERSION_DONNEES;
@@ -1080,11 +1212,29 @@ const REGLAGES_DEFAUT = {
   conseils: true,            // V5 : un conseil de méthode au début de chaque bloc
   ideesPause: true,          // V6 : une idée pour bien te reposer pendant la pause
   objectifSemaine: 0,        // V6 : temps d'étude visé chaque semaine, en minutes (0 = pas d'objectif)
+  theme: 'sombre',           // V7 : 'sombre', 'clair' ou 'auto' (comme le téléphone)
+  accent: 'violet',          // V7 : la couleur des boutons importants
+  texte: 'normal',           // V7 : 'normal' ou 'grand'
+  fondSonore: 'aucun',       // V7 : 'aucun', 'pluie', 'blanc' ou 'brun' (pendant le travail)
+  volumeFond: 0.5,           // V7 : volume du fond sonore (de 0,1 à 1)
   echelleNote: 20,           // échelle proposée pour tes notes : 10, 20 ou 100 (pour les %)
   son: true,
   vibration: true,
   ecranAllume: true,
 };
+
+// V7 : les couleurs d'accent possibles. base = boutons (texte blanc dessus), clair = texte ou icône sur fond sombre,
+// fonce = texte ou icône sur fond clair.
+const ACCENTS = {
+  violet: { nom: 'Violet', base: '#6c5cff', fin: '#5468f0', clair: '#b0abff', fonce: '#5141e0' },
+  bleu: { nom: 'Bleu', base: '#2563eb', fin: '#1d4ed8', clair: '#93c5fd', fonce: '#1d4ed8' },
+  vert: { nom: 'Vert', base: '#047857', fin: '#065f46', clair: '#6ee7b7', fonce: '#047857' },
+  rose: { nom: 'Rose', base: '#db2777', fin: '#be185d', clair: '#f9a8d4', fonce: '#be185d' },
+  orange: { nom: 'Orange', base: '#c2410c', fin: '#9a3412', clair: '#fdba74', fonce: '#c2410c' },
+  turquoise: { nom: 'Turquoise', base: '#0f766e', fin: '#115e59', clair: '#5eead4', fonce: '#0f766e' },
+};
+// V7 : les fonds sonores (fabriqués par l'appli, sans fichier).
+const SONS_FOND = { aucun: 'Aucun', pluie: 'Pluie', blanc: 'Bruit blanc', brun: 'Bruit brun' };
 
 // TOUTES les données de l'appli sont dans cet objet.
 let donnees = donneesVides();
@@ -1111,6 +1261,7 @@ function donneesVides() {
     questions: [],      // V5 : questions pour le prof ajoutées à la main : { id, matiereId, texte, date, resolue }
     planMatieres: {},   // V6 : blocs prévus chaque jour, par matière : { "2026-11-24": { idMatiere: 2 } }
     bilanFerme: null,   // V6 : mois ("AAAA-MM") dont tu as fermé le bilan sur l'écran Aujourd'hui
+    fichesQR: [],       // V7 : fiches question / réponse : { id, matiereId, echeanceId, recto, verso, boite (1 à 5), prochaine, revueLe }
   };
 }
 
@@ -1239,6 +1390,21 @@ function normaliser(lu) {
     }
   }
   if (typeof lu.bilanFerme === 'string' && /^\d{4}-\d{2}$/.test(lu.bilanFerme)) d.bilanFerme = lu.bilanFerme;
+  // Nouveau en V7 : fiches question / réponse.
+  if (Array.isArray(lu.fichesQR)) {
+    d.fichesQR = lu.fichesQR
+      .filter(f => f && String(f.recto || '').trim() && String(f.verso || '').trim() && idPropre(f.matiereId))
+      .map(f => ({
+        id: idPropre(f.id) || nouvelId(),
+        matiereId: idPropre(f.matiereId),
+        echeanceId: idPropre(f.echeanceId),
+        recto: String(f.recto).trim().slice(0, 200),
+        verso: String(f.verso).trim().slice(0, 200),
+        boite: borner(Math.round(Number(f.boite)) || 1, 1, 5),
+        prochaine: estCleDate(f.prochaine) ? f.prochaine : null,
+        revueLe: estCleDate(f.revueLe) ? f.revueLe : null,
+      }));
+  }
   // Nouveau en V4 : jours spéciaux, reports "Pas aujourd'hui", rappel de sauvegarde.
   if (Array.isArray(lu.joursSpeciaux)) {
     d.joursSpeciaux = lu.joursSpeciaux
@@ -1363,6 +1529,12 @@ function completerReglages(lus) {
     }
   }
   if (![10, 20, 100].includes(r.echelleNote)) r.echelleNote = 20;
+  // V7 : apparence et fond sonore
+  if (!['sombre', 'clair', 'auto'].includes(r.theme)) r.theme = 'sombre';
+  if (!Object.prototype.hasOwnProperty.call(ACCENTS, r.accent)) r.accent = 'violet';
+  if (!['normal', 'grand'].includes(r.texte)) r.texte = 'normal';
+  if (!Object.prototype.hasOwnProperty.call(SONS_FOND, r.fondSonore)) r.fondSonore = 'aucun';
+  r.volumeFond = borner(Math.round(r.volumeFond * 10) / 10, 0.1, 1);
   if (!(Array.isArray(r.dispoParJour) && r.dispoParJour.length === 7 && r.dispoParJour.every(v => Number.isFinite(v) && v >= 0 && v <= 720))) r.dispoParJour = null;
   else r.dispoParJour = [...r.dispoParJour];
   return r;
@@ -1578,7 +1750,59 @@ function texteSur(hex) {
   return luminosite > 0.55 ? '#10131a' : '#ffffff';
 }
 function styleCouleur(hex) {
-  return `--couleur:${hex};--couleur-fond:${rgba(hex, 0.16)};--couleur-texte:${texteSur(hex)}`;
+  return `--couleur:${hex};--couleur-fond:${rgba(hex, 0.16)};--couleur-texte:${texteSur(hex)}${apparenceClaire ? `;--couleur-encre:${encre(hex)}` : ''}`;
+}
+
+/* ---------- V7 : apparence (thème clair / sombre, couleur d'accent, texte grand) ---------- */
+let apparenceClaire = false;
+function themeEffectif() {
+  const t = donnees.reglages.theme;
+  if (t === 'auto') return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'clair' : 'sombre';
+  return t === 'clair' ? 'clair' : 'sombre';
+}
+function echelleTexte() {
+  return donnees.reglages.texte === 'grand' ? 1.15 : 1;
+}
+// Contraste entre deux couleurs (règle WCAG : 4,5 minimum pour un texte).
+function luminance(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+function contraste(a, b) {
+  const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p);
+  return (x + 0.05) / (y + 0.05);
+}
+// Une couleur de matière assez foncée pour se lire sur un fond blanc (thème clair).
+function encre(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  let f = 1;
+  let res = hex;
+  while (f > 0.2 && contraste(res, '#ffffff') < 4.5) {
+    f -= 0.05;
+    res = '#' + [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => Math.round(v * f).toString(16).padStart(2, '0')).join('');
+  }
+  return res;
+}
+function appliquerApparence() {
+  const r = donnees.reglages;
+  const racine = document.documentElement;
+  const clair = themeEffectif() === 'clair';
+  apparenceClaire = clair;
+  racine.setAttribute('data-theme', clair ? 'clair' : 'sombre');
+  if (r.texte === 'grand') racine.setAttribute('data-texte', 'grand');
+  else racine.removeAttribute('data-texte');
+  const a = ACCENTS[r.accent] || ACCENTS.violet;
+  const n = parseInt(a.base.slice(1), 16);
+  racine.style.setProperty('--accent', a.base);
+  racine.style.setProperty('--accent-rgb', `${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255}`);
+  racine.style.setProperty('--accent-clair', clair ? a.fonce : a.clair);
+  racine.style.setProperty('--accent-fond', rgba(a.base, clair ? 0.12 : 0.18));
+  racine.style.setProperty('--degrade-accent', `linear-gradient(135deg, ${a.base} 0%, ${a.fin} 100%)`);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', clair ? '#f7f8fd' : '#121628');
+  const schema = document.querySelector('meta[name="color-scheme"]');
+  if (schema) schema.setAttribute('content', clair ? 'light' : 'dark');
 }
 
 function trouverMatiere(id) {
@@ -2605,6 +2829,8 @@ function checklistVeille(e) {
   if (durs.length) liste.push({ id: 'durs', texte: `Revoir les points marqués « Dur » (${durs.length})`, details: durs.slice(0, 5).map(b => (b.note ? `« ${b.note} »` : `bloc du ${dateCourte(b.date)}`)) });
   if (e.note) liste.push({ id: 'programme', texte: `Vérifier le programme : « ${e.note} »` });
   if (restants.length) liste.push({ id: 'chapitres', texte: `Revoir les chapitres pas encore cochés (${restants.length})`, details: restants.slice(0, 6).map(c => c.nom) });
+  const fichesQR = (donnees.fichesQR || []).filter(f => f.echeanceId === e.id).length;   // V7
+  if (fichesQR) liste.push({ id: 'fiches-qr', texte: `M'interroger avec mes fiches (${fichesQR})` });
   liste.push({ id: 'methode', texte: methodes[e.travail] || methodes.mixte });
   liste.push({ id: 'affaires', texte: 'Préparer mes affaires (stylos, calculatrice, carte…)' });
   liste.push({ id: 'dormir', texte: 'Me coucher tôt 😴' });
@@ -2753,7 +2979,7 @@ function celebrer(couleur) {
 // La lueur du fond prend la couleur du chrono (matière, ou couleur calme pendant la pause).
 function majAmbiance() {
   const c = donnees.chrono;
-  const teinte = vueActive === 'chrono' && c ? rgba(couleurAffichee(c), c.phase === 'travail' && c.debut ? 0.26 : 0.2) : 'rgba(108, 92, 255, 0.16)';
+  const teinte = vueActive === 'chrono' && c ? rgba(couleurAffichee(c), c.phase === 'travail' && c.debut ? 0.26 : 0.2) : rgba((ACCENTS[donnees.reglages.accent] || ACCENTS.violet).base, apparenceClaire ? 0.1 : 0.16);
   document.documentElement.style.setProperty('--ambiance', teinte);
 }
 
@@ -2778,6 +3004,7 @@ function afficherVue(nom) {
 }
 
 function rafraichir() {
+  appliquerApparence();   // V7
   if (vueActive === 'aujourdhui') afficherAujourdhui();
   else if (vueActive === 'echeances') afficherEcheances();
   else if (vueActive === 'chrono') afficherChrono();
@@ -3306,6 +3533,7 @@ function afficherEcheances() {
   }
   h += aVenir.map(e => carteEcheance(e, plan)).join('');
   h += carteQuestions();
+  h += carteFichesQR();   // V7
   if (historique.length) {
     h += `<details class="passees"${passeesOuvertes ? ' open' : ''}><summary>Historique (${historique.length})${ic('chevronBas', 'chevron-bas')}</summary>
         ${historique.map(e => carteEcheance(e, plan)).join('')}
@@ -3590,6 +3818,8 @@ function chronoActif(c) {
       <p class="chrono-info">${info}</p>
       ${boutons}
       ${lecture ? `<div class="liens-heros"><button class="lien" data-action="fiche-lecture" data-id="${e.id}" type="button">Noter dans ma fiche de lecture</button></div>` : ''}
+      ${c.phase === 'travail' && e && fichesDe({ matiereId: e.matiereId }).length && !estLecture(e) ? `<div class="liens-heros"><button class="lien" data-action="qr-depart" ${fichesDe({ echeanceId: e.id }).length ? `data-echeance="${e.id}"` : `data-matiere="${e.matiereId}"`} type="button">🃏 M'interroger avec mes fiches</button></div>` : ''}
+      ${c.phase === 'travail' ? `<div class="liens-heros"><button class="lien" data-action="fond-suivant" type="button">🎧 Fond sonore : ${SONS_FOND[donnees.reglages.fondSonore].toLowerCase()}</button></div>` : ''}
       ${conseil ? `<p class="conseil">${ic('etincelles')}<span><strong>Conseil :</strong> ${echapper(conseil)}</span></p>` : ''}
     </section>`;
 }
@@ -3783,7 +4013,8 @@ function carteCalendrier(plan) {
         <span><span class="cal-barre"><i style="flex:1;--couleur:var(--texte-2)"></i></span>blocs prévus (ou faits)</span>
       </div>
     </section>
-    ${choisi ? detailJourCalendrier(choisi, plan) : '<p class="aide centre">Touche un jour pour voir ce qui est prévu.</p>'}`;
+    ${choisi ? detailJourCalendrier(choisi, plan) : '<p class="aide centre">Touche un jour pour voir ce qui est prévu.</p>'}
+    <button class="lien" data-action="exporter-agenda" type="button">📅 Mettre mes échéances dans Google Agenda</button>`;
 }
 
 // Les blocs prévus un jour donné, par matière.
@@ -3959,7 +4190,7 @@ function graphiquePrevuFait(lignes, L, titre) {
   const hLigne = 34;
   const epaisseur = 14;
   const xBarre = Math.min(118, Math.round(L * 0.34));
-  const placeTexte = Math.min(150, 12 + 7.2 * Math.max(...lignes.map(l => l.texte.length)));
+  const placeTexte = Math.min(150 * echelleTexte(), 12 + 7.2 * echelleTexte() * Math.max(...lignes.map(l => l.texte.length)));
   const largeurMax = Math.max(24, L - xBarre - placeTexte);
   const plafond = Math.max(1, ...lignes.map(l => Math.max(l.prevu, l.fait)));
   let svg = '';
@@ -3967,7 +4198,7 @@ function graphiquePrevuFait(lignes, L, titre) {
     const y = k * hLigne + (hLigne - epaisseur) / 2;
     const wPrevu = l.prevu ? Math.max(3, l.prevu / plafond * largeurMax) : 0;
     const wFait = l.fait ? Math.max(3, l.fait / plafond * largeurMax) : 0;
-    svg += `<text class="g-nom" x="0" y="${n1(y + epaisseur / 2)}" dominant-baseline="central">${echapper(raccourcir(l.nom, Math.max(6, Math.floor((xBarre - 8) / 8))))}</text>`;
+    svg += `<text class="g-nom" x="0" y="${n1(y + epaisseur / 2)}" dominant-baseline="central">${echapper(raccourcir(l.nom, Math.max(6, Math.floor((xBarre - 8) / (8 * echelleTexte())))))}</text>`;
     if (wPrevu) svg += `<path d="${barreH(xBarre, y, wPrevu, epaisseur)}" fill="${l.couleur}" fill-opacity="0.28"><title>${echapper(l.nom)} : prévu ${formaterDuree(l.prevu)}</title></path>`;
     if (wFait) svg += `<path d="${barreH(xBarre, y + 3, wFait, epaisseur - 6)}" fill="${l.couleur}"><title>${echapper(l.nom)} : fait ${formaterDuree(l.fait)}</title></path>`;
     svg += `<text class="g-valeur" x="${n1(xBarre + Math.max(wPrevu, wFait) + 6)}" y="${n1(y + epaisseur / 2)}" dominant-baseline="central">${echapper(l.texte)}</text>`;
@@ -4138,7 +4369,7 @@ function graphiqueBarres(lignes, L, titre, max = null) {
   const hLigne = 34;
   const epaisseur = 14;
   const xBarre = Math.min(118, Math.round(L * 0.34));
-  const placeTexte = Math.min(150, 12 + 7.2 * Math.max(...lignes.map(l => l.texte.length)));
+  const placeTexte = Math.min(150 * echelleTexte(), 12 + 7.2 * echelleTexte() * Math.max(...lignes.map(l => l.texte.length)));
   const largeurMax = Math.max(24, L - xBarre - placeTexte);
   const plafond = max || Math.max(1, ...lignes.map(l => l.valeur));
   const H = lignes.length * hLigne;
@@ -4146,7 +4377,7 @@ function graphiqueBarres(lignes, L, titre, max = null) {
   lignes.forEach((l, k) => {
     const y = k * hLigne + (hLigne - epaisseur) / 2;
     const w = Math.max(3, l.valeur / plafond * largeurMax);
-    svg += `<text class="g-nom" x="0" y="${n1(y + epaisseur / 2)}" dominant-baseline="central">${echapper(raccourcir(l.nom, Math.max(6, Math.floor((xBarre - 8) / 8))))}</text>`;
+    svg += `<text class="g-nom" x="0" y="${n1(y + epaisseur / 2)}" dominant-baseline="central">${echapper(raccourcir(l.nom, Math.max(6, Math.floor((xBarre - 8) / (8 * echelleTexte())))))}</text>`;
     svg += `<path d="${barreH(xBarre, y, w, epaisseur)}" fill="${l.couleur}"><title>${echapper(l.nom)} : ${echapper(l.texte)}</title></path>`;
     svg += `<text class="g-valeur" x="${n1(xBarre + w + 6)}" y="${n1(y + epaisseur / 2)}" dominant-baseline="central">${echapper(l.texte)}</text>`;
   });
@@ -4472,7 +4703,39 @@ function afficherReglages() {
       ${ligneInterrupteur('ecranAllume', "Garder l'écran allumé", 'pendant un bloc, si le téléphone le permet')}
       ${ligneInterrupteur('conseils', 'Conseils de méthode', 'une astuce pendant chaque bloc')}
       ${ligneInterrupteur('ideesPause', 'Idées pendant la pause', "boire, s'étirer, regarder au loin…")}
-      <div class="pile"><button class="btn btn-plein" data-action="tester-alerte" type="button">${ic('son')} Tester le son et la vibration</button></div>
+      <fieldset class="reglage-bloc" style="margin-top:14px">
+        <legend>Fond sonore pendant le travail</legend>
+        <div class="segments">
+          ${Object.entries(SONS_FOND).map(([cle, nom]) => `<label><input type="radio" name="app-fond" data-choix="fondSonore" value="${cle}"${r.fondSonore === cle ? ' checked' : ''}><span>${nom}</span></label>`).join('')}
+        </div>
+      </fieldset>
+      ${r.fondSonore !== 'aucun' ? ligneReglage('volumeFond', 'Volume du fond sonore', '', 0.1, 0.1, 1, 'pourcent') : ''}
+      <p class="aide">Fabriqué par l'appli, sans internet. Il s'arrête pendant les pauses.</p>
+      <div class="pile"><button class="btn btn-plein" data-action="tester-alerte" type="button">${ic('son')} Tester le son et la vibration</button>
+        ${r.fondSonore !== 'aucun' ? `<button class="btn btn-plein" data-action="ecouter-fond" type="button">🎧 Écouter le fond sonore (5 s)</button>` : ''}</div>
+    </section>`;
+
+  // V7 : apparence
+  h += `<h2 class="titre-section">Apparence</h2>
+    <section class="carte">
+      <fieldset class="reglage-bloc">
+        <legend>Thème</legend>
+        <div class="segments">
+          ${[['sombre', 'Sombre', ''], ['clair', 'Clair', ''], ['auto', 'Auto', 'comme le téléphone']].map(([cle, nom, aide]) => `<label><input type="radio" name="app-theme" data-choix="theme" value="${cle}"${r.theme === cle ? ' checked' : ''}><span>${nom}${aide ? `<small>${aide}</small>` : ''}</span></label>`).join('')}
+        </div>
+      </fieldset>
+      <fieldset class="reglage-bloc">
+        <legend>Couleur des boutons : ${(ACCENTS[r.accent] || ACCENTS.violet).nom.toLowerCase()}</legend>
+        <div class="choix-accents">
+          ${Object.entries(ACCENTS).map(([cle, a]) => `<label><input type="radio" name="app-accent" data-choix="accent" value="${cle}" aria-label="${a.nom}"${r.accent === cle ? ' checked' : ''}><span style="--pastille:${a.base}">${ic('check')}</span></label>`).join('')}
+        </div>
+      </fieldset>
+      <fieldset class="reglage-bloc" style="margin-bottom:0">
+        <legend>Taille du texte</legend>
+        <div class="segments">
+          ${[['normal', 'Normal'], ['grand', 'Grand']].map(([cle, nom]) => `<label><input type="radio" name="app-texte" data-choix="texte" value="${cle}"${r.texte === cle ? ' checked' : ''}><span>${nom}</span></label>`).join('')}
+        </div>
+      </fieldset>
     </section>`;
 
   // Les réglages avancés sont rangés dans une section repliable.
@@ -4519,14 +4782,17 @@ function afficherReglages() {
       <div class="pile">
         <button class="btn btn-principal btn-plein" data-action="exporter" type="button">${ic('telecharger')} Exporter mes données</button>
         <button class="btn btn-plein" data-action="importer" type="button">${ic('televerser')} Importer une sauvegarde</button>
+        <button class="btn btn-plein" data-action="exporter-agenda" type="button">${ic('calendrier')} Mettre mes échéances dans un agenda</button>
         <button class="btn btn-plein" data-action="exemple" type="button">Ajouter des exemples (pour tester)</button>
         <button class="btn btn-plein" data-action="reglages-defaut" type="button">Remettre les réglages par défaut</button>
         <button class="btn btn-plein btn-danger" data-action="tout-effacer" type="button">Tout effacer</button>
       </div>
     </section>
-    <p class="aide centre version">Plan d'étude · V6</p>`;
+    <p class="aide">Agenda : un fichier .ics avec tes tests, examens, livres et devoirs à venir. Sur Android, ouvre-le avec ton agenda. Pour Google Agenda sur ordinateur : ⚙️ Paramètres → Importer et exporter → Importer.</p>
+    <p class="aide centre version">Plan d'étude · V7</p>`;
 
   document.getElementById('vue-reglages').innerHTML = h;
+  majFondSonore();   // V7 : si le volume vient de changer
 }
 
 // Une ligne de réglage avec des boutons − et +.
@@ -4558,6 +4824,7 @@ function formaterValeur(v, format) {
   if (format === 'fois') return `× ${formaterDecimal(v)}`;
   if (format === 'minpage') return `${formaterDecimal(v)} min`;
   if (format === 'objectif') return v > 0 ? formaterDuree(v) : 'Aucun';
+  if (format === 'pourcent') return `${Math.round(v * 100)} %`;
   return formaterDecimal(v);
 }
 
@@ -4810,6 +5077,7 @@ function ouvrirDetailEcheance(id) {
         ${reportPossible(e, plan) ? `<button class="btn btn-plein" data-action="pas-aujourdhui" data-id="${e.id}" type="button">${ic('calendrier')} Pas aujourd'hui (reporter)</button>` : ''}
         ${devoir ? '' : `<button class="btn btn-plein" data-action="examen-blanc" data-id="${e.id}" type="button">${ic('horloge')} Faire un examen blanc</button>`}</div>` : ''}
       ${blocChapitres(e)}
+      ${blocFichesQR(e)}
       ${blocQuestionsMatiere(e.matiereId)}
       <h3>Mes blocs et mes notes</h3>
       ${notes}
@@ -5898,6 +6166,7 @@ function contenuExport() {
     questions: donnees.questions,           // V5 : questions pour le prof
     planMatieres: donnees.planMatieres,     // V6 : blocs prévus par matière (pour "prévu ou fait")
     bilanFerme: donnees.bilanFerme,         // V6 : bilan du mois déjà fermé
+    fichesQR: donnees.fichesQR,             // V7 : fiches question / réponse
   };
 }
 
@@ -5924,6 +6193,93 @@ async function exporterDonnees() {
   setTimeout(() => URL.revokeObjectURL(url), 30000);
   noterSauvegarde();
   afficherToast('Sauvegarde téléchargée ✓');
+}
+
+/* ---------- V7 : tes échéances dans un agenda (Google Agenda…) : un fichier .ics ---------- */
+function texteIcs(t) {
+  return String(t).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+}
+// Les lignes d'un fichier agenda ne doivent pas dépasser 75 octets : on les plie (sans couper une lettre accentuée).
+function plierLigne(ligne) {
+  const morceaux = [];
+  let courant = '';
+  let octets = 0;
+  for (const lettre of ligne) {
+    const taille = new TextEncoder().encode(lettre).length;
+    if (octets + taille > (morceaux.length ? 74 : 75)) {
+      morceaux.push(courant);
+      courant = '';
+      octets = 0;
+    }
+    courant += lettre;
+    octets += taille;
+  }
+  morceaux.push(courant);
+  return morceaux.join('\r\n ');
+}
+function titreAgenda(e) {
+  if (estLecture(e)) return `Lecture à finir : ${titreEcheance(e)}`;
+  if (e.type === 'devoir') return `Devoir à rendre : ${titreEcheance(e)}${e.titre ? ` (${nomMatiere(e.matiereId)})` : ''}`;
+  return `${nomType(e)} ${de(nomMatiere(e.matiereId))}`;
+}
+function descriptionAgenda(e) {
+  const lignes = [];
+  if (estLecture(e)) lignes.push(`Pages ${e.pageDebut} à ${e.pageFin}`);
+  else if (e.type === 'devoir') lignes.push(`Temps prévu : ${formaterDuree(e.minutesEstimees || 60)}`);
+  else lignes.push(`Niveau ${e.niveau} (${NIVEAUX[e.niveau]}) · ${pluriel(e.chapitres, 'chapitre')} · ${nomTravail(e)}`);
+  if (e.chapitresListe && e.chapitresListe.length) lignes.push(`${e.type === 'devoir' ? 'Étapes' : 'Chapitres'} : ${e.chapitresListe.map(c => c.nom).join(', ')}`);
+  if (e.note) lignes.push(`Note : ${e.note}`);
+  lignes.push("Ajouté depuis Plan d'étude");
+  return lignes.join('\n');
+}
+function contenuAgenda(d = donnees, jour = aujourdhui()) {
+  const maintenant = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+  const echeances = d.echeances.filter(e => !e.terminee && e.date >= jour).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  const lignes = ['BEGIN:VCALENDAR', 'VERSION:2.0', "PRODID:-//Plan d'étude//FR", 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', "X-WR-CALNAME:Plan d'étude"];
+  for (const e of echeances) {
+    lignes.push(
+      'BEGIN:VEVENT',
+      `UID:${e.id}@plan-etude`,
+      `DTSTAMP:${maintenant}`,
+      `DTSTART;VALUE=DATE:${e.date.replace(/-/g, '')}`,
+      `DTEND;VALUE=DATE:${ajouterJours(e.date, 1).replace(/-/g, '')}`,
+      `SUMMARY:${texteIcs(titreAgenda(e))}`,
+      `DESCRIPTION:${texteIcs(descriptionAgenda(e))}`,
+      `CATEGORIES:${texteIcs(nomType(e))}`,
+      'TRANSP:TRANSPARENT',
+      'BEGIN:VALARM',
+      'ACTION:DISPLAY',
+      `DESCRIPTION:${texteIcs('Demain : ' + titreAgenda(e))}`,
+      'TRIGGER:-PT6H',
+      'END:VALARM',
+      'END:VEVENT');
+  }
+  lignes.push('END:VCALENDAR');
+  return { texte: lignes.map(plierLigne).join('\r\n') + '\r\n', nombre: echeances.length };
+}
+async function exporterAgenda() {
+  const { texte, nombre } = contenuAgenda();
+  if (!nombre) {
+    afficherToast("Aucune échéance à venir à mettre dans l'agenda");
+    return;
+  }
+  const nom = `plan-etude-agenda-${aujourdhui()}.ics`;
+  const fichier = new File([texte], nom, { type: 'text/calendar' });
+  if (estIphone() && navigator.canShare && navigator.canShare({ files: [fichier] })) {
+    try {
+      await navigator.share({ files: [fichier], title: nom });
+    } catch (erreur) { /* partage annulé */ }
+    return;
+  }
+  const url = URL.createObjectURL(fichier);
+  const lien = document.createElement('a');
+  lien.href = url;
+  lien.download = nom;
+  document.body.appendChild(lien);
+  lien.click();
+  lien.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+  afficherToast(`📅 ${pluriel(nombre, 'échéance')} dans le fichier agenda ✓`);
 }
 
 // On retient la date de la dernière sauvegarde (pour le rappel).
@@ -6026,6 +6382,152 @@ function demarrerBloc(echeanceId, blocsSerie = 0, minutes = null) {
   vibrer(30);   // petite vibration : c'est parti !
   majVerrouEcran();
   afficherVue('chrono');
+}
+
+/* ---------- V7 : fond sonore pendant le travail (pluie, bruit blanc, bruit brun) ----------
+   Les sons sont fabriqués par l'appli (pas de fichier à télécharger) : 6 secondes qui tournent en boucle. */
+let fondEnCours = null;    // { type, source, gain, volume }
+let apercuFond = null;     // "Écouter" dans les réglages (5 secondes)
+const tamponsFond = {};
+function fabriquerBruit(ctx, type) {
+  if (tamponsFond[type]) return tamponsFond[type];
+  const taux = ctx.sampleRate;
+  const n = Math.floor(taux * 6);
+  const fondu = Math.floor(taux * 0.08);
+  const tampon = ctx.createBuffer(2, n, taux);
+  for (let canal = 0; canal < 2; canal++) {
+    const d = tampon.getChannelData(canal);
+    let brun = 0;
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < n; i++) {
+      const blanc = Math.random() * 2 - 1;
+      if (type === 'blanc') d[i] = blanc * 0.3;
+      else if (type === 'brun') {
+        brun = (brun + 0.02 * blanc) / 1.02;
+        d[i] = brun * 3.2;
+      } else {   // pluie : un bruit "rose", doux…
+        b0 = 0.99886 * b0 + blanc * 0.0555179; b1 = 0.99332 * b1 + blanc * 0.0750759; b2 = 0.969 * b2 + blanc * 0.153852;
+        b3 = 0.8665 * b3 + blanc * 0.3104856; b4 = 0.55 * b4 + blanc * 0.5329522; b5 = -0.7616 * b5 - blanc * 0.016898;
+        d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + blanc * 0.5362) * 0.05;
+        b6 = blanc * 0.115926;
+      }
+    }
+    if (type === 'pluie') {   // … et des gouttes : de petits "tic" qui s'éteignent vite
+      for (let k = 0; k < 6 * 110; k++) {
+        const depart = Math.floor(Math.random() * n);
+        const longueur = 150 + Math.floor(Math.random() * 700);
+        const force = 0.03 + Math.random() * 0.14;
+        for (let j = 0; j < longueur; j++) d[(depart + j) % n] += (Math.random() * 2 - 1) * force * Math.exp(-j / (longueur / 6));
+      }
+    }
+    // La fin se fond dans le début : la boucle ne fait pas de "clic".
+    for (let i = 0; i < fondu; i++) {
+      const f = i / fondu;
+      d[i] = d[i] * f + d[n - fondu + i] * (1 - f);
+    }
+  }
+  tamponsFond[type] = { tampon, fin: (n - fondu) / taux };
+  return tamponsFond[type];
+}
+function volumeFond() {
+  return donnees.reglages.volumeFond * 0.5;
+}
+function demarrerFond(type, volume) {
+  // Sans un premier toucher, le téléphone refuse le son : on attend (voir "touchend" plus bas).
+  if (!contexteAudio && navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
+  preparerSon();
+  const ctx = contexteAudio;
+  if (!ctx) return;
+  arreterFond(true);
+  try {
+    const { tampon, fin } = fabriquerBruit(ctx, type);
+    const source = ctx.createBufferSource();
+    source.buffer = tampon;
+    source.loop = true;
+    source.loopEnd = fin;
+    const gain = ctx.createGain();
+    const t = ctx.currentTime;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(volume, t + 1.2);   // monte en douceur
+    let sortie = source;
+    if (type === 'pluie') {
+      const filtre = ctx.createBiquadFilter();
+      filtre.type = 'lowpass';
+      filtre.frequency.value = 5500;
+      source.connect(filtre);
+      sortie = filtre;
+    }
+    sortie.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+    fondEnCours = { type, source, gain, volume };
+  } catch (erreur) {
+    fondEnCours = null;
+  }
+}
+function arreterFond(vite = false) {
+  if (!fondEnCours) return;
+  const { source, gain } = fondEnCours;
+  fondEnCours = null;
+  try {
+    const t = contexteAudio.currentTime;
+    gain.gain.cancelScheduledValues(t);
+    gain.gain.setValueAtTime(Math.max(0.0001, gain.gain.value), t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + (vite ? 0.1 : 0.8));
+    source.stop(t + (vite ? 0.15 : 0.9));
+  } catch (erreur) { /* déjà arrêté */ }
+}
+// Le fond sonore suit le chrono : seulement pendant le travail (pas pendant les pauses).
+function fondVoulu() {
+  const c = donnees.chrono;
+  const type = donnees.reglages.fondSonore;
+  return c && c.phase === 'travail' && c.debut && type !== 'aucun' ? type : null;
+}
+function majFondSonore() {
+  if (apercuFond) return;
+  const voulu = fondVoulu();
+  if (!voulu) {
+    arreterFond();
+    return;
+  }
+  if (!fondEnCours || fondEnCours.type !== voulu) {
+    demarrerFond(voulu, volumeFond());
+  } else if (Math.abs(fondEnCours.volume - volumeFond()) > 0.001) {
+    try {
+      const t = contexteAudio.currentTime;
+      fondEnCours.gain.gain.cancelScheduledValues(t);
+      fondEnCours.gain.gain.setValueAtTime(Math.max(0.0001, fondEnCours.gain.gain.value), t);
+      fondEnCours.gain.gain.exponentialRampToValueAtTime(volumeFond(), t + 0.3);
+      fondEnCours.volume = volumeFond();
+    } catch (erreur) { /* pas grave */ }
+  }
+}
+function ecouterFond() {
+  const type = donnees.reglages.fondSonore;
+  if (type === 'aucun') {
+    afficherToast("Choisis d'abord un son (pluie, bruit blanc…)");
+    return;
+  }
+  clearTimeout(apercuFond);
+  apercuFond = null;
+  demarrerFond(type, volumeFond());
+  apercuFond = setTimeout(() => {
+    apercuFond = null;
+    arreterFond();
+    majFondSonore();
+  }, 5000);
+  afficherToast(`🎧 ${SONS_FOND[type]} pendant 5 secondes`);
+}
+// Pendant un bloc : passer au son suivant (aucun → pluie → bruit blanc → bruit brun → aucun).
+function fondSuivant() {
+  const types = Object.keys(SONS_FOND);
+  const r = donnees.reglages;
+  r.fondSonore = types[(types.indexOf(r.fondSonore) + 1) % types.length];
+  sauvegarder();
+  preparerSon();
+  majFondSonore();
+  rafraichir();
+  afficherToast(r.fondSonore === 'aucun' ? '🔇 Fond sonore coupé' : `🎧 ${SONS_FOND[r.fondSonore]}`);
 }
 
 function mettreEnPause() {
@@ -6344,6 +6846,7 @@ let verrouEcran = null;
 let demandeEnCours = false;
 
 async function majVerrouEcran() {
+  majFondSonore();   // V7 : le fond sonore suit le chrono
   if (!('wakeLock' in navigator)) return;
   const c = donnees.chrono;
   const voulu = Boolean(c && c.debut && c.phase !== 'attente' && donnees.reglages.ecranAllume && document.visibilityState === 'visible');
@@ -6845,6 +7348,364 @@ function raccourciLecture() {
   ouvrirFormLecture(livre.id);
 }
 
+/* ---------- Lot 4 : fiches question / réponse (pour le par cœur) ----------
+   Chaque fiche a une question (recto) et une réponse (verso). Elle est rangée dans une "boîte" de 1 à 5 :
+   su → boîte suivante (on la revoit plus tard), pas su → boîte 1 (on la revoit vite). C'est la méthode Leitner. */
+const INTERVALLES_QR = [0, 1, 2, 4, 7, 14];   // jours avant de revoir une fiche, selon sa boîte
+let porteeQR = null;   // les fiches affichées : { echeanceId } ou { matiereId }
+let quizQR = null;     // l'interrogation en cours
+function matiereDePortee(portee) {
+  if (portee.echeanceId) {
+    const e = trouverEcheance(portee.echeanceId);
+    return e ? e.matiereId : null;
+  }
+  return portee.matiereId;
+}
+function fichesDe(portee) {
+  return donnees.fichesQR.filter(f => trouverMatiere(f.matiereId)
+    && (portee.echeanceId ? f.echeanceId === portee.echeanceId : f.matiereId === portee.matiereId));
+}
+function aRevoir(f, jour = aujourdhui()) {
+  return !f.prochaine || f.prochaine <= jour;
+}
+function titrePortee(portee) {
+  if (portee.echeanceId) {
+    const e = trouverEcheance(portee.echeanceId);
+    return e ? capitaliser(nomEcheanceLong(e)) : '';
+  }
+  return `Toutes tes fiches ${de(nomMatiere(portee.matiereId))}`;
+}
+function attributsPortee(portee) {
+  return portee.echeanceId ? `data-echeance="${portee.echeanceId}"` : `data-matiere="${portee.matiereId}"`;
+}
+function porteeDe(element) {
+  return element.dataset.echeance ? { echeanceId: element.dataset.echeance } : { matiereId: element.dataset.matiere };
+}
+function melanger(liste) {
+  const l = liste.slice();
+  for (let i = l.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [l[i], l[j]] = [l[j], l[i]];
+  }
+  return l;
+}
+
+// Dans le détail d'un test ou d'un examen.
+function blocFichesQR(e) {
+  if (!e || e.terminee || estLecture(e) || e.type === 'devoir') return '';
+  const fiches = fichesDe({ echeanceId: e.id });
+  const autres = fichesDe({ matiereId: e.matiereId }).length - fiches.length;
+  const revoir = fiches.filter(f => aRevoir(f)).length;
+  let h = `<div class="bloc-fiches" id="bloc-fiches"><h3>Fiches question / réponse${fiches.length ? `<span class="titre-compte">${fiches.length}</span>` : ''}</h3>`;
+  h += fiches.length
+    ? `<p class="aide">${revoir ? `${pluriel(revoir, 'fiche')} à revoir aujourd'hui.` : "Rien à revoir aujourd'hui 👍 (tu peux quand même t'interroger)."}</p>`
+    : `<p class="aide">Pour le par cœur (vocabulaire, dates, formules) : une question d'un côté, la réponse de l'autre, et l'appli t'interroge.</p>`;
+  h += `<div class="pile">
+      ${fiches.length ? `<button class="btn btn-plein" data-action="qr-depart" data-echeance="${e.id}" type="button">🃏 M'interroger</button>` : ''}
+      <button class="btn btn-plein" data-action="qr-gerer" data-echeance="${e.id}" type="button">${fiches.length ? 'Ajouter ou modifier mes fiches' : `${ic('plus')} Créer des fiches`}</button>
+    </div>`;
+  if (autres > 0) h += `<p class="aide">Et ${pluriel(autres, 'autre fiche')} ${de(nomMatiere(e.matiereId))} : <button class="lien" style="display:inline;margin:0;padding:4px 0" data-action="qr-depart" data-matiere="${e.matiereId}" type="button">m'interroger sur toutes</button></p>`;
+  return h + '</div>';
+}
+
+// Sur l'écran Échéances : tes fiches, matière par matière (seulement si tu en as).
+function carteFichesQR() {
+  const jour = aujourdhui();
+  const parMatiere = {};
+  for (const f of donnees.fichesQR) {
+    if (!trouverMatiere(f.matiereId)) continue;
+    const x = parMatiere[f.matiereId] = parMatiere[f.matiereId] || { total: 0, revoir: 0 };
+    x.total++;
+    if (aRevoir(f, jour)) x.revoir++;
+  }
+  const ids = Object.keys(parMatiere).sort((a, b) => nomMatiere(a).localeCompare(nomMatiere(b), 'fr'));
+  if (!ids.length) return '';
+  const revoir = ids.reduce((t, id) => t + parMatiere[id].revoir, 0);
+  return `<section class="carte carte-fiches">
+      <div class="carte-titre"><h2><span aria-hidden="true">🃏</span>Mes fiches</h2><span class="etiquette">${revoir ? `${revoir} à revoir` : 'à jour ✓'}</span></div>
+      <ul class="liste-matieres-qr">${ids.map(id => `<li><button class="ligne-matiere-qr" data-action="qr-depart" data-matiere="${id}" type="button" style="${styleMatiere(id)}">
+          <span class="rond"></span>
+          <span class="texte"><strong>${echapper(nomMatiere(id))}</strong><small>${pluriel(parMatiere[id].total, 'fiche')}${parMatiere[id].revoir ? ` · ${parMatiere[id].revoir} à revoir` : ''}</small></span>
+          ${ic('chevron')}
+        </button></li>`).join('')}</ul>
+    </section>`;
+}
+
+// Avant de commencer : quelles fiches, dans quel sens.
+function ouvrirDepartQR(portee) {
+  const fiches = fichesDe(portee);
+  if (!fiches.length) return ouvrirGestionQR(portee);
+  porteeQR = portee;
+  const revoir = fiches.filter(f => aRevoir(f)).length;
+  ouvrirFeuille(`<form id="form-depart-qr" ${attributsPortee(portee)} novalidate style="${styleMatiereRiche(matiereDePortee(portee))}">
+      <h2>M'interroger</h2>
+      <p class="aide" style="margin:-6px 0 16px">${echapper(titrePortee(portee))} · ${pluriel(fiches.length, 'fiche')}</p>
+      <fieldset>
+        <legend>Quelles fiches ?</legend>
+        <div class="segments">
+          <label><input type="radio" name="mode" value="revoir"${revoir ? ' checked' : ' disabled'}><span>À revoir<small>${revoir}</small></span></label>
+          <label><input type="radio" name="mode" value="toutes"${revoir ? '' : ' checked'}><span>Toutes<small>${fiches.length}</small></span></label>
+        </div>
+      </fieldset>
+      <label class="ligne-reglage">
+        <span class="libelle">Dans l'autre sens<small>la réponse d'abord, tu retrouves la question</small></span>
+        <span class="interrupteur"><input type="checkbox" name="inverse"><span></span></span>
+      </label>
+      <div class="pile" style="margin-top:14px">
+        <button type="submit" class="btn btn-principal btn-geant">🃏 Commencer</button>
+        <button type="button" class="btn btn-plein" data-action="qr-gerer" ${attributsPortee(portee)}>Ajouter ou modifier mes fiches</button>
+        <button type="button" class="btn btn-plein" data-action="fermer">Fermer</button>
+      </div>
+    </form>`);
+}
+function demarrerQuizQR(form) {
+  const portee = porteeDe(form);
+  const f = new FormData(form);
+  const fiches = fichesDe(portee).filter(x => f.get('mode') !== 'revoir' || aRevoir(x));
+  if (!fiches.length) return;
+  quizQR = { portee, ids: melanger(fiches.map(x => x.id)), index: 0, inverse: f.get('inverse') === 'on', retournee: false, rates: new Set(), sansMonter: new Set(), sus: 0, total: fiches.length, reprises: {} };
+  afficherQuizQR();
+}
+function ficheQR(id) {
+  return donnees.fichesQR.find(f => f.id === id) || null;
+}
+function afficherQuizQR() {
+  const q = quizQR;
+  if (!q) return;
+  while (q.index < q.ids.length && !ficheQR(q.ids[q.index])) q.index++;   // (une fiche supprimée entre-temps)
+  if (q.index >= q.ids.length) return finQuizQR();
+  const f = ficheQR(q.ids[q.index]);
+  const [question, reponse] = q.inverse ? [f.verso, f.recto] : [f.recto, f.verso];
+  const faites = q.sus + q.rates.size;
+  ouvrirFeuille(`<div class="quiz" style="${styleMatiereRiche(f.matiereId)}">
+      <div class="quiz-tete">
+        <span class="texte">Fiche ${Math.min(q.index + 1, q.ids.length)} / ${q.ids.length} · ✓ ${q.sus}</span>
+        <button class="fermer-x" data-action="qr-arreter" type="button" aria-label="Arrêter l'interrogation">${ic('fermer')}</button>
+      </div>
+      <span class="quiz-barre" aria-hidden="true"><i style="width:${Math.round(faites / q.total * 100)}%"></i></span>
+      <button class="carte-qr" id="carte-qr" data-action="qr-retourner" type="button" aria-label="Retourner la fiche">
+        <span class="faces">
+          <span class="face recto"><small>${q.inverse ? 'Réponse' : 'Question'}</small><strong>${echapper(question)}</strong></span>
+          <span class="face verso" aria-hidden="true"><small>${q.inverse ? 'Question' : 'Réponse'}</small><strong>${echapper(reponse)}</strong></span>
+        </span>
+      </button>
+      <div id="quiz-actions">${actionsQuizQR(false)}</div>
+    </div>`);
+  q.retournee = false;
+}
+function actionsQuizQR(retournee) {
+  return retournee
+    ? `<p class="aide centre" style="margin-top:0">Tu savais ?</p>
+      <div class="quiz-reponses">
+        <button class="btn btn-plein qr-rate" data-action="qr-repondre" data-valeur="rate" type="button">✗ Pas su</button>
+        <button class="btn btn-principal" data-action="qr-repondre" data-valeur="su" type="button">✓ Su</button>
+      </div>`
+    : `<button class="btn btn-principal btn-geant" data-action="qr-retourner" type="button">Voir la réponse</button>`;
+}
+function retournerQR() {
+  const q = quizQR;
+  const carte = document.getElementById('carte-qr');
+  if (!q || !carte) return;
+  q.retournee = !q.retournee;
+  carte.classList.toggle('retournee', q.retournee);
+  const [recto, verso] = carte.querySelectorAll('.face');
+  recto.setAttribute('aria-hidden', String(q.retournee));
+  verso.setAttribute('aria-hidden', String(!q.retournee));
+  if (q.retournee) document.getElementById('quiz-actions').innerHTML = actionsQuizQR(true);
+}
+function repondreQR(valeur) {
+  const q = quizQR;
+  if (!q || !q.retournee) return;
+  const f = ficheQR(q.ids[q.index]);
+  if (!f) return;
+  const jour = aujourdhui();
+  if (valeur === 'su') {
+    if (!q.rates.has(f.id)) {
+      if (!q.sansMonter.has(f.id)) f.boite = Math.min(5, f.boite + 1);   // ratée tout à l'heure : elle reste en boîte 1
+      q.sus++;
+    }
+    f.prochaine = ajouterJours(jour, INTERVALLES_QR[f.boite]);
+  } else {
+    f.boite = 1;
+    f.prochaine = ajouterJours(jour, INTERVALLES_QR[1]);
+    q.rates.add(f.id);
+    q.reprises[f.id] = (q.reprises[f.id] || 0) + 1;
+    if (q.reprises[f.id] <= 2) q.ids.push(f.id);   // on la revoit à la fin (2 fois au plus)
+  }
+  f.revueLe = jour;
+  sauvegarder();
+  q.index++;
+  vibrer(valeur === 'su' ? 15 : [20, 60, 20]);
+  afficherQuizQR();
+}
+function finQuizQR() {
+  const q = quizQR;
+  const parfait = q.sus === q.total;
+  ouvrirFeuille(`<div class="quiz resultat-qr" ${attributsPortee(q.portee)} style="${styleMatiereRiche(matiereDePortee(q.portee))}">
+      <h2>${parfait ? 'Parfait ! 🎉' : 'Terminé ✓'}</h2>
+      <span class="gros">${q.sus} / ${q.total}</span>
+      <p class="aide">${q.sus} su${q.sus > 1 ? 'es' : 'e'} du premier coup${q.rates.size ? ` · ${q.rates.size} à retravailler (tu les reverras demain)` : ''}.</p>
+      <div class="pile" style="margin-top:16px">
+        ${q.rates.size ? `<button class="btn btn-principal btn-plein" data-action="qr-refaire-rates" type="button">Revoir les ${pluriel(q.rates.size, 'fiche')} ratée${q.rates.size > 1 ? 's' : ''}</button>` : ''}
+        <button class="btn btn-plein" data-action="qr-depart" ${attributsPortee(q.portee)} type="button">Recommencer</button>
+        <button class="btn btn-plein" data-action="qr-arreter" type="button">Terminer</button>
+      </div>
+    </div>`);
+  if (parfait) celebrer(couleurMatiere(matiereDePortee(q.portee)) || '#b0abff');
+  rafraichir();
+}
+function refaireRatesQR() {
+  const q = quizQR;
+  if (!q || !q.rates.size) return;
+  quizQR = { ...q, ids: melanger([...q.rates]), index: 0, retournee: false, rates: new Set(), sansMonter: new Set([...q.sansMonter, ...q.rates]), sus: 0, total: q.rates.size, reprises: {} };
+  afficherQuizQR();
+}
+function arreterQuizQR() {
+  quizQR = null;
+  fermerFeuille();
+  rafraichir();
+}
+
+// Ajouter, modifier, supprimer des fiches.
+function ouvrirGestionQR(portee) {
+  porteeQR = portee;
+  const e = portee.echeanceId ? trouverEcheance(portee.echeanceId) : null;
+  const matiereId = matiereDePortee(portee);
+  if (!matiereId || !trouverMatiere(matiereId)) return;
+  ouvrirFeuille(`<div class="detail gestion-qr" ${attributsPortee(portee)} style="${styleMatiereRiche(matiereId)}">
+      <h2>Mes fiches</h2>
+      <p class="aide" style="margin:-6px 0 14px">${echapper(titrePortee(portee))}</p>
+      <form id="form-qr" novalidate>
+        <label class="champ">Question <span class="facultatif">(le recto)</span>
+          <input type="text" name="recto" maxlength="200" placeholder="${e && e.travail === 'parcoeur' ? 'ex : dog' : 'ex : Date de la bataille de Waterloo ?'}" autocomplete="off" enterkeyhint="next">
+        </label>
+        <label class="champ">Réponse <span class="facultatif">(le verso)</span>
+          <input type="text" name="verso" maxlength="200" placeholder="${e && e.travail === 'parcoeur' ? 'ex : le chien' : 'ex : 1815'}" autocomplete="off" enterkeyhint="done">
+        </label>
+        <p class="erreur" id="erreur-form" hidden></p>
+        <button type="submit" class="btn btn-principal btn-plein">${ic('plus')} Ajouter la fiche</button>
+      </form>
+      <details class="ajout-lot">
+        <summary>Ajouter plusieurs fiches d'un coup</summary>
+        <form id="form-qr-lot" novalidate>
+          <label class="champ">Une fiche par ligne : question = réponse
+            <textarea name="lignes" rows="5" placeholder="dog = le chien&#10;cat = le chat&#10;1815 = Waterloo"></textarea>
+          </label>
+          <button type="submit" class="btn btn-plein">Ajouter ces fiches</button>
+        </form>
+      </details>
+      <div id="liste-qr">${listeQR(portee)}</div>
+      <div class="pile" style="margin-top:12px"><button class="btn btn-plein" data-action="fermer" type="button">Fermer</button></div>
+    </div>`);
+}
+function listeQR(portee) {
+  const fiches = fichesDe(portee);
+  if (!fiches.length) return `<p class="aide">Pas encore de fiche.</p>`;
+  const points = f => [1, 2, 3, 4, 5].map(n => `<i class="${n <= f.boite ? 'plein' : ''}"></i>`).join('');
+  return `<h3>Tes fiches<span class="titre-compte">${fiches.length}</span></h3>
+    <ul class="liste-qr">${fiches.map(f => `<li>
+        <button class="ligne-qr" data-action="qr-modifier" data-id="${f.id}" type="button"><strong>${echapper(f.recto)}</strong><small>${echapper(f.verso)}</small></button>
+        <span class="boite-qr" title="Boîte ${f.boite} sur 5" aria-label="Boîte ${f.boite} sur 5">${points(f)}</span>
+        <button class="supprimer-bloc" data-action="qr-supprimer" data-id="${f.id}" type="button" aria-label="Supprimer la fiche « ${echapper(f.recto)} »">${ic('fermer')}</button>
+      </li>`).join('')}</ul>
+    <div class="pile" style="margin-top:12px"><button class="btn btn-principal btn-plein" data-action="qr-depart" ${attributsPortee(portee)} type="button">🃏 M'interroger</button></div>`;
+}
+function majListeQR() {
+  const zone = document.getElementById('liste-qr');
+  if (zone && porteeQR) zone.innerHTML = listeQR(porteeQR);
+  rafraichir();
+}
+function nouvelleFicheQR(recto, verso) {
+  const matiereId = matiereDePortee(porteeQR);
+  return { id: nouvelId() + Math.random().toString(36).slice(2, 5), matiereId, echeanceId: porteeQR.echeanceId || null, recto, verso, boite: 1, prochaine: null, revueLe: null };
+}
+function ajouterFicheQR(form) {
+  if (!porteeQR) return;
+  const recto = form.elements.recto;
+  const verso = form.elements.verso;
+  const q = String(recto.value).trim().replace(/\s+/g, ' ').slice(0, 200);
+  const r = String(verso.value).trim().replace(/\s+/g, ' ').slice(0, 200);
+  if (!q) { recto.focus(); return; }
+  if (!r) { verso.focus(); return; }   // Entrée après la question : on passe à la réponse
+  donnees.fichesQR.push(nouvelleFicheQR(q, r));
+  sauvegarder();
+  recto.value = '';
+  verso.value = '';
+  majListeQR();
+  recto.focus();
+  afficherToast('Fiche ajoutée ✓');
+}
+function ajouterLotQR(form) {
+  if (!porteeQR) return;
+  const lignes = String(form.elements.lignes.value || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  let ajoutees = 0;
+  let ignorees = 0;
+  for (const ligne of lignes) {
+    const i = ligne.indexOf('=');
+    const q = i > 0 ? ligne.slice(0, i).trim().replace(/\s+/g, ' ').slice(0, 200) : '';
+    const r = i > 0 ? ligne.slice(i + 1).trim().replace(/\s+/g, ' ').slice(0, 200) : '';
+    if (q && r) {
+      donnees.fichesQR.push(nouvelleFicheQR(q, r));
+      ajoutees++;
+    } else ignorees++;
+  }
+  if (!ajoutees) {
+    afficherToast('Rien ajouté : écris une fiche par ligne, avec « = » entre la question et la réponse');
+    return;
+  }
+  sauvegarder();
+  form.elements.lignes.value = '';
+  majListeQR();
+  afficherToast(`${pluriel(ajoutees, 'fiche')} ajoutée${ajoutees > 1 ? 's' : ''} ✓${ignorees ? ` (${ignorees} ligne${ignorees > 1 ? 's' : ''} sans « = » ignorée${ignorees > 1 ? 's' : ''})` : ''}`);
+}
+function ouvrirModifQR(id) {
+  const f = ficheQR(id);
+  if (!f) return;
+  ouvrirFeuille(`<form id="form-qr-modif" data-id="${f.id}" novalidate style="${styleMatiereRiche(f.matiereId)}">
+      <h2>Modifier la fiche</h2>
+      <label class="champ">Question<input type="text" name="recto" maxlength="200" value="${echapper(f.recto)}" autocomplete="off"></label>
+      <label class="champ">Réponse<input type="text" name="verso" maxlength="200" value="${echapper(f.verso)}" autocomplete="off"></label>
+      <p class="aide">Boîte ${f.boite} sur 5${f.revueLe ? ` · revue le ${dateCourteSansJour(f.revueLe)}` : ' · pas encore revue'}${f.prochaine ? ` · à revoir ${f.prochaine <= aujourdhui() ? "aujourd'hui" : quandCourt(f.prochaine)}` : ''}.</p>
+      <p class="erreur" id="erreur-form" hidden></p>
+      <div class="pile">
+        <button type="submit" class="btn btn-principal btn-geant">Enregistrer</button>
+        <button type="button" class="btn btn-plein" data-action="qr-retour">Retour</button>
+        <button type="button" class="btn btn-plein btn-danger" data-action="qr-supprimer" data-id="${f.id}">Supprimer cette fiche</button>
+      </div>
+    </form>`);
+}
+function enregistrerModifQR(form) {
+  const f = ficheQR(form.dataset.id);
+  if (!f) return;
+  const q = String(form.elements.recto.value).trim().replace(/\s+/g, ' ').slice(0, 200);
+  const r = String(form.elements.verso.value).trim().replace(/\s+/g, ' ').slice(0, 200);
+  if (!q || !r) return erreurForm('Il faut une question et une réponse.');
+  f.recto = q;
+  f.verso = r;
+  sauvegarder();
+  retourGestionQR();
+  afficherToast('Fiche modifiée ✓');
+}
+function retourGestionQR() {
+  if (porteeQR) ouvrirGestionQR(porteeQR);
+  else fermerFeuille();
+  rafraichir();
+}
+function supprimerFicheQR(id) {
+  const f = ficheQR(id);
+  if (!f) return;
+  const position = donnees.fichesQR.indexOf(f);
+  donnees.fichesQR.splice(position, 1);
+  sauvegarder();
+  if (document.getElementById('form-qr-modif')) retourGestionQR();
+  else majListeQR();
+  proposerAnnulation(`Fiche « ${raccourcir(f.recto, 30)} » supprimée`, () => {
+    donnees.fichesQR.splice(Math.min(position, donnees.fichesQR.length), 0, f);
+    const zone = document.getElementById('liste-qr');
+    if (zone && porteeQR) zone.innerHTML = listeQR(porteeQR);
+  });
+}
+
 /* =====================================================================
    8. CLICS, ÉVÉNEMENTS ET DÉMARRAGE
    Chaque bouton a un attribut data-action="..." qui dit ce qu'il fait.
@@ -6949,6 +7810,19 @@ const ACTIONS = {
   'passer-lecture': (id, bouton) => passerLecture(bouton),
   'supprimer-seance': id => supprimerSeance(id),
   'effacer-note': id => effacerNote(id),
+  // V7
+  'qr-depart': (id, bouton) => ouvrirDepartQR(porteeDe(bouton)),
+  'qr-gerer': (id, bouton) => ouvrirGestionQR(porteeDe(bouton)),
+  'qr-retourner': () => retournerQR(),
+  'qr-repondre': (id, bouton) => repondreQR(bouton.dataset.valeur),
+  'qr-arreter': () => arreterQuizQR(),
+  'qr-refaire-rates': () => refaireRatesQR(),
+  'qr-modifier': id => ouvrirModifQR(id),
+  'qr-supprimer': id => supprimerFicheQR(id),
+  'qr-retour': () => retourGestionQR(),
+  'exporter-agenda': () => exporterAgenda(),
+  'ecouter-fond': () => ecouterFond(),
+  'fond-suivant': () => fondSuivant(),
   // V6
   'objectif-fixer': () => changerObjectifSemaine('fixer'),
   'objectif-plus': () => changerObjectifSemaine('plus'),
@@ -7030,6 +7904,10 @@ document.addEventListener('submit', ev => {
   if (ev.target.id === 'form-lecture') enregistrerLecture(ev.target);
   if (ev.target.id === 'form-special') enregistrerSpecial(ev.target);
   if (ev.target.id === 'form-chapitre') ajouterChapitre(ev.target);
+  if (ev.target.id === 'form-qr') ajouterFicheQR(ev.target);
+  if (ev.target.id === 'form-qr-lot') ajouterLotQR(ev.target);
+  if (ev.target.id === 'form-qr-modif') enregistrerModifQR(ev.target);
+  if (ev.target.id === 'form-depart-qr') demarrerQuizQR(ev.target);
   if (ev.target.id === 'form-question') enregistrerQuestion(ev.target);
   if (ev.target.id === 'form-fiche') enregistrerFiche(ev.target);
   if (ev.target.id === 'form-examen-blanc') {
@@ -7076,6 +7954,12 @@ document.addEventListener('change', ev => {
     importerFichier(t.files[0]);
     t.value = '';
   }
+  if (t.dataset.choix) {   // V7 : thème, couleur, taille du texte, fond sonore
+    donnees.reglages[t.dataset.choix] = t.value;
+    sauvegarder();
+    rafraichir();
+    majFondSonore();
+  }
   if (t.dataset.reglage) {
     donnees.reglages[t.dataset.reglage] = t.checked;
     sauvegarder();
@@ -7104,7 +7988,11 @@ document.getElementById('fond-feuille').addEventListener('click', ev => {
 });
 
 // Pendant un chrono, chaque appui "débloque" le son (nécessaire sur iPhone).
-document.addEventListener('touchend', () => { if (donnees.chrono) preparerSon(); }, { passive: true });
+document.addEventListener('touchend', () => {
+  if (!donnees.chrono) return;
+  preparerSon();
+  majFondSonore();   // V7 : le fond sonore attendait peut-être ce premier toucher
+}, { passive: true });
 
 // Le "battement" de l'appli : 2 fois par seconde.
 let dernierJour = aujourdhui();
@@ -7135,8 +8023,16 @@ window.addEventListener('storage', ev => {
   }
 });
 
+// V7 : en thème "Auto", on suit le téléphone s'il passe en clair / sombre.
+try {
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+    if (donnees.reglages.theme === 'auto') rafraichir();
+  });
+} catch (erreur) { /* vieux navigateur */ }
+
 // ---- Démarrage ----
 charger();
+appliquerApparence();   // V7
 verifierChrono(true);
 // Une "pause terminée" d'un autre jour n'a plus d'intérêt : on l'oublie.
 const ancien = donnees.chrono;
