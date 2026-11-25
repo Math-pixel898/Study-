@@ -924,6 +924,7 @@ legend { margin-bottom: 8px; padding: 0; font-size: calc(15px * var(--echelle-te
    V7 : THÈME CLAIR (Réglages › Apparence). Le thème sombre reste celui du dessus.
    ===================================================================== */
 :root[data-texte="grand"] { --echelle-texte: 1.15; }
+:root[data-texte="grand"] .actions-lecture { grid-template-columns: 1fr; }   /* texte grand : « J'ai fini mes pages » puis « 5 min de plus » en dessous (pas un bouton tout étroit) */
 :root[data-theme="clair"] {
   color-scheme: light;
   --fond: #eef0f7;
@@ -7483,7 +7484,7 @@ function afficherQuizQR() {
         <button class="fermer-x" data-action="qr-arreter" type="button" aria-label="Arrêter l'interrogation">${ic('fermer')}</button>
       </div>
       <span class="quiz-barre" aria-hidden="true"><i style="width:${Math.round(faites / q.total * 100)}%"></i></span>
-      <button class="carte-qr" id="carte-qr" data-action="qr-retourner" type="button" aria-label="Retourner la fiche">
+      <button class="carte-qr" id="carte-qr" data-action="qr-retourner" type="button">
         <span class="faces">
           <span class="face recto"><small>${q.inverse ? 'Réponse' : 'Question'}</small><strong>${echapper(question)}</strong></span>
           <span class="face verso" aria-hidden="true"><small>${q.inverse ? 'Question' : 'Réponse'}</small><strong>${echapper(reponse)}</strong></span>
