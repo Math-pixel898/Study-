@@ -1996,7 +1996,9 @@ function tempsEcheance(e) {
 // Nombre de blocs pour un temps donné : TOUJOURS arrondi vers le haut.
 // Ex. avec des blocs de 25 min : 25 min → 1 bloc, 30 min → 2 blocs, 50 min → 2 blocs.
 function blocsPour(minutes, dureeBloc) {
-  return minutes > 0 ? Math.ceil(minutes / dureeBloc) : 0;
+  // Un petit reste (un quart de bloc au plus, ex. 30 min = 25 + 5) se fait dans le bloc d'avant :
+  // il ne compte pas comme un bloc entier de plus (sinon 30 min de travail prendraient 50 min dans le plan).
+  return minutes > 0 ? Math.max(1, Math.ceil(minutes / dureeBloc - 0.25)) : 0;
 }
 
 /* ---------- Coefficient de difficulté perso ----------
@@ -2220,7 +2222,9 @@ function calculerPlan(jour = aujourdhui(), d = donnees) {
     const compteAujourdhui = Math.max(i.prevuAujourdhui * W, i.faitAujourdhui);
     i.restantApres = Math.max(0, i.restant - compteAujourdhui);
   }
-  const passage2 = repartir(infos.map(i => demande(i, demain, blocsPour(i.restantApres, W))), capacitesFutures);
+  // (un petit reste après le travail du jour, 6 min au plus, se fait dans le bloc du jour : pas un bloc de plus demain)
+  const blocsApres = i => (i.restantApres <= W * 0.25 && (i.prevuAujourdhui > 0 || i.faitAujourdhui > 0) ? 0 : blocsPour(i.restantApres, W));
+  const passage2 = repartir(infos.map(i => demande(i, demain, blocsApres(i))), capacitesFutures);
   for (const i of infos) {
     i.futur = passage2.alloc[i.echeance.id];    // ex : { "2026-11-24": 2, "2026-11-25": 1 }
     i.manque = passage2.manque[i.echeance.id];  // blocs qu'on n'a pas pu placer
@@ -2819,7 +2823,12 @@ function verifierBadges(silencieux = false) {
   sauvegarder();
   if (!silencieux) {
     const noms = nouveaux.map(id => { const b = infoBadge(id); return `${b.emoji} ${b.nom}`; }).join(', ');
-    setTimeout(() => afficherToast(`🏅 Nouveau badge : ${noms}`), 3000);   // après le message "Bloc enregistré"
+    // Après le message "Bloc enregistré" ; et jamais par-dessus un message « Annuler » encore valable.
+    const montrer = () => {
+      if (annulation && Date.now() < annulation.jusqua) return setTimeout(montrer, annulation.jusqua - Date.now() + 300);
+      afficherToast(`🏅 Nouveau badge : ${noms}`);
+    };
+    setTimeout(montrer, 3000);
   }
   return nouveaux;
 }
